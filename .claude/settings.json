@@ -19,7 +19,6 @@
       "Bash(curl -s https://hbs-nu.vercel.app/api/health)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://hbs-nu.vercel.app/login\")",
       "Bash(GIT_AUTHOR_EMAIL=\"arecklies@googlemail.com\" GIT_COMMITTER_EMAIL=\"arecklies@googlemail.com\" git commit --amend --reset-author --no-edit)",
-      "Bash(curl -s -X POST \"https://wdawiqrmxudbdyyzdasf.supabase.co/auth/v1/admin/users\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkYXdpcXJteHVkYmR5eXpkYXNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzk0MTM2NywiZXhwIjoyMDg5NTE3MzY3fQ.cFC82Vor-2oRQaIqplKGulTDojWrWeVUlZsIczMy0VA\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkYXdpcXJteHVkYmR5eXpkYXNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzk0MTM2NywiZXhwIjoyMDg5NTE3MzY3fQ.cFC82Vor-2oRQaIqplKGulTDojWrWeVUlZsIczMy0VA\" -H \"Content-Type: application/json\" --data-raw \"{\"\"email\"\":\"\"a.recklies@prosoz.de\"\",\"\"password\"\":\"\"Test123!\"\",\"\"email_confirm\"\":true}\")",
       "Bash(node -e \":*)",
       "Read(//c/Users/a.recklies/**)",
       "Bash(node --input-type=module -e \":*)",
