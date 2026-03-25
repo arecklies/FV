@@ -9,8 +9,14 @@
 
 ## Dateistruktur Agenten & Skills
 - Rollen-Prompts liegen in `.claude/agents/<rollenname>.md`
-- Skills liegen in `.claude/skills/<skillname>/SKILL.md`
+- Skills liegen in `.claude/skills/<skillname>/SKILL.md` UND `.claude/commands/<skillname>.md` (beide Formate werden parallel gepflegt -- bei Aenderung an einem Skill BEIDE Dateien aktualisieren)
 - Regelwerke liegen in `.claude/rules/<regelwerk>.md`
+
+## Delegation an Subagenten (Schreibzugriff)
+- Subagenten der Typen `product-owner`, `senior-produktmanager`, `requirements-engineer`, `migration-architect`, `senior-software-architect` haben **keinen Schreibzugriff** (nur Read, Grep, Glob)
+- Wenn diese Agenten Dateien erstellen sollen: Entweder einen schreibfaehigen Agenten nutzen (z.B. `senior-backend-developer`, `technical-writer`) oder den Inhalt im Hauptkontext schreiben
+- Bei Massenoperationen (>3 Dateien): Immer im Hauptkontext schreiben, nie an Subagenten delegieren
+- Schreibfaehige Agenten: `senior-backend-developer`, `senior-frontend-developer`, `senior-qs-engineer`, `devops-platform-engineer`, `senior-security-engineer`, `senior-ui-ux-designer`, `database-architect`, `technical-writer`
 - Feature-Specs liegen in `features/PROJ-X-feature-name.md`
 - Migrations-Phasen liegen in `features/MIGRATION-X-phase-name.md`
 - ADRs liegen in `docs/adr/ADR-XXX-titel.md` mit Index in `docs/adr/README.md`
@@ -66,6 +72,7 @@ Optionale Abschnitte: Scope/Nicht-Scope, Feldmapping, Prozesskette, Rechtsgrundl
   - Falls falsch: NICHT committen, sondern zuerst korrigieren
   - Vercel Hobby blockiert Deployments von unbekannten Committern — falscher Committer = Force-Push noetig
 - **Kein `Co-Authored-By`** in Commit-Messages (Vercel Hobby blockiert Collaboration)
+- HINWEIS: Der Claude Code System-Prompt fuegt automatisch `Co-Authored-By` hinzu. Dies muss bei jedem Commit aktiv unterdrueckt werden, indem der Commit ueber HEREDOC ohne den Co-Authored-By-Suffix geschrieben wird.
 - Vor neuen Komponenten prüfen: `git ls-files src/components/`
 - Vor neuen APIs prüfen: `git ls-files src/app/api/`
 - Vor neuem Feature prüfen: `ls features/ | grep PROJ-`
@@ -87,8 +94,9 @@ Optionale Abschnitte: Scope/Nicht-Scope, Feldmapping, Prozesskette, Rechtsgrundl
 - Verarbeitete Dokumente können mit `DONE_`-Prefix markiert werden, um den Bearbeitungsstand zu kennzeichnen
 - Vor fachlich geprägten Skills (insbesondere `/pm-market`, `/req-stories`, `/arch-design`) prüfen, ob relevante Quelldokumente in `Input/` existieren
 - Diese Dokumente nicht ändern – sie sind externe Referenzen (Umbenennung mit Prefix ist erlaubt)
-- PDF-Extraktion: `PyPDF2` via `python -c "import sys, PyPDF2; sys.stdout.reconfigure(encoding='utf-8')"` verwenden — `pdftoppm` ist auf Windows nicht verfügbar
-- PDF-Extraktion und Regelwerk-Dateien NICHT an Subagenten delegieren — Subagenten haben keinen Bash-Zugang (weder Python noch npx/npm). Regelwerk-Arbeit (PDF lesen, Dateien schreiben, Tests laufen lassen) immer im Hauptkontext durchfuehren.
+- PDF-Extraktion: `pdf-parse` (Node.js, v4) verwenden — `PyPDF2` und `pdftoppm` sind auf diesem Windows-System NICHT verfuegbar
+- Falls pdf-parse keine Texte extrahiert (gescannte PDFs): Read-Tool fuer PDFs nutzen oder Nutzer um TXT/MD-Konvertierung bitten
+- PDF-Extraktion und Regelwerk-Dateien NICHT an Subagenten delegieren — Subagenten haben keinen Bash-Zugang. Regelwerk-Arbeit (PDF lesen, Dateien schreiben, Tests laufen lassen) immer im Hauptkontext durchfuehren.
 
 ## File Handling
 - Datei IMMER lesen, bevor sie geändert wird – nie aus dem Gedächtnis annehmen

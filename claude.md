@@ -164,6 +164,7 @@ Jeder Skill liest zuerst relevante Dateien, agiert als definierter Agent und sch
 | Skill | Beschreibung |
 |---|---|
 | `/meta-optimize` | Reibungspunkte im Agenten-/Skill-/Rules-System identifizieren und Verbesserungen vorschlagen |
+| `/kick-off` | Projekt-Kick-off mit allen 7 Kernrollen parallel -- konsolidiertes Protokoll |
 
 ---
 
@@ -235,6 +236,18 @@ Code Review (4 Agenten parallel: Security, Frontend, Architektur, QS)
 → Befundbericht → optional: zweiter Durchgang (vertieft)
 → /po-backlog (Befunde als priorisierte Items anlegen)
 → Implementierung der priorisierten Items im regulären Workflow
+```
+
+### Projekt-Kick-off
+```
+/kick-off → 7 Rollen parallel → Konsolidiertes Protokoll
+→ Offene Klaerungspunkte → /arch-adr fuer fehlende ADRs
+```
+
+### Experten-Interview (Architektur-Validierung)
+```
+Parallele Agenten mit Experten-Perspektive (Plattform-Architekt, Security, Migration, UX, DevOps)
+→ Konsolidierung als Memory-Datei → Einfluss auf ADRs und Feature-Specs
 ```
 
 ### System-Optimierung
