@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xbau:baugenehmigung.antrag.0200 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="ECA" produkthersteller="elan comfort Antrag" standard="XBau-Hochbau" version="2.6">
+  <nachrichtenkopf.g2g xmlns="">
+    <identifikation.nachricht>
+      <nachrichtenUUID>8fa6a8ae-6a53-4980-bbd1-58d3abe540e0</nachrichtenUUID>
+      <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
+        <code>0200</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt>2026-03-15T10:30:00Z</erstellungszeitpunkt>
+    </identifikation.nachricht>
+    <leser>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>psw</code>
+      </verzeichnisdienst>
+      <kennung>05315000-bauaufsicht</kennung>
+      <name>Bauaufsichtsbehoerde Koeln</name>
+    </leser>
+    <autor>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>psw</code>
+      </verzeichnisdienst>
+      <kennung>eca-antragsservice</kennung>
+      <name>ECA Antragsservice</name>
+    </autor>
+  </nachrichtenkopf.g2g>
+  <xbau:referenzAntragsservice>
+    <referenzAntragsservice>f180ba27-4549-4752-ab01-a7513866faa6</referenzAntragsservice>
+  </xbau:referenzAntragsservice>
+  <xbau:empfangendeStelle>
+    <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+      <code>psw</code>
+    </verzeichnisdienst>
+    <kennung>05315000-bauaufsicht</kennung>
+    <name>Bauaufsichtsbehoerde Koeln</name>
+  </xbau:empfangendeStelle>
+  <xbau:antragsteller>
+    <natuerlichePerson>
+      <id>8c60ceea-547e-405a-9987-aa95b01c707c</id>
+      <name>
+        <familienname>
+          <name>Mueller</name>
+        </familienname>
+        <vorname>
+          <name>Thomas</name>
+        </vorname>
+      </name>
+      <anschrift>
+        <strasse>Domstrasse</strasse>
+        <hausnummer>12</hausnummer>
+        <postleitzahl>50667</postleitzahl>
+        <ort>Koeln</ort>
+      </anschrift>
+    </natuerlichePerson>
+  </xbau:antragsteller>
+  <xbau:prozessmerkmale>
+    <xbau:verfahrensart listURI="urn:xoev-de:xbau:hh:codeliste:verfahrensart" listVersionID="2.6">
+      <code>1</code>
+    </xbau:verfahrensart>
+  </xbau:prozessmerkmale>
+  <xbau:bauvorhaben>
+    <xbau:bezeichnungDesBauvorhabens>Neubau Mehrfamilienhaus mit 6 Wohneinheiten und Tiefgarage</xbau:bezeichnungDesBauvorhabens>
+    <xbau:beteiligte>
+      <xbau:bauherr>
+        <xbau:bauherr>
+          <natuerlichePerson>
+            <id>f8110bb0-ba0b-4e8c-980b-7ff7b908ff40</id>
+            <name>
+              <familienname>
+                <name>Mueller</name>
+              </familienname>
+              <vorname>
+                <name>Thomas</name>
+              </vorname>
+            </name>
+            <anschrift>
+              <strasse>Domstrasse</strasse>
+              <hausnummer>12</hausnummer>
+              <postleitzahl>50667</postleitzahl>
+              <ort>Koeln</ort>
+            </anschrift>
+          </natuerlichePerson>
+        </xbau:bauherr>
+      </xbau:bauherr>
+      <xbau:entwurfsverfasser>
+        <xbau:personendaten>
+          <natuerlichePerson>
+            <id>a027410f-5191-4c10-be83-cc898ecc0cb4</id>
+            <name>
+              <familienname>
+                <name>Weber</name>
+              </familienname>
+              <vorname>
+                <name>Sandra</name>
+              </vorname>
+            </name>
+            <anschrift>
+              <strasse>Hohenzollernring</strasse>
+              <hausnummer>45</hausnummer>
+              <postleitzahl>50672</postleitzahl>
+              <ort>Koeln</ort>
+            </anschrift>
+          </natuerlichePerson>
+        </xbau:personendaten>
+      </xbau:entwurfsverfasser>
+      <xbau:gebuehrenpflichtiger>
+        <natuerlichePerson>
+          <id>f8110bb0-ba0b-4e8c-980b-7ff7b908ff40</id>
+          <name>
+            <familienname>
+              <name>Mueller</name>
+            </familienname>
+            <vorname>
+              <name>Thomas</name>
+            </vorname>
+          </name>
+          <anschrift>
+            <strasse>Domstrasse</strasse>
+            <hausnummer>12</hausnummer>
+            <postleitzahl>50667</postleitzahl>
+            <ort>Koeln</ort>
+          </anschrift>
+        </natuerlichePerson>
+      </xbau:gebuehrenpflichtiger>
+    </xbau:beteiligte>
+    <xbau:gegenstand>
+      <xbau:anzahlDerGebaeude>
+        <xbau:anzahlDerGebaeudeImBauvorhaben>1</xbau:anzahlDerGebaeudeImBauvorhaben>
+      </xbau:anzahlDerGebaeude>
+      <xbau:artDerMassnahme listURI="urn:xoev-de:xbau:codeliste:baumassnahmeart" listVersionID="2.0">
+        <code>11</code>
+      </xbau:artDerMassnahme>
+    </xbau:gegenstand>
+    <xbau:verortung>
+      <xbau:baugrundstueck>
+        <xbau:grundstueck>
+          <xbau:anschrift>
+            <strasse>Neumarkt</strasse>
+            <hausnummer>8</hausnummer>
+            <postleitzahl>50667</postleitzahl>
+            <ort>Koeln</ort>
+          </xbau:anschrift>
+          <xbau:flurstueck>
+            <bundesland listURI="urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bundesland" listVersionID="2004">
+              <code>05</code>
+            </bundesland>
+            <kodierungFlurstueck>
+              <gemarkung>
+                <nummer>Altstadt-Nord</nummer>
+              </gemarkung>
+              <flur>3</flur>
+              <zaehler>247</zaehler>
+            </kodierungFlurstueck>
+          </xbau:flurstueck>
+        </xbau:grundstueck>
+      </xbau:baugrundstueck>
+    </xbau:verortung>
+  </xbau:bauvorhaben>
+  <xbau:beantragteAbweichung>
+    <xbau:id>5649aa54-fbb6-4d47-b9c2-186f9c07bf37</xbau:id>
+    <xbau:art listURI="urn:xoev-de:xbau:codeliste:abweichungart" listVersionID="2.6">
+      <code>1</code>
+    </xbau:art>
+    <xbau:vorschrift>
+      <textabsatz>§ 6 Abs. 5 BauO NRW</textabsatz>
+    </xbau:vorschrift>
+    <xbau:beschreibung>
+      <textabsatz>Abstandsflaeche zum Nachbargrundstueck wird um 0,5m unterschritten</textabsatz>
+    </xbau:beschreibung>
+  </xbau:beantragteAbweichung>
+  <xbau:anlagen>
+    <anlage>
+      <bezeichnung>Lageplan M 1:500</bezeichnung>
+      <versionsnummer>1</versionsnummer>
+      <datum>2026-03-10</datum>
+      <anlageart listURI="urn:xoev-de:xbau:codeliste:anlagen" listVersionID="2.6">
+        <code>0101</code>
+      </anlageart>
+      <mimeType listURI="urn:xoev-de:xbau:codeliste:xbau-mimetypes" listVersionID="1.1">
+        <code>application/pdf</code>
+      </mimeType>
+      <anhangOderVerlinkung>
+        <anhang>
+          <dokumentid>a68bcb9e-758d-4fcd-a110-d299d60e3d79</dokumentid>
+          <dateiname>lageplan.pdf</dateiname>
+        </anhang>
+      </anhangOderVerlinkung>
+    </anlage>
+    <anlage>
+      <bezeichnung>Bauzeichnungen Grundrisse EG/OG/DG</bezeichnung>
+      <versionsnummer>1</versionsnummer>
+      <datum>2026-03-12</datum>
+      <anlageart listURI="urn:xoev-de:xbau:codeliste:anlagen" listVersionID="2.6">
+        <code>0201</code>
+      </anlageart>
+      <mimeType listURI="urn:xoev-de:xbau:codeliste:xbau-mimetypes" listVersionID="1.1">
+        <code>application/pdf</code>
+      </mimeType>
+      <anhangOderVerlinkung>
+        <anhang>
+          <dokumentid>b79dce0a-869e-4fe0-b221-e400e71f5e8a</dokumentid>
+          <dateiname>grundrisse.pdf</dateiname>
+        </anhang>
+      </anhangOderVerlinkung>
+    </anlage>
+  </xbau:anlagen>
+</xbau:baugenehmigung.antrag.0200>

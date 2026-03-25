@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbau:statistik.erloscheneBaugenehmigung.0422 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" produkt="HBS" produkthersteller="PROSOZ Herten GmbH" standard="XBau-Hochbau" version="2.6">
+  <nachrichtenkopf.g2g xmlns="">
+    <identifikation.nachricht>
+      <nachrichtenUUID>cccccccc-cccc-cccc-cccc-cccccccccccc</nachrichtenUUID>
+      <nachrichtentyp listVersionID="4.0" listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten">
+        <code>0422</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt>2026-03-23T14:43:03.682Z</erstellungszeitpunkt>
+    </identifikation.nachricht>
+    <leser>
+      <verzeichnisdienst listVersionID="3" listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst">
+        <code>DVDV</code>
+      </verzeichnisdienst>
+      <kennung>statistik</kennung>
+      <name>Statistisches Landesamt</name>
+    </leser>
+    <autor>
+      <verzeichnisdienst listVersionID="3" listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst">
+        <code>DVDV</code>
+      </verzeichnisdienst>
+      <kennung>bauaufsicht</kennung>
+      <name>Bauaufsichtsbehoerde</name>
+    </autor>
+  </nachrichtenkopf.g2g>
+  <xbau:bezug>
+    <xbau:uuidGebaeude>cccccccc-cccc-cccc-cccc-cccccccccccc</xbau:uuidGebaeude>
+    <xbau:ordnungsnummer>ORD-001</xbau:ordnungsnummer>
+  </xbau:bezug>
+  <xbau:allgemeineAngaben>
+    <xbau:anzahlDerGebaeudeImBauvorhaben>1</xbau:anzahlDerGebaeudeImBauvorhaben>
+    <xbau:beteiligteBauprojekt>
+      <xbau:bauherr>
+        <xbau:bauherr>
+          <natuerlichePerson>
+            <id>cccccccc-cccc-cccc-cccc-cccccccccccc</id>
+            <name>
+              <familienname>
+                <name>Max Mustermann</name>
+              </familienname>
+              <vorname>
+                <name>Max Mustermann</name>
+              </vorname>
+            </name>
+            <anschrift>
+              <strasse>Musterstr.</strasse>
+              <hausnummer>1</hausnummer>
+              <postleitzahl>12345</postleitzahl>
+              <ort>Berlin</ort>
+            </anschrift>
+          </natuerlichePerson>
+        </xbau:bauherr>
+      </xbau:bauherr>
+    </xbau:beteiligteBauprojekt>
+    <xbau:baugrundstueck>
+      <xbau:anschrift>
+        <strasse>Baustraße</strasse>
+        <hausnummer>42</hausnummer>
+        <postleitzahl>10115</postleitzahl>
+        <ort>Berlin</ort>
+      </xbau:anschrift>
+      <xbau:flurstueck>
+        <bundesland listURI="urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bundesland" listVersionID="2010-04-01"><code>00</code></bundesland>
+        <kodierungFlurstueck>
+          <gemarkung><nummer>0000</nummer></gemarkung>
+          <zaehler>0</zaehler>
+        </kodierungFlurstueck>
+      </xbau:flurstueck>
+    </xbau:baugrundstueck>
+  </xbau:allgemeineAngaben>
+  <xbau:datumErloscheneBaugenehmigung>2026-06</xbau:datumErloscheneBaugenehmigung>
+  <xbau:ansprechpartner>
+    <xbau:bauamt>
+      <xbau:nameNatuerlichePerson>
+        <familienname>
+          <name>Frau Schmidt</name>
+        </familienname>
+        <vorname>
+          <name>Frau Schmidt</name>
+        </vorname>
+      </xbau:nameNatuerlichePerson>
+      <xbau:kommunikation>
+        <kanal listURI="urn:de:xoev:codeliste:erreichbarkeit" listVersionID="2"><code>telefon</code></kanal>
+        <kennung>030-12345</kennung>
+      </xbau:kommunikation>
+      <xbau:kommunikation>
+        <kanal listURI="urn:de:xoev:codeliste:erreichbarkeit" listVersionID="2"><code>email</code></kanal>
+        <kennung>schmidt@amt.de</kennung>
+      </xbau:kommunikation>
+    </xbau:bauamt>
+  </xbau:ansprechpartner>
+</xbau:statistik.erloscheneBaugenehmigung.0422>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbau:statistik.datenBauvorhaben.0420
+  xmlns:xbau="http://www.xleitstelle.de/xbau/2/6"
+  xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0"
+  produkt="HBS"
+  produkthersteller="PROSOZ Herten GmbH"
+  standard="XBau-Hochbau"
+  version="2.6">
+
+  <nachrichtenkopf.g2g xmlns="">
+    <identifikation.nachricht>
+      <nachrichtenUUID>a0420000-0000-4000-8000-000000000001</nachrichtenUUID>
+      <nachrichtentyp listVersionID="4.0" listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten">
+        <code>0420</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt>2026-03-20T10:00:00.000Z</erstellungszeitpunkt>
+    </identifikation.nachricht>
+    <leser>
+      <verzeichnisdienst listVersionID="3" listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst">
+        <code>DVDV</code>
+      </verzeichnisdienst>
+      <kennung>bauaufsicht</kennung>
+      <name>Bauaufsichtsbehoerde</name>
+    </leser>
+    <autor>
+      <verzeichnisdienst listVersionID="3" listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst">
+        <code>DVDV</code>
+      </verzeichnisdienst>
+      <kennung>fachverfahren</kennung>
+      <name>Fachverfahren Bauaufsicht</name>
+    </autor>
+  </nachrichtenkopf.g2g>
+
+  <xbau:bezug>
+    <vorgang>AZ-2026-0815</vorgang>
+  </xbau:bezug>
+
+  <xbau:allgemeineAngaben>
+    <xbau:anzahlDerGebaeudeImBauvorhaben>1</xbau:anzahlDerGebaeudeImBauvorhaben>
+
+    <xbau:beteiligteBauprojekt>
+      <xbau:bauherr>
+        <xbau:bauherr>
+          <organisation>
+            <id>b0420000-0000-4000-8000-000000000002</id>
+            <name><name>Mustermann Hausbau GmbH</name></name>
+            <anschrift>
+              <strasse>Berliner Allee</strasse>
+              <hausnummer>17</hausnummer>
+              <postleitzahl>44139</postleitzahl>
+              <ort>Dortmund</ort>
+            </anschrift>
+          </organisation>
+        </xbau:bauherr>
+      </xbau:bauherr>
+    </xbau:beteiligteBauprojekt>
+
+    <xbau:baugrundstueck>
+      <xbau:anschrift>
+        <strasse>Am Westpark</strasse>
+        <hausnummer>5a</hausnummer>
+        <postleitzahl>44147</postleitzahl>
+        <ort>Dortmund</ort>
+        <ortsteil>Innenstadt-Nord</ortsteil>
+      </xbau:anschrift>
+      <xbau:flurstueck>
+        <bundesland listURI="urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bundesland" listVersionID="2010-04-01"><code>05</code></bundesland>
+        <kodierungFlurstueck>
+          <gemarkung><nummer>0000</nummer></gemarkung>
+          <zaehler>0</zaehler>
+        </kodierungFlurstueck>
+      </xbau:flurstueck>
+    </xbau:baugrundstueck>
+  </xbau:allgemeineAngaben>
+
+  <xbau:bauvorhabenGebaeude>
+    <xbau:datenEinzelnesGebaeude>
+      <xbau:identifikationGebaeude>
+        <xbau:uuidGebaeude>c0420000-0000-4000-8000-000000000003</xbau:uuidGebaeude>
+        <xbau:gebaeudeBezeichnung>Gebaeude 1</xbau:gebaeudeBezeichnung>
+      </xbau:identifikationGebaeude>
+      <xbau:artDesBauens listURI="urn:xoev-de:xbau:codeliste:artdesbauens" listVersionID="1.0"><code>01</code></xbau:artDesBauens>
+      <xbau:baugenehmigung>
+        <xbau:bauscheinnummer>BG-DO-2026-0815</xbau:bauscheinnummer>
+        <xbau:verfahrensart listURI="urn:xoev-de:xbau:hh:codeliste:verfahrensartanstatistik" listVersionID="1.0"><code>01</code></xbau:verfahrensart>
+        <xbau:artDerBautaetigkeit listURI="urn:xoev-de:xbau:codeliste:bautaetigkeitart" listVersionID="2.0"><code>1</code></xbau:artDerBautaetigkeit>
+      </xbau:baugenehmigung>
+
+      <xbau:ueberwiegendVerwendeterBaustoff listURI="urn:xoev-de:xbau:codeliste:baustoff" listVersionID="2.0"><code>3</code></xbau:ueberwiegendVerwendeterBaustoff>
+
+      <xbau:heizungHeizenergie>
+        <xbau:artDerHeizung listURI="urn:xoev-de:xbau:codeliste:heizungart" listVersionID="2.0"><code>03</code></xbau:artDerHeizung>
+        <xbau:heizenergie>
+          <xbau:primaereHeizenergieHeizung>
+            <xbau:code listURI="urn:xoev-de:xbau:codeliste:brennstoff" listVersionID="2.0"><code>005</code></xbau:code>
+          </xbau:primaereHeizenergieHeizung>
+          <xbau:sekundaereHeizenergieHeizung>
+            <xbau:code listURI="urn:xoev-de:xbau:codeliste:brennstoff" listVersionID="2.0"><code>002</code></xbau:code>
+          </xbau:sekundaereHeizenergieHeizung>
+          <xbau:primaereHeizenergieWasseraufbereitung>
+            <xbau:code listURI="urn:xoev-de:xbau:codeliste:brennstoff" listVersionID="2.0"><code>005</code></xbau:code>
+          </xbau:primaereHeizenergieWasseraufbereitung>
+        </xbau:heizenergie>
+      </xbau:heizungHeizenergie>
+
+      <xbau:sonstigeLueftungsanlagen listURI="urn:xoev-de:xbau:codeliste:lueftungsanlagen" listVersionID="2.0"><code>1</code></xbau:sonstigeLueftungsanlagen>
+      <xbau:kuehlung listURI="urn:xoev-de:xbau:codeliste:kuehlung" listVersionID="2.0"><code>3</code></xbau:kuehlung>
+
+      <xbau:bruttoRauminhaltBRI>680.00</xbau:bruttoRauminhaltBRI>
+      <xbau:anzahlVollgeschosse>2</xbau:anzahlVollgeschosse>
+    </xbau:datenEinzelnesGebaeude>
+  </xbau:bauvorhabenGebaeude>
+
+  <xbau:ansprechpartner>
+    <xbau:datenAnsprechpartner>
+      <xbau:architektEntwurfsverfasser>
+        <id>d0420000-0000-4000-8000-000000000004</id>
+        <name>
+          <familienname>
+            <name>Schmidt</name>
+          </familienname>
+          <vorname>
+            <name>Katharina</name>
+          </vorname>
+        </name>
+        <anschrift>
+          <strasse>Architektenweg</strasse>
+          <hausnummer>3</hausnummer>
+          <postleitzahl>44135</postleitzahl>
+          <ort>Dortmund</ort>
+        </anschrift>
+        <kommunikation>
+          <kanal listURI="urn:de:xoev:codeliste:erreichbarkeit" listVersionID="2"><code>telefon</code></kanal>
+          <kennung>0231-9876543</kennung>
+        </kommunikation>
+      </xbau:architektEntwurfsverfasser>
+    </xbau:datenAnsprechpartner>
+  </xbau:ansprechpartner>
+
+</xbau:statistik.datenBauvorhaben.0420>
