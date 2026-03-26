@@ -44,7 +44,11 @@
 |----|---------|--------|------|---------|
 | PROJ-9 | Vier-Augen-Freigabeworkflow | Planned | | 2026-03-25 |
 | PROJ-10 | Audit-Trail (revisionssicher) | Planned | | 2026-03-25 |
-| PROJ-11 | OZG-Portal-Anbindung (FIT-Connect) | Planned | | 2026-03-25 |
+| PROJ-11 | XTA-Anbindung (OSCI-Transport) | Planned | [PROJ-11](PROJ-11-xta-anbindung.md) | 2026-03-25 |
+| PROJ-18 | FIT-Connect-Anbindung (OZG-Portal) | Planned | [PROJ-18](PROJ-18-fit-connect.md) | 2026-03-26 |
+
+> PROJ-11 umbenannt: XTA statt FIT-Connect (Kundenfeedback 2026-03-26: Bestandskunden haben kein FIT-Connect)
+> PROJ-18 neu: FIT-Connect als strategisches Ziel in Phase 3, XTA-Sunset nach Migration
 
 ### Phase 3 - Fuehrung und Optimierung
 
@@ -63,4 +67,4 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-18
+## Next Available ID: PROJ-19
