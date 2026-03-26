@@ -41,7 +41,7 @@ export const ListVorgaengeQuerySchema = z.object({
   verfahrensart_id: z.string().uuid().optional(),
   zustaendiger_user_id: z.string().uuid().optional(),
   suche: z.string().optional(),
-  sortierung: z.enum(["eingangsdatum", "aktenzeichen", "workflow_schritt_id"]).optional(),
+  sortierung: z.enum(["eingangsdatum", "aktenzeichen", "workflow_schritt_id", "frist_status"]).optional(),
   richtung: z.enum(["asc", "desc"]).optional(),
   seite: z.coerce.number().int().positive().optional().default(1),
   pro_seite: z.coerce.number().int().min(1).max(100).optional().default(25),
@@ -105,6 +105,7 @@ export const VorgangListItemDbSchema = z.object({
   zustaendiger_user_id: z.string().nullable(),
   eingangsdatum: z.string(),
   verfahrensart_id: z.string(),
+  frist_status: z.string().nullable().optional(),
 });
 
 export const VorgangKommentarDbSchema = z.object({

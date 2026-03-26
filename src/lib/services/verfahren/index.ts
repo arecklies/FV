@@ -217,8 +217,8 @@ export async function listVorgaenge(
     );
   }
 
-  // Sortierung
-  const sortCol = params.sortierung ?? "eingangsdatum";
+  // Sortierung (PROJ-20: frist_status wird client-seitig nach Batch-Load sortiert)
+  const sortCol = params.sortierung === "frist_status" ? "eingangsdatum" : (params.sortierung ?? "eingangsdatum");
   const ascending = params.richtung === "asc";
   query = query.order(sortCol, { ascending });
 
@@ -228,7 +228,50 @@ export async function listVorgaenge(
   const { data, count, error } = await query;
 
   if (error) return { data: [], total: 0, error: error.message };
-  const parsed = (data ?? []).map((d: unknown) => VorgangListItemDbSchema.parse(d));
+
+  // PROJ-20: Frist-Status per Batch-Query nachladen (kein N+1)
+  const vorgangIds = (data ?? []).map((d: Record<string, unknown>) => d.id as string);
+  let fristStatusMap = new Map<string, string>();
+
+  if (vorgangIds.length > 0) {
+    const { data: fristData } = await serviceClient
+      .from("vorgang_fristen")
+      .select("vorgang_id, status, end_datum")
+      .eq("tenant_id", params.tenantId)
+      .eq("aktiv", true)
+      .in("vorgang_id", vorgangIds)
+      .order("end_datum", { ascending: true })
+      .limit(500);
+
+    if (fristData) {
+      // Dringendste Frist je Vorgang (erste pro vorgang_id nach end_datum ASC)
+      const AMPEL_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
+      for (const f of fristData as Array<{ vorgang_id: string; status: string }>) {
+        const existing = fristStatusMap.get(f.vorgang_id);
+        if (!existing || (AMPEL_PRIO[f.status] ?? 5) < (AMPEL_PRIO[existing] ?? 5)) {
+          fristStatusMap.set(f.vorgang_id, f.status);
+        }
+      }
+    }
+  }
+
+  let parsed = (data ?? []).map((d: unknown) => {
+    const item = VorgangListItemDbSchema.parse(d);
+    return { ...item, frist_status: fristStatusMap.get(item.id) ?? null };
+  });
+
+  // PROJ-20 US-2: Sortierung nach Frist-Dringlichkeit (AC-2)
+  if (params.sortierung === "frist_status") {
+    const SORT_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
+    const nullPrio = 5;
+    parsed.sort((a, b) => {
+      const pa = a.frist_status ? (SORT_PRIO[a.frist_status] ?? nullPrio) : nullPrio;
+      const pb = b.frist_status ? (SORT_PRIO[b.frist_status] ?? nullPrio) : nullPrio;
+      const diff = pa - pb;
+      return ascending ? -diff : diff;
+    });
+  }
+
   return { data: parsed, total: count ?? 0, error: null };
 }
 
