@@ -33,8 +33,10 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-12 | Beteiligungsmanagement (ToEB) | Planned | | 2026-03-25 |
+| PROJ-17 | Massenoperationen Vorgangsliste | Planned | [PROJ-17](PROJ-17-massenoperationen.md) | 2026-03-26 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
+> PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
 
 ### Phase 2 - Compliance und Integration
 
@@ -61,4 +63,4 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-17
+## Next Available ID: PROJ-18

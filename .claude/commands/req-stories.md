@@ -28,8 +28,10 @@ Formuliere vollständige User Stories mit messbaren Akzeptanzkriterien.
 4. Formuliere messbare Akzeptanzkriterien je Story (inkl. Negativ- und Randfälle)
 5. Identifiziere Trigger für Spezialisten (Security / DB / Migration)
 6. **Bei verfahrensbezogenen Features:** Workflow-Definition als JSON-Entwurf erstellen (gemaess ADR-011). Schritte, Uebergaenge, Fristen, Checklisten und Freigabe-Rollen aus den LBO-Quelldokumenten unter `Input/Gesetzte/LBOs/` ableiten. Referenz-Schema: `docs/adr/ADR-011-workflow-engine.md`.
-7. Markiere Unklarheiten als offene Fragen
-8. Aktualisiere `features/INDEX.md` → Status `In Progress`
+7. **Cross-Spec-Konsistenzpruefung (Retro A-7):** Pruefen welche bestehenden Specs dieselben Entitaeten referenzieren (z.B. `vorgaenge`, `tenants`). Widersprueche in Feldnamen, Status-Werten oder Abhaengigkeiten sofort klaeren.
+8. **ADR-Trigger fuer Kern-Entitaeten (Retro A-4):** Wenn das Feature eine neue zentrale Entitaet einfuehrt (Tabelle die von >= 3 Features referenziert wird), `/arch-adr` vorschlagen BEVOR abhaengige Specs geschrieben werden.
+9. Markiere Unklarheiten als offene Fragen
+10. Aktualisiere `features/INDEX.md` → Status `In Progress`
 
 ## Ausgabe
 - User Stories (vollständig)

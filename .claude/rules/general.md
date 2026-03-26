@@ -45,7 +45,9 @@ Jede Feature-Spec muss mindestens diese Abschnitte enthalten (Reihenfolge einhal
 9. **Abhängigkeiten** – Beziehungen zu anderen Features und Migrationen
 10. **Fachliche Risiken** – Risiken mit Auswirkung und Gegenmaßnahme
 
-Optionale Abschnitte: Scope/Nicht-Scope, Feldmapping, Prozesskette, Rechtsgrundlage.
+11. **Scope / Nicht-Scope** — Was ist explizit enthalten, was nicht? (Retro A-3: verhindert Conditional-Go-Situationen)
+
+Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 
 ## INDEX.md-Pflegeregeln (gilt für alle Skills)
 

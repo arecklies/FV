@@ -22,7 +22,8 @@ Implementiere neue UI-Komponenten für ein Feature.
 1. shadcn/ui prüfen: `ls src/components/ui/` – Pflicht vor jeder neuen Komponente
 2. Bestehende Komponenten prüfen: `git ls-files src/components/`
 3. Fehlende shadcn-Komponenten installieren: `npx shadcn@latest add <n> --yes` → Nutzer informieren
-4. Implementiere Komponenten (TSX, Tailwind CSS ausschließlich, TypeScript-Interfaces für alle Props)
+4. **Fachliche Konstanten VOR Komponenten anlegen (Retro A-6):** Label-Mappings, Status-Definitionen, Konfigurationswerte in `src/lib/utils/` extrahieren BEVOR Komponenten erstellt werden. Keine hardcoded Maps in Komponenten-Dateien.
+5. Implementiere Komponenten (TSX, Tailwind CSS ausschließlich, TypeScript-Interfaces für alle Props)
 5. Alle States implementieren: Default / Hover / Active / Disabled / Loading / Error / Empty
 6. Responsivität sicherstellen: 375px / 768px / 1440px
 7. ARIA-Labels und Accessibility-Attribute hinzufügen (BITV 2.0 / EN 301 549)

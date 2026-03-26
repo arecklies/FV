@@ -27,16 +27,22 @@ Entwirf und implementiere API-Endpunkte für ein Feature.
 5. Implementiere Business-Logik und Persistenz (Supabase)
 6. Setze `.limit()` auf alle Listen-Queries
 7. Behandle Fehler- und Sonderfälle mit korrekten HTTP-Status-Codes
-8. Testcode anpassen gemäß `.claude/rules/testing.md` – insbesondere:
+8. Testcode **parallel zur Implementierung** schreiben (nicht erst bei QS-Review):
    - Bestehende Tests auf veraltete Assertions prüfen (z.B. 501-Stubs, die durch echte Implementierung ersetzt werden)
    - Neue Dispatch-Pfade (Switch-Cases) in bestehenden Routen immer mit eigenen Tests abdecken
    - Mocks für alle neu importierten Module hinzufügen
-9. Hole Nutzer-Freigabe bei RLS- oder Auth-Änderungen ein (Human-in-the-Loop)
-10. Zeichensatz-Prüfung (bei deutschen Texten in geänderten Dateien):
+   - **Coverage-Check VOR Commit (Pflicht):** `npx jest --forceExit --coverage` — neue Dateien unter `src/lib/services/` muessen >= 80% haben
+9. **Error-Leakage-Selbstpruefung (Pflicht VOR QS-Uebergabe):**
+   - `grep -rn "result.error\|error.message" <neue-route-dateien>` ausfuehren
+   - Jeder Treffer pruefen: Wird der Wert an den Client zurueckgegeben (`jsonResponse({ error: ... })`)?
+   - Nur kontrollierte, selbst formulierte Meldungen an Client — Supabase/DB-Fehler IMMER ueber `serverError()` leiten
+   - Referenz: `.claude/rules/security.md` Abschnitt "Error-Leakage-Verbot"
+10. Hole Nutzer-Freigabe bei RLS- oder Auth-Änderungen ein (Human-in-the-Loop)
+11. Zeichensatz-Prüfung (bei deutschen Texten in geänderten Dateien):
     - `grep -rn` auf ASCII-Ersetzungen (ae/oe/ue statt ä/ö/ü) prüfen
     - UTF-8-Umlaute (ä, ö, ü, ß) verwenden, KEINE ASCII-Ersetzungen
     - Referenz: `.claude/rules/frontend.md` Abschnitt "Zeichensatz in Quellcode"
-11. Commit-Format: `feat(PROJ-X): <beschreibung>`
+12. Commit-Format: `feat(PROJ-X): <beschreibung>`
 
 ## Ausgabe
 - Endpunkte (Route, Methode, Schema)
