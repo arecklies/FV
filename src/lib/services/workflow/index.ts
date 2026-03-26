@@ -117,7 +117,7 @@ export async function executeWorkflowAktion(
   }
 
   // 6. Workflow-Schritt protokollieren
-  await serviceClient.from("vorgang_workflow_schritte").insert({
+  const { error: insertError } = await serviceClient.from("vorgang_workflow_schritte").insert({
     tenant_id: params.tenantId,
     vorgang_id: params.vorgangId,
     schritt_id: aktion.ziel,
@@ -126,6 +126,9 @@ export async function executeWorkflowAktion(
     uebersprungen: false,
     ausgefuehrt_von: params.userId,
   });
+  if (insertError) {
+    console.error("[PROJ-3] Workflow-Schritt-Insert fehlgeschlagen", insertError.message);
+  }
 
   // 7. Audit-Log
   await writeAuditLog({

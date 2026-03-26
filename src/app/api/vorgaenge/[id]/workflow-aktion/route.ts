@@ -57,7 +57,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   });
 
   if (result.error) {
-    return jsonResponse({ error: result.error }, 400);
+    // Kontrollierte Business-Fehler: direkt an Client
+    const businessErrors = [
+      "Keine Workflow-Definition gefunden",
+      "Aktueller Workflow-Schritt nicht gefunden",
+      "Diese Aktion ist nicht verfügbar",
+      "Ziel-Schritt nicht in Workflow-Definition",
+    ];
+    if (businessErrors.includes(result.error)) {
+      return jsonResponse({ error: result.error }, 400);
+    }
+    return serverError("[PROJ-3] POST /api/vorgaenge/[id]/workflow-aktion failed", result.error);
   }
 
   return jsonResponse({

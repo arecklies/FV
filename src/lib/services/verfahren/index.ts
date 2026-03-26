@@ -138,13 +138,16 @@ export async function createVorgang(
     }
 
     // 5. Initialen Workflow-Schritt protokollieren
-    await serviceClient.from("vorgang_workflow_schritte").insert({
+    const { error: workflowError } = await serviceClient.from("vorgang_workflow_schritte").insert({
       tenant_id: params.tenantId,
       vorgang_id: data.id,
       schritt_id: "eingegangen",
       aktion_id: null,
       ausgefuehrt_von: params.userId,
     });
+    if (workflowError) {
+      console.error("[PROJ-3] Workflow-Schritt-Insert fehlgeschlagen", workflowError.message);
+    }
 
     // 6. Audit-Log
     await writeAuditLog({

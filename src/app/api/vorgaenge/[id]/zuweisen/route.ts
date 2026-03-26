@@ -44,7 +44,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   );
 
   if (result.error) {
-    return jsonResponse({ error: result.error }, 400);
+    // Kontrollierte Meldung: nur bekannte Business-Fehler an Client
+    if (result.error === "Zielbenutzer gehört nicht zum selben Mandanten") {
+      return jsonResponse({ error: result.error }, 400);
+    }
+    return serverError("[PROJ-3] POST /api/vorgaenge/[id]/zuweisen failed", result.error);
   }
 
   return jsonResponse({ message: "Vorgang zugewiesen" });
