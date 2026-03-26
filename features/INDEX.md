@@ -82,4 +82,9 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-31
+| PROJ-31 | Visuelles Redesign und Branding | Planned | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
+
+> PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
+> PROJ-31 aus Demo-Feedback: UI wirkt langweilig
+
+## Next Available ID: PROJ-32

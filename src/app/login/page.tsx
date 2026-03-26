@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,11 +74,16 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md bg-background shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Anmelden</CardTitle>
+          <div className="flex justify-center mb-2">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
+              <FileText className="h-6 w-6" aria-hidden="true" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold">Fachverfahren</CardTitle>
           <CardDescription>
-            Melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort an.
+            Digitale Baugenehmigung — Anmeldung
           </CardDescription>
         </CardHeader>
 

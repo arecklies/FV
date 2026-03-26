@@ -7,6 +7,7 @@ import { Menu, LogOut, FileText, Users, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -82,17 +83,17 @@ export function AppHeader() {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="sticky top-0 z-50 w-full bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-sm"
       role="banner"
     >
       <div className="flex h-14 items-center px-4 md:px-6">
         {/* Logo / Titel */}
         <Link
           href="/vorgaenge"
-          className="mr-6 flex items-center space-x-2 font-semibold"
+          className="mr-6 flex items-center space-x-2 font-semibold text-primary-foreground"
           aria-label="Zur Startseite"
         >
-          <span className="text-lg">Fachverfahren</span>
+          <span className="text-lg tracking-wide">Fachverfahren</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -100,9 +101,12 @@ export function AppHeader() {
           {visibleNavItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <Button
-                variant={pathname.startsWith(item.href) ? "secondary" : "ghost"}
+                variant="ghost"
                 size="sm"
-                className="gap-2"
+                className={cn(
+                  "gap-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/15",
+                  pathname.startsWith(item.href) && "bg-white/20 text-primary-foreground"
+                )}
                 aria-current={pathname.startsWith(item.href) ? "page" : undefined}
               >
                 {item.icon}
@@ -117,10 +121,10 @@ export function AppHeader() {
 
         {/* Desktop: User Info + Logout */}
         <div className="hidden md:flex items-center space-x-3">
-          <span className="text-sm text-muted-foreground" aria-label="Angemeldeter Benutzer">
+          <span className="text-sm text-primary-foreground/70" aria-label="Angemeldeter Benutzer">
             {user.email}
           </span>
-          <Badge variant={roleBadgeVariant} aria-label={`Rolle: ${roleLabel}`}>
+          <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground" aria-label={`Rolle: ${roleLabel}`}>
             {roleLabel}
           </Badge>
           <Button
@@ -129,7 +133,7 @@ export function AppHeader() {
             onClick={handleLogout}
             disabled={loggingOut}
             aria-label="Abmelden"
-            className="gap-2"
+            className="gap-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/15"
           >
             {loggingOut ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -8,6 +8,7 @@ import { Plus, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -223,6 +224,46 @@ export default function VorgaengeListePage() {
         </Button>
       </div>
 
+      {/* Statistik-Karten (PROJ-31) */}
+      {!loading && !error && vorgaenge.length > 0 && (
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"
+          role="region"
+          aria-label="Vorgangsstatistik"
+        >
+          <Card className="bg-background">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-3xl font-bold tracking-tight">{total}</p>
+              <p className="text-sm text-muted-foreground">Vorgänge gesamt</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-background border-l-4 border-l-yellow-400">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-3xl font-bold tracking-tight text-yellow-700">
+                {vorgaenge.filter((v) => v.frist_status === "gelb" || v.frist_status === "rot").length}
+              </p>
+              <p className="text-sm text-muted-foreground">Fristgefährdet</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-background border-l-4 border-l-red-500">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-3xl font-bold tracking-tight text-red-700">
+                {vorgaenge.filter((v) => v.frist_status === "dunkelrot").length}
+              </p>
+              <p className="text-sm text-muted-foreground">Überfällig</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-background border-l-4 border-l-primary">
+            <CardContent className="pt-4 pb-3">
+              <p className="text-3xl font-bold tracking-tight text-primary">
+                {vorgaenge.filter((v) => v.frist_status === "gruen" || !v.frist_status).length}
+              </p>
+              <p className="text-sm text-muted-foreground">Im Zeitplan</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Filter-Leiste */}
       <div
         className="flex flex-col sm:flex-row gap-3 mb-4"
@@ -347,7 +388,7 @@ export default function VorgaengeListePage() {
       {!loading && !error && vorgaenge.length > 0 && (
         <>
           {/* Desktop-Tabelle */}
-          <div className="hidden md:block rounded-md border">
+          <div className="hidden md:block rounded-lg border bg-background shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -403,7 +444,7 @@ export default function VorgaengeListePage() {
                 {vorgaenge.map((v) => (
                   <TableRow
                     key={v.id}
-                    className="cursor-pointer hover:bg-muted/50"
+                    className="cursor-pointer hover:bg-primary/5 even:bg-muted/30 transition-colors"
                     onClick={() => router.push(`/vorgaenge/${v.id}`)}
                     tabIndex={0}
                     role="link"
@@ -450,7 +491,7 @@ export default function VorgaengeListePage() {
               <Link
                 key={v.id}
                 href={`/vorgaenge/${v.id}`}
-                className="block rounded-md border p-4 hover:bg-muted/50 transition-colors"
+                className="block rounded-lg border bg-background p-4 hover:bg-primary/5 shadow-sm transition-colors"
                 aria-label={`Vorgang ${v.aktenzeichen} öffnen`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
