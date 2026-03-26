@@ -75,8 +75,8 @@ Als Sachbearbeiter moechte ich eine Frist verlaengern koennen (z.B. bei Nachford
 
 ## 8. Annahmen
 
-- MVP mit BauO NRW Fristen (3-Monats-Frist, 10-Tages-Frist Unvollstaendigkeit)
-- Feiertage NRW als erster Datensatz, weitere BL spaeter
+- Fristen und Feiertage sind konfigurierbar je Bundesland (ADR-006). Alle 16 LBOs werden unterstuetzt.
+- Feiertage fuer alle 16 Bundeslaender als Konfigurationstabelle (bundeslandspezifische Feiertage + bundesweite)
 - E-Mail-Versand ueber bestehenden SMTP-Dienst
 
 ## 9. Abhaengigkeiten

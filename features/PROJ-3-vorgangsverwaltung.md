@@ -74,7 +74,7 @@ Als Sachbearbeiter moechte ich einen Vorgang an eine Kollegin uebergeben (Urlaub
 
 ## 8. Annahmen
 
-- MVP startet mit BauO NRW (5-6 Standardverfahrensarten)
+- Verfahrensarten sind konfigurierbar je Bundesland (ADR-006). Alle 16 LBOs werden architektonisch unterstuetzt. Initiale Konfiguration fuer alle BL, die als PDF-Quelldokumente unter Input/ vorliegen.
 - Status-Workflow ist konfigurierbar, aber Initial fest definiert
 - Suche nutzt PostgreSQL tsvector/tsquery (kein externer Suchindex)
 

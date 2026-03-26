@@ -146,7 +146,7 @@ Dashboard, Gebuehren, Offline fuer Breitenrollout.
 
 ### Organisatorisch
 - Lean Startup, kleines Kernteam
-- Erste LBO: BauO NRW
+- Alle 16 Landesbauordnungen muessen unterstuetzt werden (Architektur von Anfang an multi-BL-faehig). BauO NRW als erstes vollstaendig konfiguriertes Bundesland.
 - Parallelbetrieb 4-6 Wochen, Einfuehrungszeit 12-18 Monate
 
 ---
@@ -164,12 +164,12 @@ Dashboard, Gebuehren, Offline fuer Breitenrollout.
 
 ## 8. Go-to-Market: Pilot-First-Strategie
 
-**NRW als erster Markt** (396 Kommunen, hoher OZG-Druck, Foerderprogramme).
+**Deutschlandweiter Einsatz** -- das System unterstuetzt alle 16 Bundeslaender von Beginn an architektonisch (Rechtskonfiguration als Daten, ADR-006). Die Pilotierung startet mit einer Kommune, danach schrittweiser Rollout bundesweit.
 
 ```
-Phase 0-1 -> Pilotbehoerde NRW (1 Kommune, 20-50 SB)
-Phase 2   -> Early Adopter (3-5 Behoerden NRW, Rahmenvertrag)
-Phase 3   -> Breitenrollout (weitere Bundeslaender)
+Phase 0-1 -> Pilotbehoerde (1 Kommune, 20-50 SB)
+Phase 2   -> Early Adopter (3-5 Behoerden, ggf. verschiedene Bundeslaender)
+Phase 3   -> Breitenrollout (alle Bundeslaender)
 ```
 
 ### Stakeholder-Ansprache
@@ -232,7 +232,7 @@ Phase 3   -> Breitenrollout (weitere Bundeslaender)
 ```
 Q2 2026     Q3 2026     Q4 2026     Q1 2027     Q2 2027     Q3 2027
 |--Phase 0--|------------ Phase 1 (MVP) -----------|
-                                     |-- Pilot NRW --|
+                                     |--- Pilot ----|
                                             |------ Phase 2 (Compliance) ------|
                                                                |-- Early Adopter --|
                                                                           |-- Phase 3 --|
