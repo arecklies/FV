@@ -524,10 +524,45 @@ export default function VorgangDetailPage() {
                       Verfügbare Aktionen
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4">
+                    {/* PROJ-30: Hinweistext und Checkliste direkt bei den Aktionen */}
+                    {workflow.schritt?.hinweis && (
+                      <div
+                        className="rounded-md border bg-muted/50 p-3 text-sm"
+                        role="note"
+                        aria-label="Hinweis zum aktuellen Schritt"
+                      >
+                        <p className="font-medium text-foreground mb-1">
+                          Nächster Schritt
+                        </p>
+                        <p className="text-muted-foreground">
+                          {workflow.schritt.hinweis}
+                        </p>
+                      </div>
+                    )}
+                    {workflow.schritt?.checkliste &&
+                      workflow.schritt.checkliste.length > 0 && (
+                        <ul
+                          className="space-y-1 text-sm"
+                          aria-label="Checkliste für aktuellen Schritt"
+                        >
+                          {workflow.schritt.checkliste.map((item, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-muted-foreground"
+                            >
+                              <span
+                                className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     {aktionError && (
                       <p
-                        className="text-sm text-destructive mb-3"
+                        className="text-sm text-destructive"
                         role="alert"
                       >
                         {aktionError}
