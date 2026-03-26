@@ -5,7 +5,7 @@
 **Stand:** 25. Maerz 2026
 **Verantwortlich:** Senior Produktmanager
 **Status:** Accepted
-**Quellen:** Stakeholder-Interviews (P1-P4), Research-Synthese, Fachliche Anforderungsanalyse
+**Quellen:** Stakeholder-Interviews (P1-P4), Research-Synthese, Fachliche Anforderungsanalyse, Online-Umfrage (n=120, simuliert, `docs/umfrage-auswertung.md`)
 
 ---
 

@@ -28,6 +28,7 @@ Die Vorgangsverwaltung ist das zentrale Fachmodul: Bauverfahren anlegen, bearbei
 - FA-8: Wiedervorlagen mit Datum und Notiz
 - FA-9: Interne Kommentare/Notizen pro Vorgang
 - FA-10: Parallele Bearbeitung (mehrere SB am selben Vorgang mit Aenderungsprotokoll)
+- FA-11: Massenoperationen auf der Vorgangsliste (Status aendern, Zuweisen, Fristverschiebung fuer mehrere Vorgaenge gleichzeitig) -- Umfrage: 64 Votes, Rang 3 der Freitext-Anforderungen
 
 ## 4. User Stories & Akzeptanzkriterien
 

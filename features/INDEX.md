@@ -28,6 +28,14 @@
 | PROJ-7 | XBau-Basisschnittstelle | Planned | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
 | PROJ-8 | Vollstaendiger Datenexport | Planned | [PROJ-8](PROJ-8-datenexport.md) | 2026-03-25 |
 
+### Phase 1 - Kern-MVP (Erweiterung)
+
+| ID | Feature | Status | Spec | Created |
+|----|---------|--------|------|---------|
+| PROJ-12 | Beteiligungsmanagement (ToEB) | Planned | | 2026-03-25 |
+
+> PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
+
 ### Phase 2 - Compliance und Integration
 
 | ID | Feature | Status | Spec | Created |
@@ -35,7 +43,6 @@
 | PROJ-9 | Vier-Augen-Freigabeworkflow | Planned | | 2026-03-25 |
 | PROJ-10 | Audit-Trail (revisionssicher) | Planned | | 2026-03-25 |
 | PROJ-11 | OZG-Portal-Anbindung (FIT-Connect) | Planned | | 2026-03-25 |
-| PROJ-12 | Beteiligungsmanagement (ToEB) | Planned | | 2026-03-25 |
 
 ### Phase 3 - Fuehrung und Optimierung
 

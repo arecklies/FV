@@ -32,6 +32,12 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
   - **3.3.7 Redundant Entry**: Bereits eingegebene Daten nicht erneut abfragen
 - Komponenten klein und fokussiert halten (Single Responsibility)
 
+## Querschnitts-NFRs (Pflicht fuer alle Features ab Phase 1)
+> Quelle: Online-Umfrage-Auswertung (`docs/umfrage-auswertung.md`) -- 5 der Top-10 Freitext-Anforderungen sind UX-Qualitaetsmerkmale
+- **Auto-Save**: Formulareingaben automatisch zwischenspeichern (localStorage/sessionStorage). Bei Verbindungsabbruch oder versehentlichem Tab-Schliessen duerfen keine Eingaben verloren gehen. Visueller Indikator: "Gespeichert" vs. "Nicht gespeichert". (Umfrage: 61 Votes, Rang 4)
+- **Tastaturnavigation fuer Power-User**: Ueber WCAG-Pflicht hinaus: `Ctrl+K` fuer globale Suche (Command-Palette), `Ctrl+N` neuer Vorgang, `Ctrl+S` speichern. Vorgangsliste navigierbar mit Pfeiltasten. (Umfrage: 72 Votes, Rang 2)
+- **Massenoperationen**: Checkboxen in Listen + Sammelaktion (Status aendern, Zuweisen, Frist verschieben). Standardpattern fuer alle Listendarstellungen. (Umfrage: 64 Votes, Rang 3)
+
 ## Print-CSS (bei druckbaren Seiten)
 - Bei druckbaren Seiten (Reports, Zusammenfassungen, Checklisten): Print-CSS via `@media print` in `globals.css` sicherstellen
 - Hintergrundfarben: `-webkit-print-color-adjust: exact; print-color-adjust: exact`
