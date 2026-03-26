@@ -1,6 +1,6 @@
 # PROJ-21: Frist-Dashboard Sachbearbeiter-Gruppierung
 
-**Status:** Planned | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
+**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
 **Herkunft:** PROJ-4 US-3 AC-2 (QS-Review: als separates Item ausgelagert)
 
 ---
@@ -25,9 +25,16 @@ Der Endpunkt GET /api/fristen/gefaehrdet liefert gefaehrdete Fristen als flache 
 ### US-1: Gruppierung nach Sachbearbeiter
 Als Referatsleiter moechte ich gefaehrdete Fristen gruppiert nach zustaendigem Sachbearbeiter sehen.
 - AC-1: GET /api/fristen/gefaehrdet?gruppiert_nach=sachbearbeiter liefert gruppierte Daten
-- AC-2: Jede Gruppe enthaelt Sachbearbeiter-ID und die zugehoerigen gefaehrdeten Fristen
+- AC-2: Jede Gruppe enthaelt Sachbearbeiter-ID, Sachbearbeiter-Name (aus tenant_members/auth) und die zugehoerigen gefaehrdeten Fristen
 - AC-3: Gruppen sind nach Anzahl gefaehrdeter Fristen absteigend sortiert (meiste zuerst)
 - AC-4: Ohne `gruppiert_nach`-Parameter bleibt die Antwort unveraendert (Abwaertskompatibilitaet)
+- AC-5: Leere Gruppen (Sachbearbeiter ohne gefaehrdete Fristen) werden NICHT zurueckgegeben
+
+### US-2: Nur ueberschrittene Fristen im Referatsleiter-Dashboard
+Als Referatsleiter moechte ich nur tatsaechlich ueberschrittene Fristen sehen (keine Alarm-Muedigkeit).
+- AC-1: Neuer Query-Parameter `nur_ueberschritten=true` filtert auf Status `dunkelrot`
+- AC-2: Ohne den Parameter: weiterhin gelb + rot + dunkelrot (Abwaertskompatibilitaet)
+- AC-3: Kombinierbar mit `gruppiert_nach` (beide Parameter gleichzeitig)
 
 ## 5. Nicht-funktionale Anforderungen
 

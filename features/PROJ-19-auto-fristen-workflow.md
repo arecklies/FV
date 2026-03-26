@@ -1,6 +1,6 @@
 # PROJ-19: Auto-Fristen bei Workflow-Schritt-Wechsel
 
-**Status:** Planned | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
+**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
 **Herkunft:** PROJ-4 US-1 AC-4 (QS-Review: als separates Item ausgelagert)
 
 ---
@@ -30,8 +30,14 @@ Als Sachbearbeiter moechte ich, dass bei einem Workflow-Schritt-Wechsel die zuge
 - AC-1: Bei Uebergang zu einem Schritt mit `frist`-Attribut wird eine Frist in `vorgang_fristen` angelegt
 - AC-2: Fristtyp, Werktage und Bezeichnung stammen aus `config_fristen` (nicht hardcoded)
 - AC-3: Ampelstatus wird sofort berechnet und gespeichert
-- AC-4: Im Audit-Trail wird die automatische Fristsetzung protokolliert
-- AC-5: Bei fehlendem config_fristen-Eintrag: kein Fehler, nur Warn-Log
+- AC-4: Im Audit-Trail wird die automatische Fristsetzung protokolliert (action: `frist.auto_created`)
+- AC-5: Bei fehlendem config_fristen-Eintrag: kein Fehler, nur Warn-Log (`[PROJ-19] Keine config_fristen fuer ...`)
+- AC-6: Bestehende manuelle Fristen desselben Typs werden NICHT ueberschrieben (Duplikat-Schutz)
+
+### US-2: Frist im Workflow-API-Response sichtbar
+Als Frontend moechte ich nach einer Workflow-Aktion die neu erstellte Frist sehen, ohne einen separaten API-Call.
+- AC-1: POST /api/vorgaenge/[id]/workflow-aktion Response enthaelt optional `frist_erstellt: { id, typ, end_datum, status }` wenn eine Frist automatisch angelegt wurde
+- AC-2: Bei keiner Fristanlage (kein frist-Attribut oder config fehlt): Feld fehlt oder ist `null`
 
 ## 5. Nicht-funktionale Anforderungen
 

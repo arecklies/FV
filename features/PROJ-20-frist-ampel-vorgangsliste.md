@@ -1,6 +1,6 @@
 # PROJ-20: Frist-Ampel in Vorgangsliste
 
-**Status:** Planned | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
+**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
 **Herkunft:** PROJ-4 US-2 AC-1, AC-3 (QS-Review: als separates Item ausgelagert)
 
 ---
@@ -26,15 +26,18 @@ Sachbearbeiter muessen aktuell jeden Vorgang einzeln oeffnen, um den Friststatus
 
 ### US-1: Ampel-Badge in Vorgangsliste
 Als Sachbearbeiter moechte ich in der Vorgangsliste den Friststatus jedes Vorgangs sehen.
-- AC-1: Ampel-Badge (Farbe + Icon + Text) neben dem Workflow-Status in jeder Zeile
+- AC-1: Ampel-Badge (Farbe + Icon + Text) neben dem Workflow-Status in jeder Zeile (Desktop-Tabelle + Mobile Cards)
 - AC-2: Badge zeigt den Status der dringendsten aktiven Frist des Vorgangs
 - AC-3: Vorgaenge ohne Fristen zeigen keinen Badge (kein leerer Platzhalter)
+- AC-4: API liefert `frist_status` als flaches Feld im Vorgaenge-Response (Entscheidung: flach, nicht verschachtelt — weniger Payload, einfachere Sortierung)
+- AC-5: Bestehende AmpelBadge-Komponente aus PROJ-4 wird wiederverwendet (kein neues UI-Element)
 
 ### US-2: Sortierung nach Dringlichkeit
 Als Sachbearbeiter moechte ich die Liste nach Fristdringlichkeit sortieren koennen.
 - AC-1: Neues Sortierfeld "Frist" in der Tabellenkopf-Sortierung
-- AC-2: Sortierung: dunkelrot > rot > gelb > gruen > ohne Frist
+- AC-2: Sortierung: dunkelrot > rot > gelb > gruen > ohne Frist (NULL last)
 - AC-3: Standard-Sortierung bleibt "Eingangsdatum absteigend"
+- AC-4: Backend: Sortierung ueber berechnetes Feld oder Subquery (kein Client-seitiges Sortieren)
 
 ## 5. Nicht-funktionale Anforderungen
 
@@ -49,7 +52,7 @@ Als Sachbearbeiter moechte ich die Liste nach Fristdringlichkeit sortieren koenn
 
 ## 7. Offene Fragen
 
-1. Soll der Frist-Status als separates Feld (`frist_status`) oder als verschachteltes Objekt (`frist: { status, end_datum }`) zurueckgegeben werden?
+~~1. Soll der Frist-Status als separates Feld oder verschachteltes Objekt zurueckgegeben werden?~~ **Geklaert (req-stories):** Flaches Feld `frist_status` (string | null). Begruendung: weniger Payload, einfachere Sortierung, konsistent mit `workflow_schritt_id`.
 
 ## 8. Annahmen
 

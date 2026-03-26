@@ -34,9 +34,9 @@
 |----|---------|--------|------|---------|
 | PROJ-12 | Beteiligungsmanagement (ToEB) | Planned | | 2026-03-25 |
 | PROJ-17 | Massenoperationen Vorgangsliste | Planned | [PROJ-17](PROJ-17-massenoperationen.md) | 2026-03-26 |
-| PROJ-19 | Auto-Fristen bei Workflow-Schritt-Wechsel | Planned | [PROJ-19](PROJ-19-auto-fristen-workflow.md) | 2026-03-26 |
-| PROJ-20 | Frist-Ampel in Vorgangsliste | Planned | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
-| PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | Planned | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
+| PROJ-19 | Auto-Fristen bei Workflow-Schritt-Wechsel | In Progress | [PROJ-19](PROJ-19-auto-fristen-workflow.md) | 2026-03-26 |
+| PROJ-20 | Frist-Ampel in Vorgangsliste | In Progress | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
+| PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | In Progress | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
 | PROJ-22 | Cron-Job Feiertags-Korrektheit und Batch-Optimierung | Planned | [PROJ-22](PROJ-22-cron-feiertage-fix.md) | 2026-03-26 |
 | PROJ-23 | AmpelStatus Typ-Konsolidierung | Planned | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
 | PROJ-24 | Typisiertes ServiceResult Error-Modell | Planned | [PROJ-24](PROJ-24-typisiertes-service-error-modell.md) | 2026-03-26 |
