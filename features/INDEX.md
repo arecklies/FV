@@ -22,7 +22,7 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-3 | Vorgangsverwaltung | Deployed | [PROJ-3](PROJ-3-vorgangsverwaltung.md) | 2026-03-25 |
-| PROJ-4 | Fristmanagement | Deployed | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
+| PROJ-4 | Fristmanagement | Deployed (Conditional: PROJ-19, PROJ-20, PROJ-21) | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
 | PROJ-7 | XBau-Basisschnittstelle | Planned | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
@@ -37,10 +37,17 @@
 | PROJ-19 | Auto-Fristen bei Workflow-Schritt-Wechsel | Planned | [PROJ-19](PROJ-19-auto-fristen-workflow.md) | 2026-03-26 |
 | PROJ-20 | Frist-Ampel in Vorgangsliste | Planned | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
 | PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | Planned | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
+| PROJ-22 | Cron-Job Feiertags-Korrektheit und Batch-Optimierung | Planned | [PROJ-22](PROJ-22-cron-feiertage-fix.md) | 2026-03-26 |
+| PROJ-23 | AmpelStatus Typ-Konsolidierung | Planned | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
+| PROJ-24 | Typisiertes ServiceResult Error-Modell | Planned | [PROJ-24](PROJ-24-typisiertes-service-error-modell.md) | 2026-03-26 |
+| PROJ-25 | API-Route-Test-Template und Komponenten-Tests | Planned | [PROJ-25](PROJ-25-test-templates-komponententests.md) | 2026-03-26 |
+| PROJ-26 | Dialog-State-Reset | Planned | [PROJ-26](PROJ-26-dialog-state-reset.md) | 2026-03-26 |
+| PROJ-27 | Route-Handler-Utilities | Planned | [PROJ-27](PROJ-27-route-handler-utilities.md) | 2026-03-26 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
 > PROJ-19/20/21 aus PROJ-4 QS-Review extrahiert (offene ACs als separate Items)
+> PROJ-22-27 aus PROJ-4 Retro extrahiert (technische Schulden + Prozessverbesserungen)
 
 ### Phase 2 - Compliance und Integration
 
@@ -71,4 +78,4 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-22
+## Next Available ID: PROJ-28

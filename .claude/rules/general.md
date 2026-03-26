@@ -48,6 +48,11 @@ Jede Feature-Spec muss mindestens diese Abschnitte enthalten (Reihenfolge einhal
 
 Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 
+## MVP-Scope-Regel (Retro PROJ-4 A-2)
+- Wenn eine Feature-Spec mehr als 3 User Stories enthaelt, MUSS der Product Owner vor `/req-stories` pruefen, ob Stories in separate Items ausgelagert werden koennen
+- Kriterium: Jede Story, die eine zusaetzliche ADR-Abhaengigkeit einfuehrt oder ein anderes System (Workflow, Dashboard, andere API) veraendert, ist ein Kandidat fuer ein separates Item
+- Scope/Nicht-Scope muss VOR Implementierungsbeginn befuellt sein — nicht erst im QS-Review
+
 ## INDEX.md-Pflegeregeln (gilt für alle Skills)
 
 | Skill | Aktion |
@@ -55,7 +60,7 @@ Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 | `/po-backlog` | Neue Feature-ID anlegen → Status `Planned` |
 | `/req-stories` | Status → `In Progress` |
 | `/qs-release` | Status → `In Review` |
-| `/po-review` | Status → `Deployed` (nach Go) |
+| `/po-review` | Status → `Deployed` (nach Go) oder `Deployed (Conditional: PROJ-X, Y)` bei Conditional Go |
 | `/migration-plan` | Neue MIGRATION-ID anlegen → Status `Planned` |
 | `/migration-cutover` | Status → `Deployed` nach erfolgreichem Cutover |
 | `/docs-write` | Status → `Deployed` nach Release-Dokumentation |
@@ -113,8 +118,9 @@ Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 - Referenz: `.claude/rules/frontend.md` Abschnitt "Zeichensatz in Quellcode"
 
 ## Status Updates
-- Gültige Statuswerte: `Planned`, `In Progress`, `In Review`, `Deployed`
+- Gültige Statuswerte: `Planned`, `In Progress`, `In Review`, `Deployed`, `Deployed (Conditional: PROJ-X, Y)`
 - Gilt für Features (`PROJ-X`) und Migrations-Phasen (`MIGRATION-X`) gleichermaßen
+- **Conditional Go (Retro PROJ-4 A-6):** Bei Conditional Go wird der Status als `Deployed (Conditional: PROJ-X, Y, Z)` gefuehrt. Erst wenn alle Bedingungen (Follow-up-Items) den Status `Deployed` erreichen, wechselt das Ursprungs-Feature zu `Deployed`. Das verhindert, dass Conditional-Go-Bedingungen vergessen werden.
 
 ## Prozess-Pflicht — STOPP-Regel (nicht verhandelbar)
 
