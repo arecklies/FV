@@ -23,12 +23,14 @@
 | [ADR-006](ADR-006-rechtskonfiguration-als-daten.md) | Rechtskonfiguration als Daten | **Accepted** | 2026-03-25 |
 | [ADR-007](ADR-007-multi-tenancy-modell.md) | Multi-Tenancy-Modell | **Accepted** | 2026-03-25 |
 | [ADR-008](ADR-008-asynchrone-verarbeitung-background-jobs.md) | Asynchrone Verarbeitung und Background Jobs | **Accepted** | 2026-03-25 |
+| [ADR-009](ADR-009-dokumenten-storage-upload.md) | Dokumenten-Storage und Upload-Strategie | **Accepted** | 2026-03-26 |
+| [ADR-010](ADR-010-pdf-generierung.md) | PDF-Generierung und Bescheid-Rendering | **Accepted** | 2026-03-26 |
 
-> Alle 8 ADRs sind accepted (Review 2026-03-26). Keine offenen Architekturentscheidungen fuer Phase 0/1.
+> Alle 10 ADRs sind accepted (Review 2026-03-26). Keine offenen Architekturentscheidungen fuer Phase 0/1.
 
 ## Konventionen
 
 - Dateiformat: `ADR-XXX-titel-in-kebab-case.md`
 - Jeder ADR wird ueber `/arch-adr` erstellt und ueber `/docs-adr` in diesen Index eingepflegt
 - ADR-Nummern sind sequenziell und werden nie wiederverwendet
-- Naechste verfuegbare Nummer: **ADR-009**
+- Naechste verfuegbare Nummer: **ADR-011**
