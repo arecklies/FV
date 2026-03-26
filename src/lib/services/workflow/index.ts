@@ -1,5 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
+import { ladeConfigFristen, createFrist } from "@/lib/services/fristen";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
 import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie } from "./types";
@@ -67,10 +68,17 @@ interface ExecuteAktionParams {
   bundesland: string;
 }
 
+interface FristErstellt {
+  id: string;
+  typ: string;
+  end_datum: string;
+  status: string;
+}
+
 export async function executeWorkflowAktion(
   serviceClient: SupabaseClient,
   params: ExecuteAktionParams
-): Promise<{ neuerSchrittId: string | null; error: string | null }> {
+): Promise<{ neuerSchrittId: string | null; fristErstellt: FristErstellt | null; error: string | null }> {
   // 1. Workflow-Definition laden
   const definition = await getWorkflowDefinition(
     serviceClient,
@@ -79,7 +87,7 @@ export async function executeWorkflowAktion(
   );
 
   if (!definition) {
-    return { neuerSchrittId: null, error: "Keine Workflow-Definition gefunden" };
+    return { neuerSchrittId: null, fristErstellt: null, error: "Keine Workflow-Definition gefunden" };
   }
 
   // 2. Aktuellen Schritt und Aktionen pruefen
@@ -90,19 +98,19 @@ export async function executeWorkflowAktion(
   );
 
   if (!schritt) {
-    return { neuerSchrittId: null, error: "Aktueller Workflow-Schritt nicht gefunden" };
+    return { neuerSchrittId: null, fristErstellt: null, error: "Aktueller Workflow-Schritt nicht gefunden" };
   }
 
   // 3. Aktion finden
   const aktion = aktionen.find((a) => a.id === params.aktionId);
   if (!aktion) {
-    return { neuerSchrittId: null, error: "Diese Aktion ist nicht verfügbar" };
+    return { neuerSchrittId: null, fristErstellt: null, error: "Diese Aktion ist nicht verfügbar" };
   }
 
   // 4. Ziel-Schritt validieren
   const zielSchritt = getSchritt(definition, aktion.ziel);
   if (!zielSchritt) {
-    return { neuerSchrittId: null, error: "Ziel-Schritt nicht in Workflow-Definition" };
+    return { neuerSchrittId: null, fristErstellt: null, error: "Ziel-Schritt nicht in Workflow-Definition" };
   }
 
   // 5. Vorgang aktualisieren
@@ -113,7 +121,7 @@ export async function executeWorkflowAktion(
     .eq("tenant_id", params.tenantId);
 
   if (updateError) {
-    return { neuerSchrittId: null, error: updateError.message };
+    return { neuerSchrittId: null, fristErstellt: null, error: updateError.message };
   }
 
   // 6. Workflow-Schritt protokollieren
@@ -144,7 +152,55 @@ export async function executeWorkflowAktion(
     },
   });
 
-  return { neuerSchrittId: aktion.ziel, error: null };
+  // 8. PROJ-19: Auto-Frist bei Schritt-Wechsel
+  let fristErstellt: FristErstellt | null = null;
+  if (zielSchritt.frist) {
+    // Lookup in config_fristen: frist-Attribut ist der Typ-Key
+    const configFristen = await ladeConfigFristen(
+      serviceClient,
+      params.bundesland,
+      params.verfahrensartId
+    );
+    const passendeFrist = configFristen.find((cf) => cf.typ === zielSchritt.frist);
+
+    if (passendeFrist) {
+      // AC-6: Duplikat-Schutz — prüfe ob Frist dieses Typs bereits existiert
+      const { data: existierendeFristen } = await serviceClient
+        .from("vorgang_fristen")
+        .select("id")
+        .eq("tenant_id", params.tenantId)
+        .eq("vorgang_id", params.vorgangId)
+        .eq("typ", passendeFrist.typ)
+        .eq("aktiv", true)
+        .limit(1);
+
+      if (!existierendeFristen || existierendeFristen.length === 0) {
+        const fristResult = await createFrist(serviceClient, {
+          tenantId: params.tenantId,
+          userId: params.userId,
+          vorgangId: params.vorgangId,
+          typ: passendeFrist.typ,
+          bezeichnung: passendeFrist.bezeichnung,
+          werktage: passendeFrist.werktage,
+          startDatum: new Date().toISOString(),
+          bundesland: params.bundesland,
+        });
+
+        if (fristResult.data) {
+          fristErstellt = {
+            id: fristResult.data.id,
+            typ: fristResult.data.typ,
+            end_datum: fristResult.data.end_datum,
+            status: fristResult.data.status,
+          };
+        }
+      }
+    } else {
+      console.warn(`[PROJ-19] Keine config_fristen fuer typ="${zielSchritt.frist}" bundesland="${params.bundesland}" verfahrensart="${params.verfahrensartId}"`);
+    }
+  }
+
+  return { neuerSchrittId: aktion.ziel, fristErstellt, error: null };
 }
 
 export async function getWorkflowHistorie(

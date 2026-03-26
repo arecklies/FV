@@ -14,7 +14,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 /**
  * POST /api/vorgaenge/[id]/workflow-aktion
  * Workflow-Schritt ausfuehren (ADR-011).
- * PROJ-3 US-7
+ * PROJ-3 US-7, PROJ-19 (Auto-Frist bei Schritt-Wechsel)
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   const auth = await requireAuth();
@@ -76,5 +76,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   return jsonResponse({
     message: "Workflow-Schritt ausgeführt",
     neuer_schritt: result.neuerSchrittId,
+    frist_erstellt: result.fristErstellt ?? null,
   });
 }
