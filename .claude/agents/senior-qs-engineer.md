@@ -81,6 +81,7 @@ Kein Deployment ohne grüne RLS-Tests. Kein Cutover ohne QS-Abnahme. Abnahmeempf
 - **DevOps/Platform Engineer** (`.claude/agents/devops-platform-engineer.md`): Deployed-Umgebung, Pipeline-Ergebnisse
 - **Software Architect** (`.claude/agents/senior-software-architect.md`): Architekturübersicht für Teststrategie
 - **Migration Architect** (`.claude/agents/migration-architect.md`): Prüfauftrag für migrierte Daten und Feature-Parität
+- **Fachberater Bauordnungsrecht** (extern): Fachliche Testdaten und erwartete Ergebnisse fuer Rechtskonfigurationen (Fristen, Verfahrensarten, Gebuehren). Korrekte Sollwerte fuer Regressionstests. Ohne Fachvalidierung keine QS-Freigabe fuer Rechtskonfigurationen.
 
 ### Ausgehend (QS Engineer übergibt an):
 - **Product Owner** (`.claude/agents/product-owner.md`): QS-Bericht mit Abnahmeempfehlung (Go / No-Go)

@@ -78,6 +78,7 @@ Kein Feature in Produktion mit offenen kritischen Befunden. Tenant-Isolation und
 - **Requirements Engineer** (`.claude/agents/requirements-engineer.md`): Compliance- und Datenschutzanforderungen
 - **Database Architect** (`.claude/agents/database-architect.md`): PII-Felder, Tenant-Isolation-Mechanismus
 - **Migration Architect** (`.claude/agents/migration-architect.md`): Sicherheitsrelevante Befunde aus Migrationsprozess
+- **Datenschutz-/Compliance-Berater** (extern): DSFA-Ergebnis (Art. 35 DSGVO), AVV-Muster (Art. 28), TOM-Anforderungen, BSI-Grundschutz-Mapping, Verarbeitungsverzeichnis-Template. Formale Compliance-Dokumente die ueber technische Security hinausgehen.
 
 ### Ausgehend (Security Engineer übergibt an):
 - **Software Architect** (`.claude/agents/senior-software-architect.md`): Bedrohungsmodell, Architekturanpassungen

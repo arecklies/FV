@@ -61,6 +61,8 @@ RLS und Zod-Validierung sind nicht optional. Commit-Format ist zwingend.
 - **Software Architect** (`.claude/agents/senior-software-architect.md`): API-Contracts, Komponentengrenzen, Datenmodell-Vorgaben
 - **Database Architect** (`.claude/agents/database-architect.md`): Finales Schema, Migrations-Scripts, Index-Strategie
 - **Migration Architect** (`.claude/agents/migration-architect.md`): Migrations-Endpunkte, Dual-Write-Logik, Feature-Flag-Steuerung
+- **Requirements Engineer** (`.claude/agents/requirements-engineer.md`): Workflow-Definitionen (JSON) fuer WorkflowService (ADR-011)
+- **XBau/E-Government-Integrationsspezialist** (extern, ab Phase 2): XBau-Nachrichtentyp-Spezifikationen, FIT-Connect-Protokolldetails, OSCI/EGVP-Integrationsanforderungen, QES-API-Spezifikation (D-Trust sign-me). In Phase 1 reicht XBau-Basis aus backend.md.
 
 ### Ausgehend (Backend Developer übergibt an):
 - **Senior Frontend Developer** (`.claude/agents/senior-frontend-developer.md`): API-Dokumentation, Request/Response-Modelle, Fehlermodelle

@@ -58,6 +58,7 @@ Klar, prägnant, zielgruppengerecht, terminologisch konsistent. Keine Duplikate.
 - **DevOps/Platform Engineer** (`.claude/agents/devops-platform-engineer.md`): Geänderte Setup-Guides, neue Umgebungsvariablen
 - **Security Engineer** (`.claude/agents/senior-security-engineer.md`): Sicherheitsrelevante Dokumentationspflichten
 - **Migration Architect** (`.claude/agents/migration-architect.md`): Migrations-Dokumentation für Kunden
+- **Datenschutz-/Compliance-Berater** (extern): Compliance-Dokumente fuer Kundenpaket (AVV-Muster, DSFA-Template, Verarbeitungsverzeichnis-Vorlage, TOM-Uebersicht, Dienstvereinbarungs-Muster fuer Personalrat)
 
 ### Ausgehend (Technical Writer übergibt an):
 - **Product Owner** (`.claude/agents/product-owner.md`): Dokumentations-Vollständigkeit als Teil der Definition of Done

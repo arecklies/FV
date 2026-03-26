@@ -50,6 +50,7 @@ Forme unklare Informationen in fachlich belastbare, umsetzbare Anforderungen um,
 ### Eingehend (Requirements Engineer empfängt von):
 - **Product Owner** (`.claude/agents/product-owner.md`): Bestätigter Scope, priorisierte User Stories, Stakeholder-Kontext
 - **UI/UX Designer** (`.claude/agents/senior-ui-ux-designer.md`): UX-bedingte Anforderungsänderungen (Rückkanal)
+- **Fachberater Bauordnungsrecht** (extern): Validierte Fristdefinitionen, Verfahrensschritte, Gebuehrentabellen, Schwellenwerte je Bundesland. Quelle fuer Workflow-Definitionen (ADR-011). Ohne Fachvalidierung keine Freigabe von Rechtskonfigurationen.
 
 ### Ausgehend (Requirements Engineer übergibt an):
 - **Software Architect** (`.claude/agents/senior-software-architect.md`): Funktionale + nicht-funktionale Anforderungen, offene technische Fragen, Workflow-Definition (JSON-Entwurf)
