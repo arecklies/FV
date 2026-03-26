@@ -213,6 +213,19 @@ export default function BenutzerVerwaltungPage() {
     }
   };
 
+  // F-12/13: Nicht-authentifiziert-Zustand abfangen (Netzwerkfehler, abgelaufene Session)
+  if (!loading && !user) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <Alert variant="destructive" role="alert">
+          <AlertDescription>
+            Sitzung abgelaufen oder Verbindungsfehler. Bitte melden Sie sich erneut an.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   // Zugriffskontrolle: Nur tenant_admin / platform_admin
   if (user && user.role !== "tenant_admin" && user.role !== "platform_admin") {
     return (

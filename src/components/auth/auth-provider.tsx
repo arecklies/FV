@@ -7,8 +7,8 @@ import * as React from "react";
  *
  * - Laedt Session via GET /api/auth/session beim Mount
  * - Bei 401: Redirect auf /login
- * - Cookie-Synchronisation: sb-access-token bei Session-Aenderung setzen
- * - Stellt user, role, tenantId, loading, logout bereit
+ * - Bei Netzwerkfehler: error-State + Retry nach 3s (F-03)
+ * - Stellt user, role, tenantId, loading, error, logout bereit
  */
 
 export interface AuthUser {
@@ -21,21 +21,21 @@ export interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
+  error: string | null;
   logout: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextType>({
   user: null,
   loading: true,
+  error: null,
   logout: async () => {},
 });
 
+// F-04: Context hat Default-Wert, daher kann useContext nie null sein.
+// Kein Guard noetig — direkt zurueckgeben.
 export function useAuth() {
-  const context = React.useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth muss innerhalb eines AuthProviders verwendet werden.");
-  }
-  return context;
+  return React.useContext(AuthContext);
 }
 
 interface AuthProviderProps {
@@ -45,21 +45,23 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = React.useState<AuthUser | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   // Session laden beim Mount
   React.useEffect(() => {
     let cancelled = false;
+    let retryTimeout: ReturnType<typeof setTimeout>;
 
     async function loadSession() {
       try {
+        setError(null);
         const response = await fetch("/api/auth/session", {
           credentials: "include",
         });
 
         if (!response.ok) {
-          // 401 = nicht authentifiziert → Redirect auf Login
+          // 401 = nicht authentifiziert -> Redirect auf Login
           if (response.status === 401) {
-            // Nur redirecten wenn nicht bereits auf /login
             if (!window.location.pathname.startsWith("/login")) {
               window.location.href = "/login";
               return;
@@ -82,9 +84,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           });
         }
       } catch {
-        // Netzwerkfehler: User bleibt null, kein Redirect
+        // F-03: Netzwerkfehler — error-State setzen + Retry nach 3s
         if (!cancelled) {
           setUser(null);
+          setError("Verbindungsfehler. Erneuter Versuch...");
+          retryTimeout = setTimeout(() => {
+            if (!cancelled) loadSession();
+          }, 3000);
         }
       } finally {
         if (!cancelled) {
@@ -97,6 +103,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return () => {
       cancelled = true;
+      clearTimeout(retryTimeout);
     };
   }, []);
 
@@ -110,14 +117,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch {
       // Logout-Fehler ignorieren, Cookie wird serverseitig geloescht
     } finally {
-      // window.location.href fuer Post-Logout-Redirect (frontend.md Auth Best Practices)
       window.location.href = "/login";
     }
   }, []);
 
   const value = React.useMemo(
-    () => ({ user, loading, logout }),
-    [user, loading, logout]
+    () => ({ user, loading, error, logout }),
+    [user, loading, error, logout]
   );
 
   return (

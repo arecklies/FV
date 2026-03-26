@@ -38,28 +38,24 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      // Supabase resetPasswordForEmail ueber den Client
-      // Fuer Phase 0: Direkte Supabase-Client-Nutzung (kein eigener API-Endpunkt noetig)
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { auth: { persistSession: false } }
-      );
-
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
+      // Passwort-Reset ueber eigene API-Route (F-01: kein Supabase-Client im Browser)
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+        credentials: "include",
       });
 
-      if (resetError) {
-        // Kein User-Enumeration: Immer Erfolgsmeldung zeigen
-        console.error("[PROJ-1] Password reset error:", resetError.message);
+      if (!response.ok && response.status === 400) {
+        const data = await response.json();
+        setError(data.fields?.email ?? "Ungültige Eingabe");
+        return;
       }
 
-      // Unabhaengig vom Ergebnis: Erfolgsmeldung zeigen
+      // Immer Erfolgsmeldung zeigen (verhindert User-Enumeration)
       setSubmitted(true);
     } catch {
-      setError("Verbindungsfehler. Bitte versuchen Sie es spaeter erneut.");
+      setError("Verbindungsfehler. Bitte versuchen Sie es später erneut.");
     } finally {
       setLoading(false);
     }
