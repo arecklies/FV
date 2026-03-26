@@ -10,6 +10,7 @@ import type {
   ConfigFrist,
   AmpelStatus,
   GefaehrdeteFrist,
+  GruppierteFristen,
 } from "./types";
 import {
   VorgangFristDbSchema,
@@ -362,6 +363,8 @@ interface GefaehrdeteParams {
   tenantId: string;
   seite: number;
   proSeite: number;
+  nurUeberschritten?: boolean;
+  gruppiertNach?: "sachbearbeiter" | "status";
 }
 
 export async function listGefaehrdeteFristen(
@@ -370,7 +373,11 @@ export async function listGefaehrdeteFristen(
 ): Promise<{ data: GefaehrdeteFrist[]; total: number; error: string | null }> {
   const offset = (params.seite - 1) * params.proSeite;
 
-  // Fristen mit status rot/dunkelrot JOIN vorgaenge (für Aktenzeichen etc.)
+  // PROJ-21 US-2: nur_ueberschritten filtert auf dunkelrot
+  const statusFilter = params.nurUeberschritten
+    ? ["dunkelrot"]
+    : ["gelb", "rot", "dunkelrot"];
+
   const { data, count, error } = await serviceClient
     .from("vorgang_fristen")
     .select(
@@ -379,7 +386,7 @@ export async function listGefaehrdeteFristen(
     )
     .eq("tenant_id", params.tenantId)
     .eq("aktiv", true)
-    .in("status", ["gelb", "rot", "dunkelrot"])
+    .in("status", statusFilter)
     .order("end_datum", { ascending: true })
     .range(offset, offset + params.proSeite - 1);
 
@@ -397,6 +404,32 @@ export async function listGefaehrdeteFristen(
   });
 
   return { data: result, total: count ?? 0, error: null };
+}
+
+/**
+ * Gruppiert gefaehrdete Fristen nach Sachbearbeiter (PROJ-21 US-1).
+ * Sortiert nach Anzahl gefaehrdeter Fristen absteigend (meiste zuerst).
+ * Leere Gruppen werden nicht zurueckgegeben (AC-5).
+ */
+export function gruppiereNachSachbearbeiter(
+  fristen: GefaehrdeteFrist[]
+): GruppierteFristen[] {
+  const gruppen = new Map<string, GefaehrdeteFrist[]>();
+
+  for (const frist of fristen) {
+    const key = frist.zustaendiger_user_id ?? "__unzugewiesen__";
+    const liste = gruppen.get(key) ?? [];
+    liste.push(frist);
+    gruppen.set(key, liste);
+  }
+
+  return Array.from(gruppen.entries())
+    .map(([userId, items]) => ({
+      zustaendiger_user_id: userId,
+      anzahl: items.length,
+      fristen: items,
+    }))
+    .sort((a, b) => b.anzahl - a.anzahl);
 }
 
 // -- Ampelstatus-Aktualisierung (Cron-Job, ADR-008) --

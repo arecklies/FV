@@ -46,6 +46,7 @@ export const GefaehrdeteQuerySchema = z.object({
   seite: z.coerce.number().int().positive().optional().default(1),
   pro_seite: z.coerce.number().int().min(1).max(100).optional().default(25),
   gruppiert_nach: z.enum(["sachbearbeiter", "status"]).optional(),
+  nur_ueberschritten: z.coerce.boolean().optional().default(false),
 });
 
 // -- Zod-Schemas für DB-Ergebnisse (B-003: statt Type Assertions) --
@@ -111,4 +112,11 @@ export interface GefaehrdeteFrist {
   vorgang_aktenzeichen: string;
   vorgang_bezeichnung: string | null;
   zustaendiger_user_id: string | null;
+}
+
+/** Gruppierte gefährdete Fristen nach Sachbearbeiter (PROJ-21 US-1) */
+export interface GruppierteFristen {
+  zustaendiger_user_id: string;
+  anzahl: number;
+  fristen: GefaehrdeteFrist[];
 }

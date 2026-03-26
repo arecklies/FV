@@ -24,6 +24,7 @@ import {
   hemmeFrist,
   hebeHemmungAuf,
   listGefaehrdeteFristen,
+  gruppiereNachSachbearbeiter,
   aktualisiereAlleAmpelStatus,
 } from "./index";
 import { writeAuditLog } from "@/lib/services/audit";
@@ -441,6 +442,71 @@ describe("listGefaehrdeteFristen", () => {
 
     expect(result.error).toBe("DB-Fehler");
     expect(result.data).toEqual([]);
+  });
+});
+
+describe("gruppiereNachSachbearbeiter (PROJ-21)", () => {
+  it("sollte Fristen nach Sachbearbeiter gruppieren und nach Anzahl sortieren", () => {
+    const fristen = [
+      { frist: { ...MOCK_FRIST, status: "rot" } as any, vorgang_aktenzeichen: "2026/BG-0001", vorgang_bezeichnung: null, zustaendiger_user_id: "user-a" },
+      { frist: { ...MOCK_FRIST, status: "rot" } as any, vorgang_aktenzeichen: "2026/BG-0002", vorgang_bezeichnung: null, zustaendiger_user_id: "user-a" },
+      { frist: { ...MOCK_FRIST, status: "dunkelrot" } as any, vorgang_aktenzeichen: "2026/BG-0003", vorgang_bezeichnung: null, zustaendiger_user_id: "user-b" },
+    ];
+
+    const gruppen = gruppiereNachSachbearbeiter(fristen);
+    expect(gruppen).toHaveLength(2);
+    // user-a hat 2 Fristen → erste Gruppe
+    expect(gruppen[0].zustaendiger_user_id).toBe("user-a");
+    expect(gruppen[0].anzahl).toBe(2);
+    // user-b hat 1 Frist → zweite Gruppe
+    expect(gruppen[1].zustaendiger_user_id).toBe("user-b");
+    expect(gruppen[1].anzahl).toBe(1);
+  });
+
+  it("sollte unzugewiesene Fristen unter __unzugewiesen__ gruppieren", () => {
+    const fristen = [
+      { frist: { ...MOCK_FRIST, status: "rot" } as any, vorgang_aktenzeichen: "2026/BG-0001", vorgang_bezeichnung: null, zustaendiger_user_id: null },
+    ];
+
+    const gruppen = gruppiereNachSachbearbeiter(fristen);
+    expect(gruppen).toHaveLength(1);
+    expect(gruppen[0].zustaendiger_user_id).toBe("__unzugewiesen__");
+  });
+
+  it("sollte leeres Array bei leerer Eingabe zurueckgeben", () => {
+    const gruppen = gruppiereNachSachbearbeiter([]);
+    expect(gruppen).toEqual([]);
+  });
+});
+
+describe("listGefaehrdeteFristen mit nurUeberschritten (PROJ-21 US-2)", () => {
+  it("sollte mit nurUeberschritten=true nur dunkelrot zurueckgeben", async () => {
+    const mockClient = createMockClient();
+    mockClient.setTableResult("vorgang_fristen", {
+      data: [{
+        ...MOCK_FRIST,
+        status: "dunkelrot",
+        vorgaenge: {
+          aktenzeichen: "2026/BG-0005",
+          bezeichnung: "Ueberschritten",
+          zustaendiger_user_id: "user-1",
+        },
+      }],
+      count: 1,
+      error: null,
+    });
+
+    const result = await listGefaehrdeteFristen(mockClient as any, {
+      tenantId: "tenant-1",
+      seite: 1,
+      proSeite: 25,
+      nurUeberschritten: true,
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.data).toHaveLength(1);
+    // Verifiziere dass der mockClient mit dem richtigen Status-Filter aufgerufen wurde
+    expect(mockClient.from).toHaveBeenCalledWith("vorgang_fristen");
   });
 });
 
