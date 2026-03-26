@@ -34,9 +34,10 @@ import {
 } from "@/components/ui/pagination";
 
 import type { VorgangListItem, Verfahrensart } from "@/lib/services/verfahren/types";
+import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
 
 /**
- * Vorgangsliste (PROJ-3 US-2)
+ * Vorgangsliste (PROJ-3 US-2, PROJ-20 Frist-Ampel)
  *
  * Tabelle mit Sortierung, Filterung, Suche, Paginierung.
  * Responsive: 375px (Cards) / 768px+ (Tabelle).
@@ -46,7 +47,7 @@ import { getSchrittLabel, getAllSchrittLabels } from "@/lib/utils/workflow-label
 
 const SCHRITT_LABELS = getAllSchrittLabels();
 
-type Sortierung = "eingangsdatum" | "aktenzeichen" | "workflow_schritt_id";
+type Sortierung = "eingangsdatum" | "aktenzeichen" | "workflow_schritt_id" | "frist_status";
 type Richtung = "asc" | "desc";
 
 interface VorgaengeResponse {
@@ -378,6 +379,17 @@ export default function VorgaengeListePage() {
                     <button
                       type="button"
                       className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      onClick={() => handleSort("frist_status")}
+                      aria-label="Nach Fristdringlichkeit sortieren"
+                    >
+                      Frist
+                      {getSortIcon("frist_status")}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors"
                       onClick={() => handleSort("eingangsdatum")}
                       aria-label="Nach Eingangsdatum sortieren"
                     >
@@ -413,6 +425,14 @@ export default function VorgaengeListePage() {
                     <TableCell>
                       {getSchrittBadge(v.workflow_schritt_id)}
                     </TableCell>
+                    <TableCell>
+                      {v.frist_status ? (
+                        <AmpelBadge
+                          status={v.frist_status as AmpelStatus}
+                          compact
+                        />
+                      ) : null}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(v.eingangsdatum).toLocaleDateString(
                         "de-DE"
@@ -437,7 +457,15 @@ export default function VorgaengeListePage() {
                   <span className="font-medium text-sm">
                     {v.aktenzeichen}
                   </span>
-                  {getSchrittBadge(v.workflow_schritt_id)}
+                  <div className="flex items-center gap-1">
+                    {v.frist_status && (
+                      <AmpelBadge
+                        status={v.frist_status as AmpelStatus}
+                        compact
+                      />
+                    )}
+                    {getSchrittBadge(v.workflow_schritt_id)}
+                  </div>
                 </div>
                 <p className="text-sm">{v.bauherr_name}</p>
                 <p className="text-xs text-muted-foreground mt-1">
