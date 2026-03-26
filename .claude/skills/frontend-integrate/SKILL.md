@@ -29,7 +29,13 @@ Binde Frontend-Komponenten an Backend-APIs an.
    - `window.location.href` für Post-Login-Redirect (nicht `router.push`)
    - Loading State in allen Code-Pfaden zurücksetzen (success / error / finally)
 5. Hole Nutzer-Freigabe bei Auth-Flow-Änderungen ein (Human-in-the-Loop)
-6. Testcode anpassen gemäß `.claude/rules/testing.md`
+6. Testcode **parallel zur Integration** schreiben (nicht erst bei QS-Review):
+   - Komponenten-Tests (`*.test.tsx`) fuer alle neuen Komponenten unter `src/components/`
+   - Hook-Tests fuer alle neuen Hooks unter `src/hooks/`
+   - Mindestabdeckung: Happy Path, Loading State, Error State, Empty State
+   - Dialog-Tests: Pflichtfeld-Validierung pruefen
+   - **Coverage-Check VOR Commit (Pflicht):** `npx jest --forceExit --coverage` — neue Dateien muessen >= 80% haben
+   - Referenz: `.claude/rules/testing.md`
 7. Commit-Format: `feat(PROJ-X): <beschreibung>`
 
 ## Ausgabe

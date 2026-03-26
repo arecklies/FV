@@ -52,3 +52,5 @@ Verifiziere eine fertiggestellte Implementierung.
 - Befunde (kritisch / major / minor) mit Reproduktionsschritten
 - Testlücken
 - **Nächster Schritt:** `/qs-release` bei bestandener Prüfung oder `/backend-api` / `/frontend-component` bei Nacharbeit
+
+**Hinweis:** Dieser Skill aendert NICHT den Status in INDEX.md. Die Status-Aktualisierung auf "In Review" erfolgt ausschliesslich durch `/qs-release`.
