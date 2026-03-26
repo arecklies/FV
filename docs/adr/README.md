@@ -16,7 +16,7 @@
 | ADR | Titel | Status | Datum |
 |-----|-------|--------|-------|
 | [ADR-001](ADR-001-hosting-strategie-eu-datenresidenz.md) | Hosting-Strategie und EU-Datenresidenz | Proposed | 2026-03-25 |
-| [ADR-002](ADR-002-authentifizierung-sso-strategie.md) | Authentifizierung und SSO-Strategie | Proposed | 2026-03-25 |
+| [ADR-002](ADR-002-authentifizierung-sso-strategie.md) | Authentifizierung, SSO-Strategie und RBAC | Accepted | 2026-03-25 |
 | [ADR-003](ADR-003-service-architektur-kapselung.md) | Service-Architektur und Kapselung | Accepted | 2026-03-25 |
 | [ADR-004](ADR-004-xbau-integrationsstrategie.md) | XBau-Integrationsstrategie | Proposed | 2026-03-25 |
 | [ADR-005](ADR-005-audit-trail-revisionssicherheit.md) | Audit-Trail und Revisionssicherheit | Proposed | 2026-03-25 |
