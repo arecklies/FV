@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { generateAktenzeichen } from "./aktenzeichen";
 import type { Vorgang, VorgangListItem, VorgangKommentar, Verfahrensart } from "./types";
+import { VerfahrensartDbSchema, VorgangDbSchema, VorgangListItemDbSchema, VorgangKommentarDbSchema } from "./types";
 
 /**
  * VerfahrenService (ADR-003, ADR-012, PROJ-3)
@@ -27,7 +28,8 @@ export async function listVerfahrensarten(
     .limit(100);
 
   if (error) return { data: null, error: error.message };
-  return { data: data as Verfahrensart[], error: null };
+  const parsed = (data ?? []).map((d: unknown) => VerfahrensartDbSchema.parse(d));
+  return { data: parsed, error: null };
 }
 
 export async function getVerfahrensart(
@@ -40,7 +42,8 @@ export async function getVerfahrensart(
     .eq("id", id)
     .single();
 
-  return data as Verfahrensart | null;
+  if (!data) return null;
+  return VerfahrensartDbSchema.parse(data);
 }
 
 // -- Vorgaenge (mandantenfaehig, RLS ueber Client) --
@@ -159,7 +162,7 @@ export async function createVorgang(
       payload: { aktenzeichen, verfahrensart: verfahrensart.bezeichnung },
     });
 
-    return { data: data as Vorgang, error: null };
+    return { data: VorgangDbSchema.parse(data), error: null };
   }
 
   return { data: null, error: "Aktenzeichen konnte nicht vergeben werden (zu viele Konflikte)" };
@@ -225,7 +228,8 @@ export async function listVorgaenge(
   const { data, count, error } = await query;
 
   if (error) return { data: [], total: 0, error: error.message };
-  return { data: (data ?? []) as VorgangListItem[], total: count ?? 0, error: null };
+  const parsed = (data ?? []).map((d: unknown) => VorgangListItemDbSchema.parse(d));
+  return { data: parsed, total: count ?? 0, error: null };
 }
 
 export async function getVorgang(
@@ -242,7 +246,7 @@ export async function getVorgang(
     .single();
 
   if (error) return { data: null, error: error.message };
-  return { data: data as Vorgang, error: null };
+  return { data: VorgangDbSchema.parse(data), error: null };
 }
 
 interface UpdateVorgangParams {
@@ -284,7 +288,7 @@ export async function updateVorgang(
     payload: { fields: Object.keys(params.updates) },
   });
 
-  return { data: data as Vorgang, error: null, conflict: false };
+  return { data: VorgangDbSchema.parse(data), error: null, conflict: false };
 }
 
 export async function softDeleteVorgang(
@@ -370,7 +374,8 @@ export async function listKommentare(
     .limit(500);
 
   if (error) return { data: [], error: error.message };
-  return { data: (data ?? []) as VorgangKommentar[], error: null };
+  const parsed = (data ?? []).map((d: unknown) => VorgangKommentarDbSchema.parse(d));
+  return { data: parsed, error: null };
 }
 
 export async function createKommentar(
@@ -392,5 +397,5 @@ export async function createKommentar(
     .single();
 
   if (error) return { data: null, error: error.message };
-  return { data: data as VorgangKommentar, error: null };
+  return { data: VorgangKommentarDbSchema.parse(data), error: null };
 }

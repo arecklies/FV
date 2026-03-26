@@ -5,7 +5,7 @@ import { jsonResponse } from "@/lib/api/security-headers";
 import { validationError, serverError } from "@/lib/api/errors";
 import { createServiceRoleClient } from "@/lib/supabase-server";
 import { zuweiseVorgang } from "@/lib/services/verfahren";
-import { ZuweisenSchema } from "@/lib/services/verfahren/types";
+import { ZuweisenSchema, UuidParamSchema } from "@/lib/services/verfahren/types";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -19,6 +19,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
 
   let body: z.infer<typeof ZuweisenSchema>;
   try {

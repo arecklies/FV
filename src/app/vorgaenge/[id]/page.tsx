@@ -33,20 +33,7 @@ import type {
  * Kopfbereich mit Aktenzeichen + Status, Tabs fuer Uebersicht / Kommentare / Workflow.
  */
 
-/** Status-Labels analog zur Liste */
-const SCHRITT_LABELS: Record<
-  string,
-  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
-> = {
-  eingegangen: { label: "Eingegangen", variant: "secondary" },
-  formelle_pruefung: { label: "Formelle Prüfung", variant: "default" },
-  materielle_pruefung: { label: "Materielle Prüfung", variant: "default" },
-  stellungnahmen: { label: "Stellungnahmen", variant: "outline" },
-  entscheidung: { label: "Entscheidung", variant: "default" },
-  genehmigt: { label: "Genehmigt", variant: "secondary" },
-  abgelehnt: { label: "Abgelehnt", variant: "destructive" },
-  zurueckgestellt: { label: "Zurückgestellt", variant: "outline" },
-};
+import { getSchrittLabel } from "@/lib/utils/workflow-labels";
 
 interface WorkflowAktionInfo {
   id: string;
@@ -219,11 +206,13 @@ export default function VorgangDetailPage() {
   }
 
   function getSchrittBadge(schrittId: string) {
-    const info = SCHRITT_LABELS[schrittId];
-    if (info) {
-      return <Badge variant={info.variant}>{info.label}</Badge>;
+    // API-Labels aus Workflow-Definition bevorzugen (B-007)
+    const apiLabels: Record<string, string> = {};
+    if (workflow?.alle_schritte) {
+      workflow.alle_schritte.forEach((s) => { apiLabels[s.id] = s.label; });
     }
-    return <Badge variant="outline">{schrittId}</Badge>;
+    const info = getSchrittLabel(schrittId, apiLabels);
+    return <Badge variant={info.variant}>{info.label}</Badge>;
   }
 
   // Loading State
@@ -553,8 +542,9 @@ export default function VorgangDetailPage() {
                       >
                         <div className="flex-1">
                           <span className="font-medium">
-                            {SCHRITT_LABELS[h.schritt_id]?.label ??
-                              h.schritt_id}
+                            {getSchrittLabel(h.schritt_id,
+                              workflow?.alle_schritte?.reduce((acc, s) => ({ ...acc, [s.id]: s.label }), {} as Record<string, string>)
+                            ).label}
                           </span>
                           {h.aktion_id && (
                             <span className="text-muted-foreground ml-2">

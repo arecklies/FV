@@ -7,6 +7,7 @@ import { createServiceRoleClient } from "@/lib/supabase-server";
 import { getVorgang } from "@/lib/services/verfahren";
 import { executeWorkflowAktion } from "@/lib/services/workflow";
 import { WorkflowAktionSchema } from "@/lib/services/workflow/types";
+import { UuidParamSchema } from "@/lib/services/verfahren/types";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -20,6 +21,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
 
   let body: z.infer<typeof WorkflowAktionSchema>;
   try {

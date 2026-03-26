@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { requireAuth, isAuthContext } from "@/lib/api/auth";
 import { jsonResponse } from "@/lib/api/security-headers";
-import { serverError } from "@/lib/api/errors";
+import { validationError, serverError } from "@/lib/api/errors";
+import { UuidParamSchema } from "@/lib/services/verfahren/types";
 import { createServiceRoleClient } from "@/lib/supabase-server";
 import { getWorkflowHistorie } from "@/lib/services/workflow";
 
@@ -17,6 +18,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
+
   const serviceClient = createServiceRoleClient();
 
   const result = await getWorkflowHistorie(serviceClient, auth.tenantId, id);

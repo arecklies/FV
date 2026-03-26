@@ -42,17 +42,9 @@ import type { VorgangListItem, Verfahrensart } from "@/lib/services/verfahren/ty
  * Responsive: 375px (Cards) / 768px+ (Tabelle).
  */
 
-/** Workflow-Schritt-Labels fuer Badge-Anzeige */
-const SCHRITT_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  eingegangen: { label: "Eingegangen", variant: "secondary" },
-  formelle_pruefung: { label: "Formelle Prüfung", variant: "default" },
-  materielle_pruefung: { label: "Materielle Prüfung", variant: "default" },
-  stellungnahmen: { label: "Stellungnahmen", variant: "outline" },
-  entscheidung: { label: "Entscheidung", variant: "default" },
-  genehmigt: { label: "Genehmigt", variant: "secondary" },
-  abgelehnt: { label: "Abgelehnt", variant: "destructive" },
-  zurueckgestellt: { label: "Zurückgestellt", variant: "outline" },
-};
+import { getSchrittLabel, getAllSchrittLabels } from "@/lib/utils/workflow-labels";
+
+const SCHRITT_LABELS = getAllSchrittLabels();
 
 type Sortierung = "eingangsdatum" | "aktenzeichen" | "workflow_schritt_id";
 type Richtung = "asc" | "desc";

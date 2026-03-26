@@ -55,59 +55,70 @@ export const KommentarSchema = z.object({
   inhalt: z.string().min(1, "Kommentar darf nicht leer sein").max(10000),
 });
 
-// -- TypeScript-Interfaces --
+/** UUID-Validierung fuer [id] Path-Parameter (B-004) */
+export const UuidParamSchema = z.string().uuid("Ungültige ID");
 
-export interface Vorgang {
-  id: string;
-  tenant_id: string;
-  aktenzeichen: string;
-  verfahrensart_id: string;
-  bundesland: string;
-  bauherr_name: string;
-  bauherr_anschrift: string | null;
-  bauherr_telefon: string | null;
-  bauherr_email: string | null;
-  grundstueck_adresse: string | null;
-  grundstueck_flurstueck: string | null;
-  grundstueck_gemarkung: string | null;
-  bezeichnung: string | null;
-  workflow_schritt_id: string;
-  zustaendiger_user_id: string | null;
-  eingangsdatum: string;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-  version: number;
-  extra_felder: Record<string, unknown>;
-}
+// -- Zod-Schemas fuer DB-Ergebnisse (B-003: statt Type Assertions) --
 
-export interface VorgangListItem {
-  id: string;
-  aktenzeichen: string;
-  bauherr_name: string;
-  grundstueck_adresse: string | null;
-  bezeichnung: string | null;
-  workflow_schritt_id: string;
-  zustaendiger_user_id: string | null;
-  eingangsdatum: string;
-  verfahrensart_id: string;
-}
+export const VerfahrensartDbSchema = z.object({
+  id: z.string(),
+  bundesland: z.string(),
+  kuerzel: z.string(),
+  bezeichnung: z.string(),
+  kategorie: z.string(),
+  sortierung: z.number(),
+  rechtsgrundlage: z.string().nullable(),
+});
 
-export interface VorgangKommentar {
-  id: string;
-  vorgang_id: string;
-  autor_user_id: string;
-  inhalt: string;
-  created_at: string;
-}
+export const VorgangDbSchema = z.object({
+  id: z.string(),
+  tenant_id: z.string(),
+  aktenzeichen: z.string(),
+  verfahrensart_id: z.string(),
+  bundesland: z.string(),
+  bauherr_name: z.string(),
+  bauherr_anschrift: z.string().nullable(),
+  bauherr_telefon: z.string().nullable(),
+  bauherr_email: z.string().nullable(),
+  grundstueck_adresse: z.string().nullable(),
+  grundstueck_flurstueck: z.string().nullable(),
+  grundstueck_gemarkung: z.string().nullable(),
+  bezeichnung: z.string().nullable(),
+  workflow_schritt_id: z.string(),
+  zustaendiger_user_id: z.string().nullable(),
+  eingangsdatum: z.string(),
+  created_by: z.string().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  deleted_at: z.string().nullable(),
+  version: z.number(),
+  extra_felder: z.record(z.string(), z.unknown()),
+});
 
-export interface Verfahrensart {
-  id: string;
-  bundesland: string;
-  kuerzel: string;
-  bezeichnung: string;
-  kategorie: string;
-  sortierung: number;
-  rechtsgrundlage: string | null;
-}
+export const VorgangListItemDbSchema = z.object({
+  id: z.string(),
+  aktenzeichen: z.string(),
+  bauherr_name: z.string(),
+  grundstueck_adresse: z.string().nullable(),
+  bezeichnung: z.string().nullable(),
+  workflow_schritt_id: z.string(),
+  zustaendiger_user_id: z.string().nullable(),
+  eingangsdatum: z.string(),
+  verfahrensart_id: z.string(),
+});
+
+export const VorgangKommentarDbSchema = z.object({
+  id: z.string(),
+  vorgang_id: z.string(),
+  autor_user_id: z.string(),
+  inhalt: z.string(),
+  created_at: z.string(),
+});
+
+// -- TypeScript-Interfaces (abgeleitet aus Zod-Schemas) --
+
+export type Vorgang = z.infer<typeof VorgangDbSchema>;
+export type VorgangListItem = z.infer<typeof VorgangListItemDbSchema>;
+export type VorgangKommentar = z.infer<typeof VorgangKommentarDbSchema>;
+export type Verfahrensart = z.infer<typeof VerfahrensartDbSchema>;
+

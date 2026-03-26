@@ -5,7 +5,7 @@ import { jsonResponse } from "@/lib/api/security-headers";
 import { validationError, serverError } from "@/lib/api/errors";
 import { createServiceRoleClient } from "@/lib/supabase-server";
 import { listKommentare, createKommentar } from "@/lib/services/verfahren";
-import { KommentarSchema } from "@/lib/services/verfahren/types";
+import { KommentarSchema, UuidParamSchema } from "@/lib/services/verfahren/types";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -19,6 +19,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
+
   const serviceClient = createServiceRoleClient();
 
   const result = await listKommentare(serviceClient, auth.tenantId, id);
@@ -39,6 +42,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
 
   let body: z.infer<typeof KommentarSchema>;
   try {

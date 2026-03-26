@@ -6,7 +6,7 @@ import { validationError, notFoundError, conflictError, serverError } from "@/li
 import { createServiceRoleClient } from "@/lib/supabase-server";
 import { getVorgang, updateVorgang, softDeleteVorgang } from "@/lib/services/verfahren";
 import { getWorkflowDefinition, getSchritt, getVerfuegbareAktionen } from "@/lib/services/workflow";
-import { UpdateVorgangSchema } from "@/lib/services/verfahren/types";
+import { UpdateVorgangSchema, UuidParamSchema } from "@/lib/services/verfahren/types";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -20,6 +20,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
+
   const serviceClient = createServiceRoleClient();
 
   const result = await getVorgang(serviceClient, auth.tenantId, id);
@@ -60,6 +63,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
 
   let body: z.infer<typeof UpdateVorgangSchema>;
   try {
@@ -105,6 +110,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   if (!isAuthContext(auth)) return auth;
 
   const { id } = await params;
+  const idResult = UuidParamSchema.safeParse(id);
+  if (!idResult.success) return validationError({ id: "Ungültige Vorgang-ID" });
+
   const serviceClient = createServiceRoleClient();
 
   const result = await softDeleteVorgang(serviceClient, auth.tenantId, auth.userId, id);
