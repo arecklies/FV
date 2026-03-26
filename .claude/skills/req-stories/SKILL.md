@@ -27,12 +27,14 @@ Formuliere vollständige User Stories mit messbaren Akzeptanzkriterien.
 3. Leite User Stories ab: `Als [Rolle] möchte ich [Aktion], damit [Nutzen]`
 4. Formuliere messbare Akzeptanzkriterien je Story (inkl. Negativ- und Randfälle)
 5. Identifiziere Trigger für Spezialisten (Security / DB / Migration)
-6. Markiere Unklarheiten als offene Fragen
-7. Aktualisiere `features/INDEX.md` → Status `In Progress`
+6. **Bei verfahrensbezogenen Features:** Workflow-Definition als JSON-Entwurf erstellen (gemaess ADR-011). Schritte, Uebergaenge, Fristen, Checklisten und Freigabe-Rollen aus den LBO-Quelldokumenten unter `Input/Gesetzte/LBOs/` ableiten. Referenz-Schema: `docs/adr/ADR-011-workflow-engine.md`.
+7. Markiere Unklarheiten als offene Fragen
+8. Aktualisiere `features/INDEX.md` → Status `In Progress`
 
 ## Ausgabe
 - User Stories (vollständig)
 - Akzeptanzkriterien je Story
+- **Workflow-Definition (JSON)** -- bei verfahrensbezogenen Features (PROJ-3, PROJ-9, PROJ-12)
 - Spezialisten-Trigger
 - Offene Fragen
 - Aktualisierte `features/INDEX.md`
