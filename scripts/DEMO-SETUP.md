@@ -1,115 +1,139 @@
-# Demo-Umgebung einrichten (Kunden-Vorfuehrung)
+# Demo-Umgebung einrichten (vollstaendig lokal)
 
-Dauer: ca. 30-45 Minuten. Ergebnis: Lokale Demo unter http://localhost:3000
+Kein Internet noetig. Alles laeuft lokal via Docker.
+Dauer: ca. 15-20 Minuten. Ergebnis: Demo unter http://localhost:3000
 
-## 1. Supabase-Projekt anlegen (10 Min)
+## Voraussetzungen
 
-1. https://supabase.com → Neues Projekt erstellen
-2. Region: **Frankfurt (eu-central-1)**
-3. Passwort notieren (wird fuer DB-Zugang benoetigt)
-4. Warten bis Projekt bereit ist (~2 Min)
+- Docker Desktop laeuft
+- Node.js installiert
+- Supabase CLI installiert (`npx supabase --version` → 2.x)
 
-## 2. .env.local konfigurieren (2 Min)
+## 1. Supabase lokal starten (5 Min)
+
+```bash
+npx supabase start
+```
+
+Beim ersten Mal werden Docker-Images geladen (~2-3 Min).
+Am Ende zeigt die CLI die lokalen URLs und Keys:
+
+```
+API URL:      http://127.0.0.1:54321
+GraphQL URL:  http://127.0.0.1:54321/graphql/v1
+S3 Storage:   http://127.0.0.1:54321/storage/v1/s3
+DB URL:       postgresql://postgres:postgres@127.0.0.1:54322/postgres
+Studio URL:   http://127.0.0.1:54323
+Inbucket URL: http://127.0.0.1:54324
+anon key:     eyJ...  ← kopieren
+service_role: eyJ...  ← kopieren
+```
+
+## 2. .env.local konfigurieren (1 Min)
 
 ```bash
 cp .env.local.example .env.local
 ```
 
-Werte aus Supabase Dashboard (Settings → API):
+Werte aus der `supabase start`-Ausgabe eintragen:
+
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://<projekt-ref>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key von oben>
+SUPABASE_SERVICE_ROLE_KEY=<service_role key von oben>
 CRON_SECRET=demo-cron-secret-2026
 ```
 
-## 3. Datenbank-Migrationen ausfuehren (5 Min)
+## 3. Datenbank + Demo-Daten laden (2 Min)
 
-Option A — Supabase CLI:
 ```bash
-npx supabase link --project-ref <projekt-ref>
-npx supabase db push
+npx supabase db reset
 ```
 
-Option B — Manuell im SQL Editor:
-1. Supabase Dashboard → SQL Editor
-2. Migrationen in dieser Reihenfolge ausfuehren:
-   - `supabase/migrations/20260326100000_proj2_mandanten_schema_rls.sql`
-   - `supabase/migrations/20260326120000_proj3_vorgangsverwaltung.sql`
-   - `supabase/migrations/20260326140000_proj4_fristmanagement.sql`
+Das fuehrt automatisch aus:
+1. Alle 3 Migrationen (Schema, Vorgangsverwaltung, Fristmanagement)
+2. `supabase/seed.sql` (Demo-Daten: Benutzer, Vorgaenge, Fristen)
 
-## 4. Demo-Benutzer anlegen (3 Min)
-
-Supabase Dashboard → Authentication → Users → **Add User** (Email):
-
-| E-Mail | Passwort | Rolle |
-|---|---|---|
-| `demo-sb@bauaufsicht.example` | `Demo2026!sb` | Sachbearbeiter |
-| `demo-rl@bauaufsicht.example` | `Demo2026!rl` | Referatsleiter |
-
-**UUIDs notieren!** (werden in der ID-Spalte angezeigt)
-
-## 5. Demo-Daten einspielen (5 Min)
-
-1. `scripts/demo-seed.sql` oeffnen
-2. Die zwei Platzhalter-UUIDs ersetzen:
-   - `00000000-0000-0000-0000-000000000001` → UUID des Sachbearbeiters
-   - `00000000-0000-0000-0000-000000000002` → UUID des Referatsleiters
-3. Im Supabase SQL Editor ausfuehren
-
-## 6. App starten (1 Min)
+## 4. App starten (1 Min)
 
 ```bash
 npm install   # falls noch nicht geschehen
 npm run dev
 ```
 
-Oeffnen: http://localhost:3000
+Oeffnen: **http://localhost:3000**
 
-## 7. Demo-Drehbuch
+## 5. Demo-Zugaenge
 
-### Login
-- URL: http://localhost:3000/login
-- Email: `demo-sb@bauaufsicht.example` / Passwort: `Demo2026!sb`
+| Rolle | E-Mail | Passwort |
+|---|---|---|
+| Sachbearbeiter | `demo-sb@bauaufsicht.example` | `Demo2026!sb` |
+| Referatsleiter | `demo-rl@bauaufsicht.example` | `Demo2026!rl` |
 
-### Vorgangsliste zeigen
+## 6. Demo-Drehbuch
+
+### Login (1 Min)
+- http://localhost:3000/login
+- Als Sachbearbeiter einloggen
+
+### Vorgangsliste mit Frist-Ampel (3 Min)
 - 8 Vorgaenge in verschiedenen Stadien
-- **Frist-Ampel** neben jedem Vorgang (gruen/gelb/rot/dunkelrot/gehemmt)
-- Sortierung nach "Frist" klicken → dringendste oben
+- **Frist-Ampel** in jeder Zeile (gruen/gelb/rot/dunkelrot/gehemmt)
+- "Frist"-Spalte klicken → Sortierung nach Dringlichkeit
+- BG-0005 (dunkelrot) erscheint oben
 
-### Vorgang-Detail oeffnen (BG-0004, rot)
-- Kopfbereich: Workflow-Badge + Ampel-Badge
-- **Fristen-Tab**: Gesamtfrist mit roter Ampel, Enddatum sichtbar
+### Vorgang-Detail: BG-0004 (rot, kritisch) (3 Min)
+- Klick auf BG-0004 → Detail-Ansicht
+- Kopfbereich: Workflow-Badge "Fachliche Prüfung" + rote Ampel
+- **Fristen-Tab** oeffnen → Gesamtfrist mit roter Ampel
 
-### Frist verlaengern (BG-0004)
+### Frist verlaengern (2 Min)
 - "Verlängern" klicken
-- 10 Werktage, Begründung: "Nachforderung Statik"
-- Ampel springt auf gelb/gruen
+- 10 Werktage eingeben
+- Begründung: "Nachforderung Statik gemäß § 69 BauO NRW"
+- → Ampel springt auf gelb/gruen
 
-### Frist hemmen (BG-0001)
-- Vorgang BG-0001 oeffnen → Fristen-Tab
+### Frist hemmen (2 Min)
+- BG-0001 oeffnen → Fristen-Tab
 - "Hemmen" klicken
-- Grund: "Unvollständige Unterlagen"
-- Ampel zeigt "Gehemmt"
+- Grund: "Unvollständige Unterlagen, Nachforderung am 20.03.2026"
+- → Ampel zeigt "Gehemmt" (Pause-Symbol)
+- "Hemmung aufheben" → Frist wird automatisch verlaengert
 
-### Hemmung aufheben
-- "Hemmung aufheben" klicken
-- Frist wird automatisch verlaengert
-
-### Workflow-Aktion (BG-0002)
-- Vorgang BG-0002 → Workflow-Tab
+### Workflow-Aktion mit Auto-Frist (3 Min)
+- BG-0002 oeffnen → Workflow-Tab
+- Schritt: "Vollständigkeitsprüfung"
 - "Vollständig" klicken → Schritt wechselt zu "Beteiligung"
-- Fristen-Tab: Neue Beteiligungsfrist automatisch angelegt (PROJ-19!)
+- **Fristen-Tab**: Neue Beteiligungsfrist automatisch angelegt!
+- "Das merkt sich das System für Sie — 20 Werktage gemäß § 72 BauO NRW"
 
-### Als Referatsleiter einloggen
-- Logout → Login als demo-rl@bauaufsicht.example
-- Vorgang BG-0006 → Freizeichnung: Nur Referatsleiter kann freigeben
+### Vier-Augen-Freigabe (2 Min)
+- Ausloggen → als Referatsleiter einloggen
+- BG-0006 oeffnen → Workflow-Tab
+- "Freizeichnen" oder "Zur Überarbeitung" — nur Referatsleiter sieht das
+
+### Gehemmte Frist zeigen (1 Min)
+- BG-0006 → Fristen-Tab
+- Gehemmte Frist mit Grund "Standsicherheitsnachweis fehlt"
+
+## 7. Lokalen Stack beenden
+
+```bash
+npx supabase stop
+```
+
+## 8. Zuruecksetzen (bei Problemen)
+
+```bash
+npx supabase db reset    # Datenbank komplett neu + Seed
+```
 
 ## Troubleshooting
 
 | Problem | Loesung |
 |---|---|
-| Login schlaegt fehl | Email-Confirmation in Supabase deaktivieren: Auth → Settings → "Confirm email" aus |
-| Keine Vorgaenge sichtbar | Seed-Script pruefen: UUIDs der Benutzer korrekt? |
-| Fristen fehlen | Migration 20260326140000 ausgefuehrt? |
-| 500-Fehler bei API | .env.local pruefen: SUPABASE_SERVICE_ROLE_KEY korrekt? |
+| `supabase start` haengt | Docker Desktop pruefen, ggf. neu starten |
+| Login schlaegt fehl | `npx supabase db reset` — Seed neu laden |
+| Keine Vorgaenge | Seed pruefen: `npx supabase db reset` |
+| Port belegt (54321) | Anderen Port in `supabase/config.toml` setzen |
+| Studio oeffnen | http://127.0.0.1:54323 (lokales Supabase Dashboard) |
