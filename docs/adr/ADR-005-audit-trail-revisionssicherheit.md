@@ -1,7 +1,7 @@
 # ADR-005: Audit-Trail und Revisionssicherheit
 
 ## Status
-Proposed
+Accepted (Review 2026-03-26: Stufenmodell bestaetigt durch STRIDE T-3, Security-Kick-off. Stufe 2 vor Pilotbetrieb Pflicht.)
 
 ## Kontext
 

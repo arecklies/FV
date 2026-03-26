@@ -1,7 +1,7 @@
 # ADR-006: Rechtskonfiguration als Daten
 
 ## Status
-Proposed
+Accepted (Review 2026-03-26: Hybridmodell bestaetigt durch Experten-Interview Plattform-Architekt. Umfrage bestaetigt: Gebuehren Phase 3, Verfahrensarten Phase 1.)
 
 ## Kontext
 

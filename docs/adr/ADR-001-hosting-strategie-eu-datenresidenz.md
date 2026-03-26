@@ -1,7 +1,7 @@
 # ADR-001: Hosting-Strategie und EU-Datenresidenz
 
 ## Status
-Proposed
+Accepted (Review 2026-03-26: Konsistent mit PRD, STRIDE-Modell, Kick-off-Protokoll. Phasenmodell bestaetigt.)
 
 ## Kontext
 

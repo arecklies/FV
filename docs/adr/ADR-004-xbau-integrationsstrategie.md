@@ -1,7 +1,7 @@
 # ADR-004: XBau-Integrationsstrategie
 
 ## Status
-Proposed
+Accepted (Review 2026-03-26: Konsistent mit backend.md XBau-Regeln, XSD-Quelldateien, Experten-Interview Plattform-Architekt.)
 
 ## Kontext
 

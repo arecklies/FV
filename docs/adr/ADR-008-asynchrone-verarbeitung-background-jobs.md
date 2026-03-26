@@ -1,6 +1,6 @@
 # ADR-008: Asynchrone Verarbeitung und Background Jobs
 
-**Status:** Proposed
+**Status:** Accepted (Review 2026-03-26: Dreistufiges Modell bestaetigt. Lokale Worker fuer MVP, pg_cron + Edge Functions fuer Pilot.)
 **Datum:** 2026-03-25
 **Autor:** Senior Software Architect
 
