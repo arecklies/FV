@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthLayoutWrapper } from "@/components/auth/auth-layout-wrapper";
 
 export const metadata: Metadata = {
-  title: "AI Coding Starter Kit",
-  description: "Built with AI Agent Team System",
+  title: "Fachverfahren",
+  description: "Digitale Baugenehmigung - Fachverfahren",
 };
 
 export default function RootLayout({
@@ -12,9 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body className="antialiased">
-        {children}
+        <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
       </body>
     </html>
   );
