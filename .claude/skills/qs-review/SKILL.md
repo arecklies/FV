@@ -37,6 +37,9 @@ Verifiziere eine fertiggestellte Implementierung.
    - Reine Logik in Page-/Komponenten-Dateien statt in eigenen Modulen?
    - Typ-Duplikate (gleicher Interface-Name in mehreren Dateien)?
    - Nicht-exportierte Hilfsfunktionen, die testbar sein sollten?
+   - **Type Assertions auf DB-Ergebnisse:** `grep -rn "as [A-Z]" <service-dateien>` — muessen durch Zod `.parse()` ersetzt sein (backend.md Type Safety)
+   - **Path-Parameter [id]:** UUID-Validierung mit `UuidParamSchema.safeParse()` in allen [id]-Routes?
+   - **Error-Leakage:** `grep -rn "result.error\|error.message" <route-dateien>` — DB-Fehler duerfen nicht an Client gehen
 10. Zeichensatz-Verifikation (bei Dateien mit deutschen Texten):
     - `grep -rn` auf geänderte Dateien: keine ASCII-Ersetzungen (ae/oe/ue) in nutzersichtbaren Strings
     - UTF-8-Umlaute (ä, ö, ü, ß) müssen verwendet werden

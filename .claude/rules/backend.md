@@ -53,7 +53,18 @@
 
 ## Type Safety
 - `as unknown as X` Doppel-Casts sind verboten — wenn ein Cast nötig ist, fehlt ein Typ oder die Query ist falsch typisiert
-- Supabase-Query-Ergebnisse über typisierte `.select()` oder ein Zod-Schema parsen statt casten
+- Supabase-Query-Ergebnisse ueber Zod-Schema parsen statt casten:
+  ```typescript
+  // FALSCH: Type Assertion (B-003 aus PROJ-3 Retro)
+  return { data: data as Vorgang };
+
+  // RICHTIG: Zod-Schema parsen
+  return { data: VorgangDbSchema.parse(data) };
+
+  // RICHTIG: Listen parsen
+  const parsed = (data ?? []).map((d: unknown) => VorgangListItemDbSchema.parse(d));
+  ```
+- Alle `[id]`-Path-Parameter in API-Routes mit `UuidParamSchema.safeParse(id)` validieren (B-004)
 - `any` ist verboten in Produktivcode (erlaubt in Test-Mocks)
 - Bei unvermeidbaren Casts: Kommentar mit Begründung und TODO für Typisierung
 

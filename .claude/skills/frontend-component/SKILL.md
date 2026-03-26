@@ -30,24 +30,24 @@ Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren
 3. Fehlende shadcn-Komponenten installieren: `npx shadcn@latest add <n> --yes` → Nutzer informieren
 4. **Fachliche Konstanten VOR Komponenten anlegen (Retro A-6):** Label-Mappings, Status-Definitionen, Konfigurationswerte in `src/lib/utils/` extrahieren BEVOR Komponenten erstellt werden. Keine hardcoded Maps in Komponenten-Dateien.
 5. Implementiere Komponenten (TSX, Tailwind CSS ausschließlich, TypeScript-Interfaces für alle Props)
-5. Alle States implementieren: Default / Hover / Active / Disabled / Loading / Error / Empty
-6. Responsivität sicherstellen: 375px / 768px / 1440px
-7. ARIA-Labels und Accessibility-Attribute hinzufügen (BITV 2.0 / EN 301 549)
-8. Akzeptanzkriterien-Check: Jedes AC aus der Feature-Spec einzeln prüfen. Für jedes AC dokumentieren, welche Komponente/Stelle es erfüllt. Fehlende ACs sofort implementieren.
-9. Testcode schreiben gemäß `.claude/rules/testing.md`:
-   - Für reine Logik-Module (Engine, Regelwerk): Unit-Tests mit Jest schreiben
-   - Für UI-Komponenten: Mindestens Smoke-Tests (rendert ohne Fehler)
-   - Testinfrastruktur prüfen: `ls jest.config*` – falls nicht vorhanden, Jest einrichten
-   - Testabdeckung ≥ 80 % für neue Dateien sicherstellen (Qualitätsgate)
-10. Hole Nutzer-Freigabe bei Auth-Flow-Änderungen ein (Human-in-the-Loop)
-11. Vor dem Commit: Tote Imports prüfen. Jede importierte Komponente/Funktion muss im Code verwendet werden. Ungenutzte Imports entfernen.
-12. Zeichensatz-Prüfung (Pflicht bei deutschen Texten):
-   - Alle nutzersichtbaren Strings auf ASCII-Ersetzungen prüfen: ae→ä, oe→ö, ue→ü, ss→ß
-   - Grep-Prüfung: `grep -rn "oe\|ue\|ae" <neue-dateien>` und Treffer gegen Kontext prüfen
-   - Ausnahmen: Variable-Namen, Anker-IDs, URL-Slugs, CSS-Klassen — dort bleibt ASCII
-   - Regel: `.claude/rules/frontend.md` Abschnitt "Zeichensatz in Quellcode"
-13. Build-Verifikation: `npm run build` ausführen. Alle Fehler vor dem Commit beheben.
-14. Commit-Format: `feat(PROJ-X): <beschreibung>`
+6. Alle States implementieren: Default / Hover / Active / Disabled / Loading / Error / Empty
+7. Responsivität sicherstellen: 375px / 768px / 1440px
+8. ARIA-Labels und Accessibility-Attribute hinzufügen (BITV 2.0 / EN 301 549)
+9. Akzeptanzkriterien-Check: Jedes AC aus der Feature-Spec einzeln prüfen. Für jedes AC dokumentieren, welche Komponente/Stelle es erfüllt. Fehlende ACs sofort implementieren.
+10. Testcode schreiben gemäß `.claude/rules/testing.md`:
+    - Für reine Logik-Module (Engine, Regelwerk): Unit-Tests mit Jest schreiben
+    - Für UI-Komponenten: Mindestens Smoke-Tests (rendert ohne Fehler)
+    - Testinfrastruktur prüfen: `ls jest.config*` – falls nicht vorhanden, Jest einrichten
+    - Testabdeckung ≥ 80 % für neue Dateien sicherstellen (Qualitätsgate)
+11. Hole Nutzer-Freigabe bei Auth-Flow-Änderungen ein (Human-in-the-Loop)
+12. Vor dem Commit: Tote Imports prüfen. Jede importierte Komponente/Funktion muss im Code verwendet werden. Ungenutzte Imports entfernen.
+13. Zeichensatz-Prüfung (Pflicht bei deutschen Texten):
+    - Alle nutzersichtbaren Strings auf ASCII-Ersetzungen prüfen: ae→ä, oe→ö, ue→ü, ss→ß
+    - Grep-Prüfung: `grep -rn "oe\|ue\|ae" <neue-dateien>` und Treffer gegen Kontext prüfen
+    - Ausnahmen: Variable-Namen, Anker-IDs, URL-Slugs, CSS-Klassen — dort bleibt ASCII
+    - Regel: `.claude/rules/frontend.md` Abschnitt "Zeichensatz in Quellcode"
+14. Build-Verifikation: `npm run build` ausführen. Alle Fehler vor dem Commit beheben.
+15. Commit-Format: `feat(PROJ-X): <beschreibung>`
 
 ## Ausgabe
 - Implementierte Komponenten (Code)

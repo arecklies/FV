@@ -32,7 +32,10 @@ Entwirf und implementiere API-Endpunkte für ein Feature.
    - Nur kontrollierte, selbst formulierte Meldungen an Client — Supabase/DB-Fehler IMMER ueber `serverError()` leiten
    - Referenz: `.claude/rules/security.md` Abschnitt "Error-Leakage-Verbot"
 10. Hole Nutzer-Freigabe bei RLS- oder Auth-Änderungen ein (Human-in-the-Loop)
-11. Commit-Format: `feat(PROJ-X): <beschreibung>`
+11. Zeichensatz-Prüfung (bei deutschen Texten in geänderten Dateien):
+    - `grep -rn` auf ASCII-Ersetzungen (ae/oe/ue statt ä/ö/ü) prüfen
+    - UTF-8-Umlaute (ä, ö, ü, ß) verwenden, KEINE ASCII-Ersetzungen
+12. Commit-Format: `feat(PROJ-X): <beschreibung>`
 
 ## Ausgabe
 - Endpunkte (Route, Methode, Schema)
