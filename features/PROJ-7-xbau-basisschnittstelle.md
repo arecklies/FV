@@ -1,6 +1,7 @@
 # PROJ-7: XBau-Basisschnittstelle
 
 **Status:** Planned | **Phase:** 1 (Kern-MVP) | **Erstellt:** 2026-03-25
+**Letzte Verfeinerung:** 2026-03-26 (req-refine: MVP-Scope auf alle 8 Statistik-Nachrichten gesetzt, offene Frage 2 geklaert)
 
 ---
 
@@ -19,7 +20,7 @@ XBau-Schnittstelle ist K.O.-Kriterium Nr. 3. Das System muss XBau 2.6 Nachrichte
 
 - FA-1: XBau-Import: Nachricht `baugenehmigung.antrag.0200` parsen und Vorgang anlegen
 - FA-2: XBau-Import: Nachricht `statistik.datenBauvorhaben.0420` parsen
-- FA-3: XBau-Export: Statistik-Nachrichten generieren (0421-0427)
+- FA-3: XBau-Export: Alle 8 Statistik-Nachrichten generieren (0420-0427: Daten Bauvorhaben, Baugenehmigung, Abbruchgenehmigung, Bautaetigkeitsstatistik Hochbau, Bautaetigkeitsstatistik Tiefbau, Baufertigstellung, Bauueberhang, Wohnungsbestand)
 - FA-4: Typisierte XML-Generierung mit xmlbuilder2 (keine String-Konkatenation)
 - FA-5: Namespace-Handling: xbau (qualified) vs. Kernmodul (unqualified)
 - FA-6: Codelisten-Mapping: DB-Codes <-> XBau-Codes (separate Mapping-Tabelle)
@@ -35,12 +36,13 @@ Als Sachbearbeiter moechte ich einen XBau-Bauantrag (0200) importieren und als V
 - AC-3: Vorgang wird mit extrahierten Daten angelegt
 - AC-4: Fehlerhafte XML zeigt klare Fehlermeldung
 
-### US-2: Statistik-Nachricht generieren
-Als System moechte ich bei Baugenehmigung eine XBau-Statistiknachricht (0421) erzeugen.
-- AC-1: Nachricht enthaelt alle Pflichtfelder laut XSD
+### US-2: Statistik-Nachrichten generieren
+Als System moechte ich alle 8 XBau-Statistiknachrichten (0420-0427) erzeugen koennen.
+- AC-1: Jede Nachricht enthaelt alle Pflichtfelder laut XSD
 - AC-2: Codelisten-Attribute (listURI, listVersionID) exakt aus XSD
-- AC-3: Nachricht ist XSD-valide
+- AC-3: Alle Nachrichten sind XSD-valide
 - AC-4: Namespace-Qualifizierung korrekt (xbau: fuer Fachmodule, kein Prefix fuer Kernmodul)
+- AC-5: Jeder Nachrichtentyp hat mindestens einen Unit-Test gegen Referenz-XML
 
 ### US-3: XBau-Validierung
 Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
@@ -56,20 +58,21 @@ Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
 ## 6. Spezialisten-Trigger
 
 - **Backend Developer:** XBauService, XML-Builder, Codelisten-Mapping
-- **QS Engineer:** Validierungstests, Referenz-XML-Vergleich
+- **QS Engineer:** Validierungstests, Referenz-XML-Vergleich fuer alle 8 Nachrichtentypen
 - **Database Architect:** Codelisten-Tabellen, Mapping DB <-> XBau
 
 ## 7. Offene Fragen
 
 1. Schematron-Validierung: Saxon-JS oder externer Java-Service?
-2. Welche Statistik-Nachrichtentypen im MVP (alle 8 oder Auswahl)?
-3. XBau-Version pro Tenant konfigurierbar ab wann?
+2. ~~Welche Statistik-Nachrichtentypen im MVP?~~ **Geklaert:** Alle 8 Typen (0420-0427) im MVP. Vollstaendige OZG-Konformitaet ist K.O.-Kriterium.
+3. XBau-Version pro Tenant konfigurierbar ab wann? (MVP: nur XBau 2.6)
 
 ## 8. Annahmen
 
 - MVP: XBau 2.6 only (keine parallelen Versionen)
-- Transport: Manueller Upload/Download (FIT-Connect in Phase 2)
+- Transport: Manueller Upload/Download (FIT-Connect in Phase 2, PROJ-11)
 - Schematron-Validierung als Nice-to-Have im MVP, Pflicht ab Phase 2
+- Alle 8 Statistik-Nachrichtentypen im MVP-Scope
 
 ## 9. Abhaengigkeiten
 
@@ -87,3 +90,4 @@ Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
 | Namespace-Fehler in generiertem XML | Mittel | Serviceportal lehnt ab | Referenz-XML-Vergleich, XSD-Validierung als Gate |
 | Codelisten-Divergenz DB vs. XBau | Mittel | Invalides XML | Automatisierter Abgleich XSD <-> Mapping |
 | XBau 2.7 erscheint waehrend Entwicklung | Niedrig | Nacharbeit | Versionierte Module (ADR-004) |
+| 8 Nachrichtentypen erhoehen Implementierungsaufwand | Mittel | Verzoegerung | Gemeinsamer XML-Builder, Nachrichtentypen teilen Kernmodul-Struktur |

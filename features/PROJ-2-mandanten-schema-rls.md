@@ -1,6 +1,7 @@
 # PROJ-2: Mandanten-Schema und RLS-Grundstruktur
 
 **Status:** Planned | **Phase:** 0 (Fundament) | **Erstellt:** 2026-03-25
+**Letzte Verfeinerung:** 2026-03-26 (req-refine: offene Fragen 1+3 geklaert, fehlende ACs ergaenzt)
 
 ---
 
@@ -34,9 +35,16 @@ Als Sachbearbeiter der Kommune A darf ich keine Daten der Kommune B sehen.
 - AC-4: Automatisierte Tests fuer alle 4 RLS-Operationen
 
 ### US-2: Tenant-Konfiguration
-Als Admin moechte ich Tenant-Einstellungen (Bundesland, Name) konfigurieren.
+Als Tenant-Admin moechte ich Tenant-Einstellungen (Bundesland, Name) konfigurieren.
 - AC-1: `settings` JSONB-Spalte fuer mandantenspezifische Konfiguration
 - AC-2: Bundesland-Zuordnung bestimmt Regelwerk-Konfiguration
+- AC-3: Bundesland-Wert muss ein gueltiges BL-Kuerzel sein (Validierung gegen erlaubte Werte)
+
+### US-3: Benutzer ohne Tenant-Zuordnung
+Als System moechte ich bei Login eines Benutzers ohne Tenant-Zuordnung eine klare Fehlermeldung anzeigen.
+- AC-1: Login schlaegt fehl mit Meldung "Kein Mandant zugeordnet. Bitte wenden Sie sich an Ihren Administrator."
+- AC-2: Kein Zugriff auf geschuetzte Seiten moeglich
+- AC-3: Fehlgeschlagener Login wird im Audit-Log protokolliert
 
 ## 5. Nicht-funktionale Anforderungen
 
@@ -53,15 +61,16 @@ Als Admin moechte ich Tenant-Einstellungen (Bundesland, Name) konfigurieren.
 
 ## 7. Offene Fragen
 
-1. Soll `tenant_members` mehrere Rollen pro User/Tenant erlauben?
+1. ~~Soll `tenant_members` mehrere Rollen pro User/Tenant erlauben?~~ **Geklaert:** Nein. ADR-002: Enum auf `tenant_members.role`, 1 Rolle pro User/Tenant. Erweiterung auf Array spaeter moeglich.
 2. Wie wird der Tenant-Kontext bei SSO automatisch gesetzt (Claim Mapping)?
-3. Brauchen wir eine `tenant_settings`-Tabelle oder reicht JSONB auf `tenants`?
+3. ~~Brauchen wir eine `tenant_settings`-Tabelle oder reicht JSONB auf `tenants`?~~ **Geklaert:** JSONB auf `tenants.settings` reicht fuer MVP. Separate Tabelle evaluieren wenn Settings-Struktur zu komplex wird.
 
 ## 8. Annahmen
 
-- Phase 1 gemaess ADR-007: Service-Only-Tabellen existieren bereits
+- Phase 1 gemaess ADR-007: Service-Only-Tabellen existieren bereits (Migration vorhanden)
 - Ein Benutzer gehoert initial zu genau einem Tenant
 - Tenant-Provisionierung erfolgt manuell (Script), kein Self-Service
+- `tenant_members.role` ist ein Enum mit genau 5 Werten (ADR-002)
 
 ## 9. Abhaengigkeiten
 
@@ -69,6 +78,7 @@ Als Admin moechte ich Tenant-Einstellungen (Bundesland, Name) konfigurieren.
 |---|---|
 | PROJ-1 (Auth) | Parallel, JWT Custom Claims |
 | ADR-007 (Multi-Tenancy) | Architekturentscheidung |
+| ADR-002 (RBAC, Rollenmodell) | Architekturentscheidung |
 | Supabase-Projekt eingerichtet | Voraussetzung |
 
 ## 10. Fachliche Risiken
