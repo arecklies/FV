@@ -93,12 +93,12 @@ CREATE TABLE config_feiertage (
   -- Jahr fuer einfache Abfragen und jaehrliche Aktualisierung
   jahr int NOT NULL,
 
-  created_at timestamptz NOT NULL DEFAULT now(),
-
-  -- UNIQUE mit COALESCE: NULL-Bundesland wird als '__BUND__' behandelt
-  -- Damit gilt: pro (Bundesland ODER bundesweit) + Datum genau ein Eintrag
-  UNIQUE(COALESCE(bundesland, '__BUND__'), datum)
+  created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- UNIQUE mit COALESCE: NULL-Bundesland wird als '__BUND__' behandelt
+-- Damit gilt: pro (Bundesland ODER bundesweit) + Datum genau ein Eintrag
+CREATE UNIQUE INDEX idx_config_feiertage_unique ON config_feiertage(COALESCE(bundesland, '__BUND__'), datum);
 
 COMMENT ON TABLE config_feiertage IS 'Service-Only: Feiertage je Bundesland und bundesweit. Fuer Werktage-Berechnung (PROJ-4 FA-3).';
 COMMENT ON COLUMN config_feiertage.bundesland IS 'NULL = bundesweiter Feiertag. BL-Kuerzel (z.B. NW, BY) = landesspezifischer Feiertag.';
