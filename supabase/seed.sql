@@ -11,7 +11,7 @@
 -- ==============================
 
 -- Sachbearbeiter
-INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, recovery_token)
+INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, recovery_token, email_change, phone_change, is_sso_user, is_anonymous)
 VALUES (
   'a1111111-1111-1111-1111-111111111111',
   '00000000-0000-0000-0000-000000000000',
@@ -22,7 +22,7 @@ VALUES (
   now(),
   '{"provider": "email", "providers": ["email"]}',
   '{"name": "Petra Schmidt"}',
-  now(), now(), '', ''
+  now(), now(), '', '', '', '', false, false
 );
 
 INSERT INTO auth.identities (id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at)
@@ -36,7 +36,7 @@ VALUES (
 );
 
 -- Referatsleiter
-INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, recovery_token)
+INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, recovery_token, email_change, phone_change, is_sso_user, is_anonymous)
 VALUES (
   'a2222222-2222-2222-2222-222222222222',
   '00000000-0000-0000-0000-000000000000',
@@ -47,7 +47,7 @@ VALUES (
   now(),
   '{"provider": "email", "providers": ["email"]}',
   '{"name": "Martin Steinhoff"}',
-  now(), now(), '', ''
+  now(), now(), '', '', '', '', false, false
 );
 
 INSERT INTO auth.identities (id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at)
