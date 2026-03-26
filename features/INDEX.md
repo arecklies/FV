@@ -21,7 +21,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| PROJ-3 | Vorgangsverwaltung | Planned | [PROJ-3](PROJ-3-vorgangsverwaltung.md) | 2026-03-25 |
+| PROJ-3 | Vorgangsverwaltung | Deployed | [PROJ-3](PROJ-3-vorgangsverwaltung.md) | 2026-03-25 |
 | PROJ-4 | Fristmanagement | Planned | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
