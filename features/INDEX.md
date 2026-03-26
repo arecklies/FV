@@ -43,11 +43,14 @@
 | PROJ-25 | API-Route-Test-Template und Komponenten-Tests | Planned | [PROJ-25](PROJ-25-test-templates-komponententests.md) | 2026-03-26 |
 | PROJ-26 | Dialog-State-Reset | Planned | [PROJ-26](PROJ-26-dialog-state-reset.md) | 2026-03-26 |
 | PROJ-27 | Route-Handler-Utilities | Planned | [PROJ-27](PROJ-27-route-handler-utilities.md) | 2026-03-26 |
+| PROJ-28 | Nicht-gesetzliche Fristen (intern) | Planned | [PROJ-28](PROJ-28-nicht-gesetzliche-fristen.md) | 2026-03-26 |
+| PROJ-29 | Persoenliche Tagesansicht | Planned | [PROJ-29](PROJ-29-persoenliche-tagesansicht.md) | 2026-03-26 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
 > PROJ-19/20/21 aus PROJ-4 QS-Review extrahiert (offene ACs als separate Items)
 > PROJ-22-27 aus PROJ-4 Retro extrahiert (technische Schulden + Prozessverbesserungen)
+> PROJ-28/29 aus Kundentermin 26.03.2026 (Feedback F-05: interne Fristen, F-08: Tagesansicht)
 
 ### Phase 2 - Compliance und Integration
 
@@ -78,4 +81,4 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-28
+## Next Available ID: PROJ-30
