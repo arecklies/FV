@@ -14,7 +14,7 @@
 
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
-| PROJ-1 | Auth und Benutzerverwaltung | In Review | [PROJ-1](PROJ-1-auth-benutzerverwaltung.md) | 2026-03-25 |
+| PROJ-1 | Auth und Benutzerverwaltung | Deployed | [PROJ-1](PROJ-1-auth-benutzerverwaltung.md) | 2026-03-25 |
 | PROJ-2 | Mandanten-Schema und RLS | Planned | [PROJ-2](PROJ-2-mandanten-schema-rls.md) | 2026-03-25 |
 
 ### Phase 1 - Kern-MVP
