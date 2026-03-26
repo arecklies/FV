@@ -22,13 +22,17 @@
       "Bash(node -e \":*)",
       "Read(//c/Users/a.recklies/**)",
       "Bash(node --input-type=module -e \":*)",
-      "Bash(node -e \"const p = require\\(''''pdf-parse''''\\); console.log\\(''''pdf-parse:'''', typeof p\\);\")"
+      "Bash(node -e \"const p = require\\(''''pdf-parse''''\\); console.log\\(''''pdf-parse:'''', typeof p\\);\")",
+      "Edit(/.claude/skills/req-stories/**)"
     ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(./secrets/**)",
       "Read(./config/credentials.json)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\a.recklies\\Visual Studio Code\\FV\\.claude\\skills\\req-stories"
     ]
   }
 }
