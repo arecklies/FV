@@ -1,8 +1,46 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 import { writeAuditLog } from "@/lib/services/audit";
 import { generateAktenzeichen } from "./aktenzeichen";
 import type { Vorgang, VorgangListItem, VorgangKommentar, Verfahrensart } from "./types";
 import { VerfahrensartDbSchema, VorgangDbSchema, VorgangListItemDbSchema, VorgangKommentarDbSchema } from "./types";
+
+/** Zod-Schema fuer Frist-Batch-Query (B-20-03: statt Type Assertion) */
+const FristStatusRowSchema = z.object({
+  vorgang_id: z.string(),
+  status: z.string(),
+});
+
+/** PROJ-20: Laedt dringendsten Frist-Status je Vorgang per Batch-Query */
+async function ladeFristStatusBatch(
+  serviceClient: SupabaseClient,
+  tenantId: string,
+  vorgangIds: string[]
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  if (vorgangIds.length === 0) return result;
+
+  const { data } = await serviceClient
+    .from("vorgang_fristen")
+    .select("vorgang_id, status")
+    .eq("tenant_id", tenantId)
+    .eq("aktiv", true)
+    .in("vorgang_id", vorgangIds)
+    .limit(2000);
+
+  if (!data) return result;
+
+  const AMPEL_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
+  for (const row of data) {
+    const parsed = FristStatusRowSchema.parse(row);
+    const existing = result.get(parsed.vorgang_id);
+    if (!existing || (AMPEL_PRIO[parsed.status] ?? 5) < (AMPEL_PRIO[existing] ?? 5)) {
+      result.set(parsed.vorgang_id, parsed.status);
+    }
+  }
+
+  return result;
+}
 
 /**
  * VerfahrenService (ADR-003, ADR-012, PROJ-3)
@@ -217,60 +255,55 @@ export async function listVorgaenge(
     );
   }
 
-  // Sortierung (PROJ-20: frist_status wird client-seitig nach Batch-Load sortiert)
-  const sortCol = params.sortierung === "frist_status" ? "eingangsdatum" : (params.sortierung ?? "eingangsdatum");
   const ascending = params.richtung === "asc";
-  query = query.order(sortCol, { ascending });
+  const isFristSort = params.sortierung === "frist_status";
 
-  // Paginierung (.limit() Pflicht, backend.md)
-  query = query.range(offset, offset + proSeite - 1);
+  if (!isFristSort) {
+    // Standard-Sortierung: DB-seitig + Paginierung
+    const sortCol = params.sortierung ?? "eingangsdatum";
+    query = query.order(sortCol, { ascending });
+    query = query.range(offset, offset + proSeite - 1);
 
-  const { data, count, error } = await query;
+    const { data, count, error } = await query;
+    if (error) return { data: [], total: 0, error: error.message };
 
-  if (error) return { data: [], total: 0, error: error.message };
+    const vorgangIds = (data ?? []).map((d: Record<string, unknown>) => d.id as string);
+    const fristStatusMap = await ladeFristStatusBatch(serviceClient, params.tenantId, vorgangIds);
 
-  // PROJ-20: Frist-Status per Batch-Query nachladen (kein N+1)
-  const vorgangIds = (data ?? []).map((d: Record<string, unknown>) => d.id as string);
-  let fristStatusMap = new Map<string, string>();
+    const parsed = (data ?? []).map((d: unknown) => {
+      const item = VorgangListItemDbSchema.parse(d);
+      return { ...item, frist_status: fristStatusMap.get(item.id) ?? null };
+    });
 
-  if (vorgangIds.length > 0) {
-    const { data: fristData } = await serviceClient
-      .from("vorgang_fristen")
-      .select("vorgang_id, status, end_datum")
-      .eq("tenant_id", params.tenantId)
-      .eq("aktiv", true)
-      .in("vorgang_id", vorgangIds)
-      .order("end_datum", { ascending: true })
-      .limit(500);
-
-    if (fristData) {
-      // Dringendste Frist je Vorgang (erste pro vorgang_id nach end_datum ASC)
-      const AMPEL_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
-      for (const f of fristData as Array<{ vorgang_id: string; status: string }>) {
-        const existing = fristStatusMap.get(f.vorgang_id);
-        if (!existing || (AMPEL_PRIO[f.status] ?? 5) < (AMPEL_PRIO[existing] ?? 5)) {
-          fristStatusMap.set(f.vorgang_id, f.status);
-        }
-      }
-    }
+    return { data: parsed, total: count ?? 0, error: null };
   }
 
-  let parsed = (data ?? []).map((d: unknown) => {
+  // PROJ-20 US-2: Frist-Sortierung — IDs laden, Frist-Status berechnen, sortieren, dann paginieren
+  // B-20-01 Fix: Sortierung VOR Paginierung auf vollstaendigem Ergebnis
+  query = query.order("eingangsdatum", { ascending: false });
+  const { data: alleData, count, error } = await query.limit(1000);
+  if (error) return { data: [], total: 0, error: error.message };
+
+  const alleIds = (alleData ?? []).map((d: Record<string, unknown>) => d.id as string);
+  const fristStatusMap = await ladeFristStatusBatch(serviceClient, params.tenantId, alleIds);
+
+  // B-20-02 Fix: Korrekte Sortierrichtung (desc = dringendste zuerst)
+  const SORT_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
+  const nullPrio = 5;
+  const sortiert = (alleData ?? []).sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+    const sa = fristStatusMap.get(a.id as string);
+    const sb = fristStatusMap.get(b.id as string);
+    const pa = sa ? (SORT_PRIO[sa] ?? nullPrio) : nullPrio;
+    const pb = sb ? (SORT_PRIO[sb] ?? nullPrio) : nullPrio;
+    return ascending ? pa - pb : pb - pa;
+  });
+
+  // Paginierung auf sortiertes Ergebnis anwenden
+  const paginiert = sortiert.slice(offset, offset + proSeite);
+  const parsed = paginiert.map((d: unknown) => {
     const item = VorgangListItemDbSchema.parse(d);
     return { ...item, frist_status: fristStatusMap.get(item.id) ?? null };
   });
-
-  // PROJ-20 US-2: Sortierung nach Frist-Dringlichkeit (AC-2)
-  if (params.sortierung === "frist_status") {
-    const SORT_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
-    const nullPrio = 5;
-    parsed.sort((a, b) => {
-      const pa = a.frist_status ? (SORT_PRIO[a.frist_status] ?? nullPrio) : nullPrio;
-      const pb = b.frist_status ? (SORT_PRIO[b.frist_status] ?? nullPrio) : nullPrio;
-      const diff = pa - pb;
-      return ascending ? -diff : diff;
-    });
-  }
 
   return { data: parsed, total: count ?? 0, error: null };
 }

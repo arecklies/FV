@@ -45,3 +45,41 @@ export interface WorkflowSchrittHistorie {
   ausgefuehrt_von: string | null;
   ausgefuehrt_am: string;
 }
+
+/** Zod-Schemas fuer DB-Ergebnisse (B-19-03: statt Type Assertions) */
+
+const WorkflowAktionDbSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  ziel: z.string(),
+});
+
+const WorkflowSchrittDbSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  typ: z.enum(["automatisch", "manuell", "freigabe", "endstatus"]),
+  naechsteSchritte: z.array(z.string()),
+  aktionen: z.array(WorkflowAktionDbSchema),
+  frist: z.string().optional(),
+  hinweis: z.string().optional(),
+  checkliste: z.array(z.string()).optional(),
+  minRolle: z.string().optional(),
+});
+
+export const WorkflowDefinitionDbSchema = z.object({
+  name: z.string(),
+  version: z.number(),
+  initialStatus: z.string(),
+  schritte: z.array(WorkflowSchrittDbSchema),
+});
+
+export const WorkflowSchrittHistorieDbSchema = z.object({
+  id: z.string(),
+  vorgang_id: z.string(),
+  schritt_id: z.string(),
+  aktion_id: z.string().nullable(),
+  begruendung: z.string().nullable(),
+  uebersprungen: z.boolean(),
+  ausgefuehrt_von: z.string().nullable(),
+  ausgefuehrt_am: z.string(),
+});

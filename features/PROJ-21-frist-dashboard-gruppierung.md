@@ -25,7 +25,7 @@ Der Endpunkt GET /api/fristen/gefaehrdet liefert gefaehrdete Fristen als flache 
 ### US-1: Gruppierung nach Sachbearbeiter
 Als Referatsleiter moechte ich gefaehrdete Fristen gruppiert nach zustaendigem Sachbearbeiter sehen.
 - AC-1: GET /api/fristen/gefaehrdet?gruppiert_nach=sachbearbeiter liefert gruppierte Daten
-- AC-2: Jede Gruppe enthaelt Sachbearbeiter-ID, Sachbearbeiter-Name (aus tenant_members/auth) und die zugehoerigen gefaehrdeten Fristen
+- AC-2: Jede Gruppe enthaelt Sachbearbeiter-ID und die zugehoerigen gefaehrdeten Fristen. **Scope-Reduktion (QS-Review):** SB-Name-Lookup erfordert zusaetzlichen JOIN auf tenant_members/auth — wird als Enhancement nachgeliefert, da der Name im Frontend ueber den bereits geladenen User-Kontext aufgeloest werden kann.
 - AC-3: Gruppen sind nach Anzahl gefaehrdeter Fristen absteigend sortiert (meiste zuerst)
 - AC-4: Ohne `gruppiert_nach`-Parameter bleibt die Antwort unveraendert (Abwaertskompatibilitaet)
 - AC-5: Leere Gruppen (Sachbearbeiter ohne gefaehrdete Fristen) werden NICHT zurueckgegeben

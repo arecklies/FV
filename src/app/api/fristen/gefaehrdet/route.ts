@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
     seite: parsed.data.seite,
     proSeite: parsed.data.pro_seite,
     nurUeberschritten: parsed.data.nur_ueberschritten,
-    gruppiertNach: parsed.data.gruppiert_nach,
   });
 
   if (result.error) {

@@ -364,7 +364,6 @@ interface GefaehrdeteParams {
   seite: number;
   proSeite: number;
   nurUeberschritten?: boolean;
-  gruppiertNach?: "sachbearbeiter" | "status";
 }
 
 export async function listGefaehrdeteFristen(

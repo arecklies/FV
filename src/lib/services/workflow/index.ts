@@ -4,6 +4,7 @@ import { ladeConfigFristen, createFrist } from "@/lib/services/fristen";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
 import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie } from "./types";
+import { WorkflowDefinitionDbSchema, WorkflowSchrittHistorieDbSchema } from "./types";
 
 /**
  * WorkflowService (ADR-011, ADR-003)
@@ -28,7 +29,7 @@ export async function getWorkflowDefinition(
     .single();
 
   if (!data) return null;
-  return data.definition as WorkflowDefinition;
+  return WorkflowDefinitionDbSchema.parse(data.definition);
 }
 
 export function getSchritt(
@@ -193,6 +194,21 @@ export async function executeWorkflowAktion(
             end_datum: fristResult.data.end_datum,
             status: fristResult.data.status,
           };
+
+          // B-19-01: Separate Audit-Action fuer automatisch erstellte Fristen
+          await writeAuditLog({
+            tenantId: params.tenantId,
+            userId: params.userId,
+            action: "frist.auto_created",
+            resourceType: "vorgang_frist",
+            resourceId: fristResult.data.id,
+            payload: {
+              vorgang_id: params.vorgangId,
+              workflow_schritt: aktion.ziel,
+              frist_typ: passendeFrist.typ,
+              werktage: passendeFrist.werktage,
+            },
+          });
         }
       }
     } else {
@@ -217,5 +233,6 @@ export async function getWorkflowHistorie(
     .limit(200);
 
   if (error) return { data: [], error: error.message };
-  return { data: (data ?? []) as WorkflowSchrittHistorie[], error: null };
+  const parsed = (data ?? []).map((d: unknown) => WorkflowSchrittHistorieDbSchema.parse(d));
+  return { data: parsed, error: null };
 }
