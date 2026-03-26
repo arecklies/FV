@@ -27,7 +27,29 @@ export async function GET() {
     return serverError("[PROJ-1] GET /api/admin/users failed", error);
   }
 
-  return jsonResponse({ users: data });
+  // B-001: E-Mail aus auth.users laden (Service-Role kann admin.listUsers)
+  const userIds = (data ?? []).map((m: { user_id: string }) => m.user_id);
+  const emailMap: Record<string, string> = {};
+
+  if (userIds.length > 0) {
+    const { data: authUsers } = await supabase.auth.admin.listUsers({
+      perPage: 200,
+    });
+    if (authUsers?.users) {
+      authUsers.users.forEach((u) => {
+        if (userIds.includes(u.id)) {
+          emailMap[u.id] = u.email ?? "";
+        }
+      });
+    }
+  }
+
+  const usersWithEmail = (data ?? []).map((m: { id: string; user_id: string; role: string; created_at: string }) => ({
+    ...m,
+    email: emailMap[m.user_id] ?? "",
+  }));
+
+  return jsonResponse({ users: usersWithEmail });
 }
 
 const CreateUserSchema = z.object({

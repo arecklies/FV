@@ -65,6 +65,7 @@ import {
 interface TenantMember {
   id: string;
   user_id: string;
+  email: string;
   role: string;
   created_at: string;
 }
@@ -296,10 +297,11 @@ export default function BenutzerVerwaltungPage() {
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     minLength={8}
+                    aria-describedby="password-hint"
                     disabled={creating}
-                    aria-label="Passwort des neuen Benutzers (mindestens 8 Zeichen)"
+                    aria-label="Passwort des neuen Benutzers"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="password-hint" className="text-xs text-muted-foreground">
                     Mindestens 8 Zeichen
                   </p>
                 </div>
@@ -335,7 +337,7 @@ export default function BenutzerVerwaltungPage() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={creating || !newEmail.trim() || !newPassword.trim()}
+                  disabled={creating || !newEmail.trim() || newPassword.length < 8}
                   className="gap-2 min-h-[44px]"
                   aria-label="Benutzer anlegen"
                 >
@@ -395,9 +397,9 @@ export default function BenutzerVerwaltungPage() {
 
                 return (
                   <TableRow key={member.id}>
-                    {/* Benutzer-ID (User-ID als Fallback, da E-Mail nicht in tenant_members) */}
-                    <TableCell className="font-mono text-xs max-w-[200px] truncate">
-                      {member.user_id}
+                    {/* E-Mail (B-001: aus auth.users via Backend geladen) */}
+                    <TableCell className="max-w-[200px] truncate">
+                      {member.email || <span className="font-mono text-xs text-muted-foreground">{member.user_id}</span>}
                       {isCurrentUser && (
                         <Badge variant="outline" className="ml-2 text-xs">
                           Sie
@@ -424,7 +426,7 @@ export default function BenutzerVerwaltungPage() {
                         >
                           <SelectTrigger
                             className="w-[180px]"
-                            aria-label={`Rolle fuer Benutzer ${member.user_id} aendern`}
+                            aria-label={`Rolle für Benutzer ${member.email || member.user_id} ändern`}
                           >
                             <Badge
                               variant={
@@ -468,7 +470,7 @@ export default function BenutzerVerwaltungPage() {
                               size="sm"
                               disabled={isDeleting}
                               className="text-destructive hover:text-destructive hover:bg-destructive/10 min-h-[36px] min-w-[36px]"
-                              aria-label={`Benutzer ${member.user_id} entfernen`}
+                              aria-label={`Benutzer ${member.email || member.user_id} entfernen`}
                             >
                               {isDeleting ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
