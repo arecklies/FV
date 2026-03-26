@@ -22,7 +22,7 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-3 | Vorgangsverwaltung | Deployed | [PROJ-3](PROJ-3-vorgangsverwaltung.md) | 2026-03-25 |
-| PROJ-4 | Fristmanagement | Planned | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
+| PROJ-4 | Fristmanagement | Deployed | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
 | PROJ-7 | XBau-Basisschnittstelle | Planned | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
@@ -34,9 +34,13 @@
 |----|---------|--------|------|---------|
 | PROJ-12 | Beteiligungsmanagement (ToEB) | Planned | | 2026-03-25 |
 | PROJ-17 | Massenoperationen Vorgangsliste | Planned | [PROJ-17](PROJ-17-massenoperationen.md) | 2026-03-26 |
+| PROJ-19 | Auto-Fristen bei Workflow-Schritt-Wechsel | Planned | [PROJ-19](PROJ-19-auto-fristen-workflow.md) | 2026-03-26 |
+| PROJ-20 | Frist-Ampel in Vorgangsliste | Planned | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
+| PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | Planned | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
+> PROJ-19/20/21 aus PROJ-4 QS-Review extrahiert (offene ACs als separate Items)
 
 ### Phase 2 - Compliance und Integration
 
@@ -67,4 +71,4 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-## Next Available ID: PROJ-19
+## Next Available ID: PROJ-22

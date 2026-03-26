@@ -17,6 +17,9 @@ import {
   WorkflowStepper,
   type WorkflowSchrittInfo,
 } from "@/components/vorgaenge/workflow-stepper";
+import { FristenPanel } from "@/components/fristen/fristen-panel";
+import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
+import { useFristen } from "@/hooks/use-fristen";
 
 import type {
   Vorgang,
@@ -77,6 +80,9 @@ export default function VorgangDetailPage() {
   // Workflow-Aktion
   const [aktionLoading, setAktionLoading] = React.useState<string | null>(null);
   const [aktionError, setAktionError] = React.useState<string | null>(null);
+
+  // Fristen (PROJ-4)
+  const fristenHook = useFristen(vorgangId);
 
   // Vorgang laden
   const loadVorgang = React.useCallback(async () => {
@@ -285,6 +291,17 @@ export default function VorgangDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           {getSchrittBadge(vorgang.workflow_schritt_id)}
+          {fristenHook.fristen.length > 0 && (() => {
+            const dringendste = fristenHook.fristen.reduce((a, b) =>
+              new Date(a.end_datum) < new Date(b.end_datum) ? a : b
+            );
+            return (
+              <AmpelBadge
+                status={dringendste.status as AmpelStatus}
+                compact
+              />
+            );
+          })()}
         </div>
       </div>
 
@@ -298,6 +315,7 @@ export default function VorgangDetailPage() {
       >
         <TabsList className="mb-4">
           <TabsTrigger value="uebersicht">Übersicht</TabsTrigger>
+          <TabsTrigger value="fristen">Fristen</TabsTrigger>
           <TabsTrigger value="kommentare">Kommentare</TabsTrigger>
           <TabsTrigger value="workflow">Workflow</TabsTrigger>
         </TabsList>
@@ -371,6 +389,20 @@ export default function VorgangDetailPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Fristen (PROJ-4) */}
+        <TabsContent value="fristen">
+          <FristenPanel
+            fristen={fristenHook.fristen}
+            loading={fristenHook.loading}
+            error={fristenHook.error}
+            actionLoading={fristenHook.actionLoading}
+            actionError={fristenHook.actionError}
+            onVerlaengerung={fristenHook.verlaengereFrist}
+            onHemmung={fristenHook.hemmeFrist}
+            onHemmungAufheben={fristenHook.hebeHemmungAuf}
+          />
         </TabsContent>
 
         {/* Kommentare */}
