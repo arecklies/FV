@@ -3,6 +3,14 @@ name: backend-logic
 description: Implementiert oder refaktoriert Business-Logik, Domänenobjekte und Service-Schichten. Fokus auf saubere Trennung von Transport-, Domänen- und Infrastruktur-Logik. Commit-Format: type(PROJ-X): description. Aufruf mit /backend-logic [PROJ-X]
 ---
 
+## Voraussetzung (STOPP bei Verletzung)
+1. Prüfe `features/INDEX.md`: Existiert ein Eintrag für die angeforderte PROJ-ID?
+2. Prüfe `features/PROJ-X-*.md`: Existiert eine Feature-Spec mit mindestens 1 User Story?
+Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren:
+"Feature hat keine Spec / keinen INDEX-Eintrag. Nächster Schritt: `/po-backlog`."
+3. Pruefe ob bereits Implementierung existiert: `git log --oneline --grep="PROJ-X" -- src/ supabase/`
+   Falls Commits gefunden: Nutzer warnen: "Implementierung fuer PROJ-X existiert bereits (X Commits). Fortfahren als Ergaenzung/Korrektur?"
+
 Lies zuerst:
 - Betroffene Dateien: `git ls-files src/`
 - Bestehende Muster im Repository: `git ls-files src/lib/` und `git ls-files src/services/`

@@ -19,6 +19,12 @@ Entwirf oder ändere das Datenbankschema für ein Feature.
 2. Entwirf Schema: Tabellen, Spalten (`snake_case`), Typen, Constraints, Foreign Keys
 3. Primärschlüssel: `uuid` mit `gen_random_uuid()`, Timestamps: `created_at`/`updated_at` (`timestamptz`)
 4. Erstelle RLS-Policies für SELECT, INSERT, UPDATE, DELETE (mit `USING` und `WITH CHECK`)
+   **RLS-Vollstaendigkeits-Checkliste (Pflicht, je Tabelle in Ausgabe dokumentieren):**
+   - [ ] SELECT-Policy mit USING vorhanden
+   - [ ] INSERT-Policy mit WITH CHECK vorhanden
+   - [ ] UPDATE-Policy mit USING und WITH CHECK vorhanden
+   - [ ] DELETE-Policy mit USING vorhanden
+   - [ ] Service-Only? Dann deny-all (USING(false) / WITH CHECK(false)) fuer alle 4
 5. Definiere Indizes für alle WHERE / ORDER BY / JOIN-Spalten
 6. Erstelle Migrations-Script: `supabase migration new <beschreibender-name>`
 7. Prüfe Rückwärtskompatibilität (Zero-Downtime)

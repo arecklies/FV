@@ -3,6 +3,12 @@ name: frontend-component
 description: Implementiert neue React-Komponenten nach frontend.md. shadcn/ui-Pflicht, Tailwind CSS, TypeScript, alle States, responsiv. Commit-Format: type(PROJ-X): description. Aufruf mit /frontend-component [PROJ-X]
 ---
 
+## Voraussetzung (STOPP bei Verletzung)
+1. Prüfe `features/INDEX.md`: Existiert ein Eintrag für die angeforderte PROJ-ID?
+2. Prüfe `features/PROJ-X-*.md`: Existiert eine Feature-Spec mit mindestens 1 User Story?
+Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren:
+"Feature hat keine Spec / keinen INDEX-Eintrag. Nächster Schritt: `/po-backlog`."
+
 Lies zuerst:
 - UX-Handoff / Feature-Spec: `features/PROJ-X-*.md`
 - shadcn/ui-Bestand: `ls src/components/ui/`
