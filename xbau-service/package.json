@@ -7,7 +7,8 @@
     "start": "node src/worker.js",
     "dev": "node --watch src/worker.js",
     "prebuild:schematron": "node src/compile-schematron.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:xsd": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=xsd-validation"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
