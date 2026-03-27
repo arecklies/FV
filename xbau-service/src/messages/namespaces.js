@@ -88,6 +88,10 @@ export const CODELISTE = {
     listURI: "urn:xoev-de:xbau:codeliste:baufortschritt",
     listVersionID: "2.0",
   },
+  raeumeAnzahl: {
+    listURI: "urn:xoev-de:xbau:codeliste:anzahlraeume",
+    listVersionID: "3.0",
+  },
   abgangUmfang: {
     listURI: "urn:xoev-de:xbau:codeliste:abgangumfang",
     listVersionID: "2.0",

@@ -291,11 +291,11 @@ nachrichten.push({
         umfangDesAbgangs: "1",
         ursacheDesAbgangs: "1",
         groesseDesAbgangs: {
-          anzahlRaeume: [{ anzahl: 4, raeume: 1 }],
+          anzahlRaeume: [{ anzahlWohnungen: 4, kategorie: "3" }],
         },
         nutzflaeche: 120,
       },
-      artDesWohngebaeudes: "01",
+      artDesWohngebaeudes: "1",
     },
   }),
 });

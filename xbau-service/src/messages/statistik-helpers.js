@@ -426,10 +426,11 @@ export function appendDatenBauabgang(parent, data) {
     // groesseDesAbgangs (Pflicht laut XSD)
     const gda = ba.ele(NS_XBAU, "groesseDesAbgangs");
     if (data.bauabgang.groesseDesAbgangs?.anzahlRaeume) {
+      // anzahlRaeume hat Typ Wohnungsprofil: anzahlWohnungen, kategorie, ...
       for (const wp of data.bauabgang.groesseDesAbgangs.anzahlRaeume) {
         const ar = gda.ele(NS_XBAU, "anzahlRaeume");
-        if (wp.anzahl != null) ar.ele(NS_XBAU, "anzahl").txt(String(wp.anzahl));
-        if (wp.raeume != null) ar.ele(NS_XBAU, "raeume").txt(String(wp.raeume));
+        if (wp.anzahlWohnungen != null) ar.ele(NS_XBAU, "anzahlWohnungen").txt(String(wp.anzahlWohnungen));
+        if (wp.kategorie) appendCodeElement(ar, "kategorie", wp.kategorie, CODELISTE.raeumeAnzahl);
       }
     }
     // nutzflaeche (Pflicht laut XSD)
