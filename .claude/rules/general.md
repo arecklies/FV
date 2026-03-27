@@ -142,7 +142,11 @@ Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 ## Status Updates
 - Gültige Statuswerte: `Planned`, `In Progress`, `In Review`, `Deployed`, `Deployed (Conditional: PROJ-X, Y)`
 - Gilt für Features (`PROJ-X`) und Migrations-Phasen (`MIGRATION-X`) gleichermaßen
-- **Conditional Go (Retro PROJ-4 A-6):** Bei Conditional Go wird der Status als `Deployed (Conditional: PROJ-X, Y, Z)` gefuehrt. Erst wenn alle Bedingungen (Follow-up-Items) den Status `Deployed` erreichen, wechselt das Ursprungs-Feature zu `Deployed`. Das verhindert, dass Conditional-Go-Bedingungen vergessen werden.
+- **Conditional Go (Retro PROJ-4 A-6, R-2 aus PROJ-48):** Bei Conditional Go:
+  1. Jede Bedingung wird sofort als eigenes Follow-Up-Item via `/po-backlog` angelegt (PROJ-ID, nicht QS-Befund-ID)
+  2. INDEX.md verweist auf PROJ-IDs: `Deployed (Conditional: PROJ-52)` statt `Deployed (Conditional: B-48-01)`
+  3. Erst wenn alle Follow-Up-PROJ-IDs den Status `Deployed` erreichen, wechselt das Ursprungs-Feature zu `Deployed`
+  4. Follow-Up-Items werden im selben `/po-review` angelegt — nicht "spaeter machen"
 
 ## Prozess-Pflicht — STOPP-Regel (nicht verhandelbar)
 
@@ -162,10 +166,11 @@ Schreibe KEINEN Code, auch nicht "nur zum Zeigen" oder "als Vorschlag".
 Der Mindest-Workflow für offensichtliche Minor-Fixes:
 `/po-backlog` (Minimal-Spec) → Implementierungs-Skill → Commit
 
-**Quick-Fix-Kriterium:** Wenn alle drei Bedingungen erfuellt sind:
+**Quick-Fix-Kriterium:** Wenn alle vier Bedingungen erfuellt sind:
 1. Aenderung betrifft max. 1 Datei unter `src/`
 2. Keine neue Komponente, API-Route oder DB-Aenderung
 3. Nutzer beschreibt das Problem eindeutig (z.B. "entferne X", "aendere Y zu Z")
+4. Keine Aenderung an Shared Services (`src/lib/services/`) die von mehreren Seiten/Komponenten importiert werden — bei Service-Aenderungen: regulaeres Item (Retro R-1 aus PROJ-51: Service-Aenderung verursachte Test-Failures in anderen Modulen)
 
 Dann darf der Mindest-Workflow verkuerzt werden:
 `/po-backlog` (Minimal-Spec: nur Ziel + 1 AC) → Implementierung direkt → Commit

@@ -76,6 +76,12 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 - Loading-State in allen Code-Pfaden zurücksetzen (success, error, finally)
 - Änderungen am Auth-Flow erfordern explizite Nutzer-Freigabe (Human-in-the-Loop)
 
+## Sortier-Konventionen (Frist-Ampel)
+- Die Ampel-Prioritaet ist numerisch invertiert: `dunkelrot=0` (dringendst) bis `gruen=4` (sicher), `null=5` (keine Frist)
+- "Dringendste zuerst" = **aufsteigende** Sortierung (`asc`, pa - pb) — dunkelrot(0) kommt vor gruen(4)
+- "Im Zeitplan zuerst" = **absteigende** Sortierung (`desc`, pb - pa) — gruen(4) kommt vor dunkelrot(0)
+- Bei neuen Schnellfiltern oder Sortier-Buttons: Richtung gegen Seed-Daten verifizieren, nicht raten (Retro R-3 aus PROJ-50)
+
 ## Lokales Testen (Dev-Modus)
 - Fuer visuelle Tests ohne Auth: temporaere Seite unter `src/app/test-<feature>/page.tsx` erstellen
 - Seite mit `"use client"` und ohne AuthGuard/AuthProvider

@@ -68,6 +68,13 @@
 - `any` ist verboten in Produktivcode (erlaubt in Test-Mocks)
 - Bei unvermeidbaren Casts: Kommentar mit Begründung und TODO für Typisierung
 
+## Shared Zod-Schema-Aenderungen
+- Wenn ein Zod-Schema in `src/lib/services/` um neue Pflichtfelder erweitert wird:
+  1. `grep -rn "SchemaName" src/` — alle Stellen finden die das Schema nutzen
+  2. Alle zugehoerigen Test-Mocks aktualisieren (neue Felder in Mock-Daten ergaenzen)
+  3. Tests SOFORT ausfuehren (`npx jest --forceExit`) — nicht erst am Ende
+- Grund: Zod `.parse()` schlaegt bei fehlenden Pflichtfeldern fehl. Mock-Daten muessen immer dem aktuellen Schema entsprechen. (Retro R-4 aus PROJ-51)
+
 ## Security
 > Vollständige Regeln: `.claude/rules/security.md` (Secrets, Input Validation, Auth, Multi-Tenancy)
 - Secrets, Input Validation, Auth und Multi-Tenancy → siehe `security.md`
