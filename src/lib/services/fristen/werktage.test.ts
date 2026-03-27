@@ -12,6 +12,8 @@ import {
   berechneWerktageDazwischen,
   berechneAmpelStatus,
   berechneProzentVerbraucht,
+  AMPEL_STANDARD_GELB,
+  AMPEL_STANDARD_ROT,
 } from "./werktage";
 
 describe("istWochenende", () => {
@@ -151,6 +153,89 @@ describe("berechneAmpelStatus (FA-4)", () => {
 
   it("sollte dunkelrot bei negativen Werktagen zurückgeben", () => {
     expect(berechneAmpelStatus(60, -5)).toBe("dunkelrot");
+  });
+});
+
+describe("berechneAmpelStatus mit konfigurierbaren Schwellenwerten (PROJ-34)", () => {
+  it("sollte Standard-Schwellenwerte exportieren", () => {
+    expect(AMPEL_STANDARD_GELB).toBe(50);
+    expect(AMPEL_STANDARD_ROT).toBe(25);
+  });
+
+  it("sollte bei NULL-Schwellenwerten auf Standard 50/25 fallen", () => {
+    // 40 von 60 = 66.7% -> gruen bei Standard
+    expect(berechneAmpelStatus(60, 40, { gelb_ab: null, rot_ab: null })).toBe("gruen");
+    // 20 von 60 = 33.3% -> gelb bei Standard
+    expect(berechneAmpelStatus(60, 20, { gelb_ab: null, rot_ab: null })).toBe("gelb");
+  });
+
+  it("sollte bei undefined-Schwellenwerten auf Standard fallen", () => {
+    expect(berechneAmpelStatus(60, 40, undefined)).toBe("gruen");
+    expect(berechneAmpelStatus(60, 40, {})).toBe("gruen");
+  });
+
+  it("sollte konfigurierte Schwellenwerte verwenden (Dortmund: 60/30)", () => {
+    const dortmund = { gelb_ab: 60, rot_ab: 30 };
+
+    // 40 von 60 = 66.7% -> gruen (> 60%)
+    expect(berechneAmpelStatus(60, 40, dortmund)).toBe("gruen");
+
+    // 36 von 60 = 60% -> gelb (= 60%, also <= gelb_ab)
+    expect(berechneAmpelStatus(60, 36, dortmund)).toBe("gelb");
+
+    // 20 von 60 = 33.3% -> gelb (> 30%, <= 60%)
+    expect(berechneAmpelStatus(60, 20, dortmund)).toBe("gelb");
+
+    // 15 von 60 = 25% -> rot (< 30%)
+    expect(berechneAmpelStatus(60, 15, dortmund)).toBe("rot");
+  });
+
+  it("sollte sehr hohe Schwellenwerte unterstuetzen (90/70)", () => {
+    const streng = { gelb_ab: 90, rot_ab: 70 };
+
+    // 55 von 60 = 91.7% -> gruen
+    expect(berechneAmpelStatus(60, 55, streng)).toBe("gruen");
+
+    // 50 von 60 = 83.3% -> gelb (< 90%, > 70%)
+    expect(berechneAmpelStatus(60, 50, streng)).toBe("gelb");
+
+    // 40 von 60 = 66.7% -> rot (< 70%)
+    expect(berechneAmpelStatus(60, 40, streng)).toBe("rot");
+  });
+
+  it("sollte dunkelrot unabhaengig von Schwellenwerten bei 0 Werktagen zurueckgeben", () => {
+    expect(berechneAmpelStatus(60, 0, { gelb_ab: 90, rot_ab: 70 })).toBe("dunkelrot");
+    expect(berechneAmpelStatus(60, -5, { gelb_ab: 90, rot_ab: 70 })).toBe("dunkelrot");
+  });
+
+  it("sollte rot bei < 5 Werktagen zurueckgeben unabhaengig von Schwellenwerten", () => {
+    // 4 von 100 = 4% -> < 5 WT -> rot, egal ob prozentual gruen waere
+    expect(berechneAmpelStatus(100, 4, { gelb_ab: 1, rot_ab: 1 })).toBe("rot");
+  });
+
+  it("sollte nur gelb_ab konfiguriert und rot_ab Standard verwenden", () => {
+    // Nur gelb_ab=70 konfiguriert, rot_ab bleibt 25 (Standard)
+    const teilKonfig = { gelb_ab: 70, rot_ab: null };
+
+    // 45 von 60 = 75% -> gruen (> 70%)
+    expect(berechneAmpelStatus(60, 45, teilKonfig)).toBe("gruen");
+
+    // 40 von 60 = 66.7% -> gelb (<= 70%, > 25%)
+    expect(berechneAmpelStatus(60, 40, teilKonfig)).toBe("gelb");
+
+    // 10 von 60 = 16.7% -> rot (< 25%)
+    expect(berechneAmpelStatus(60, 10, teilKonfig)).toBe("rot");
+  });
+
+  it("sollte nur rot_ab konfiguriert und gelb_ab Standard verwenden", () => {
+    // gelb_ab bleibt 50 (Standard), rot_ab=10
+    const teilKonfig = { gelb_ab: null, rot_ab: 10 };
+
+    // 20 von 60 = 33.3% -> gelb (<= 50%, > 10%)
+    expect(berechneAmpelStatus(60, 20, teilKonfig)).toBe("gelb");
+
+    // 5 von 60 = 8.3% -> rot (< 10%)
+    expect(berechneAmpelStatus(60, 5, teilKonfig)).toBe("rot");
   });
 });
 

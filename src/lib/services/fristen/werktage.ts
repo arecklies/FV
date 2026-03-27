@@ -85,28 +85,43 @@ export function berechneWerktageDazwischen(
   return werktage;
 }
 
+/** Standard-Schwellenwerte fuer die Ampelberechnung (FA-4) */
+export const AMPEL_STANDARD_GELB = 50;
+export const AMPEL_STANDARD_ROT = 25;
+
+/** Optionale Schwellenwerte fuer konfigurierbare Ampel (PROJ-34) */
+export interface AmpelSchwellenwerte {
+  gelb_ab?: number | null;
+  rot_ab?: number | null;
+}
+
 /**
- * Berechnet den Ampelstatus gemäß FA-4:
- * - Grün: > 50% der Frist übrig
- * - Gelb: 25-50% übrig
- * - Rot: < 25% übrig ODER < 5 Werktage übrig
- * - Dunkelrot: Frist überschritten (0 oder weniger Werktage übrig)
+ * Berechnet den Ampelstatus gemaess FA-4 (PROJ-4) und PROJ-34:
+ * - Gruen: > gelb_ab% der Frist uebrig (Standard: 50%)
+ * - Gelb: rot_ab% bis gelb_ab% uebrig (Standard: 25-50%)
+ * - Rot: < rot_ab% uebrig ODER < 5 Werktage uebrig (Standard: 25%)
+ * - Dunkelrot: Frist ueberschritten (0 oder weniger Werktage uebrig)
  *
  * @param gesamtWerktage - Gesamtanzahl Werktage der Frist
  * @param verbleibendeWerktage - Verbleibende Werktage bis Fristende
+ * @param schwellenwerte - Optionale konfigurierte Schwellenwerte (PROJ-34). Fallback auf 50/25.
  * @returns Ampelstatus
  */
 export function berechneAmpelStatus(
   gesamtWerktage: number,
-  verbleibendeWerktage: number
+  verbleibendeWerktage: number,
+  schwellenwerte?: AmpelSchwellenwerte
 ): "gruen" | "gelb" | "rot" | "dunkelrot" {
   if (verbleibendeWerktage <= 0) return "dunkelrot";
+
+  const gelbAb = schwellenwerte?.gelb_ab ?? AMPEL_STANDARD_GELB;
+  const rotAb = schwellenwerte?.rot_ab ?? AMPEL_STANDARD_ROT;
 
   const prozentUebrig = (verbleibendeWerktage / gesamtWerktage) * 100;
 
   if (verbleibendeWerktage < 5) return "rot";
-  if (prozentUebrig < 25) return "rot";
-  if (prozentUebrig <= 50) return "gelb";
+  if (prozentUebrig < rotAb) return "rot";
+  if (prozentUebrig <= gelbAb) return "gelb";
   return "gruen";
 }
 
