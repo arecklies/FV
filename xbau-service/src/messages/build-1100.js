@@ -4,6 +4,9 @@ import crypto from "node:crypto";
 
 /**
  * build-1100: Rueckweisungsnachricht G2G
+ *
+ * Kernmodul: elementFormDefault="unqualified" — alle Kinder-Elemente
+ * muessen im leeren Namespace stehen (ele("", name)).
  */
 export function build1100(params) {
   const nachrichtenUUID = crypto.randomUUID();
@@ -27,23 +30,24 @@ export function build1100(params) {
     codeliste: "kernmodul",
   });
 
-  const rueckweisungDaten = root.ele("rueckweisungDaten");
-  const grund = rueckweisungDaten.ele("rueckweisungsgrund");
-  grund.ele("grund")
+  // Alle Kinder unqualified (leerer Namespace)
+  const rueckweisungDaten = root.ele("", "rueckweisungDaten");
+  const grund = rueckweisungDaten.ele("", "rueckweisungsgrund");
+  grund.ele("", "grund")
     .att("listURI", CODELISTE.fehlerkennzahlen.listURI)
     .att("listVersionID", CODELISTE.fehlerkennzahlen.listVersionID)
-    .ele("code").txt(params.fehlerkennzahl);
-  if (params.fehlertext) grund.ele("fehlertext").txt(params.fehlertext);
+    .ele("", "code").txt(params.fehlerkennzahl);
+  if (params.fehlertext) grund.ele("", "fehlertext").txt(params.fehlertext);
 
-  const idNachricht = rueckweisungDaten.ele("idNachricht");
-  idNachricht.ele("nachrichtenUUID").txt(params.abgewieseneNachrichtenUUID);
-  idNachricht.ele("nachrichtentyp")
+  const idNachricht = rueckweisungDaten.ele("", "idNachricht");
+  idNachricht.ele("", "nachrichtenUUID").txt(params.abgewieseneNachrichtenUUID ?? params.bezugNachrichtenUuid);
+  idNachricht.ele("", "nachrichtentyp")
     .att("listURI", CODELISTE.kernmodulNachrichten.listURI)
     .att("listVersionID", CODELISTE.kernmodulNachrichten.listVersionID)
-    .ele("code").txt(params.abgewiesenerNachrichtentyp);
-  idNachricht.ele("erstellungszeitpunkt").txt(params.abgewieseneErstellungszeit);
+    .ele("", "code").txt(params.abgewiesenerNachrichtentyp ?? params.bezugNachrichtentyp);
+  idNachricht.ele("", "erstellungszeitpunkt").txt(params.abgewieseneErstellungszeit ?? params.bezugErstellungszeit ?? "");
 
-  rueckweisungDaten.ele("nachricht").txt(params.abgewieseneNachrichtBase64);
+  rueckweisungDaten.ele("", "nachricht").txt(params.abgewieseneNachrichtBase64 ?? params.abgewieseNeNachrichtBase64);
 
   return doc.end({ prettyPrint: true });
 }

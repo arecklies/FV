@@ -4,6 +4,9 @@ import crypto from "node:crypto";
 
 /**
  * build-1180: Generische Eingangsquittung
+ *
+ * Kernmodul: elementFormDefault="unqualified" — alle Kinder-Elemente
+ * muessen im leeren Namespace stehen (ele("", name)).
  */
 export function build1180(params) {
   const nachrichtenUUID = crypto.randomUUID();
@@ -27,21 +30,22 @@ export function build1180(params) {
     codeliste: "kernmodul",
   });
 
-  const bezug = root.ele("bezug");
-  if (params.referenzUuid) bezug.ele("referenz").txt(params.referenzUuid);
-  if (params.aktenzeichen) bezug.ele("vorgang").txt(params.aktenzeichen);
-  const bezugNachricht = bezug.ele("bezugNachricht");
-  bezugNachricht.ele("nachrichtenUUID").txt(params.quittierteNachrichtenUUID);
-  bezugNachricht.ele("nachrichtentyp")
+  // Alle Kinder unqualified (leerer Namespace)
+  const bezug = root.ele("", "bezug");
+  if (params.referenzUuid) bezug.ele("", "referenz").txt(params.referenzUuid);
+  if (params.aktenzeichen) bezug.ele("", "vorgang").txt(params.aktenzeichen);
+  const bezugNachricht = bezug.ele("", "bezugNachricht");
+  bezugNachricht.ele("", "nachrichtenUUID").txt(params.quittierteNachrichtenUUID ?? params.bezugNachrichtenUuid);
+  bezugNachricht.ele("", "nachrichtentyp")
     .att("listURI", CODELISTE.kernmodulNachrichten.listURI)
     .att("listVersionID", CODELISTE.kernmodulNachrichten.listVersionID)
-    .ele("code").txt(params.quittierterNachrichtentyp);
-  bezugNachricht.ele("erstellungszeitpunkt").txt(params.quittierteErstellungszeit);
+    .ele("", "code").txt(params.quittierterNachrichtentyp ?? params.bezugNachrichtentyp);
+  bezugNachricht.ele("", "erstellungszeitpunkt").txt(params.quittierteErstellungszeit ?? params.bezugErstellungszeit ?? "");
 
-  root.ele("nachrichtentyp")
+  root.ele("", "nachrichtentyp")
     .att("listURI", CODELISTE.quittierteNachricht.listURI)
     .att("listVersionID", CODELISTE.quittierteNachricht.listVersionID)
-    .ele("code").txt(params.quittierterNachrichtentyp);
+    .ele("", "code").txt(params.quittierterNachrichtentyp ?? params.bezugNachrichtentyp);
 
   return doc.end({ prettyPrint: true });
 }
