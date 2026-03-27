@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -76,6 +77,10 @@ export default function VorgaengeListePage() {
   const [suchInput, setSuchInput] = React.useState("");
   const [sortierung, setSortierung] = React.useState<Sortierung>("eingangsdatum");
   const [richtung, setRichtung] = React.useState<Richtung>("desc");
+
+  // PROJ-50: Aktive Statistik-Karte tracken
+  type SchnellfilterKarte = "gesamt" | "gefaehrdet" | "ueberfaellig" | "zeitplan";
+  const [activeCard, setActiveCard] = React.useState<SchnellfilterKarte | null>(null);
   const [seite, setSeite] = React.useState(1);
   const proSeite = 25;
 
@@ -243,12 +248,13 @@ export default function VorgaengeListePage() {
           aria-label="Vorgangsstatistik"
         >
           <Card
-            className="shadow-sm hover:shadow-md transition-shadow cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => { setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); }}
+            className={cn("shadow-sm hover:shadow-md transition-all cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "gesamt" && "ring-2 ring-primary shadow-md")}
+            onClick={() => { setActiveCard("gesamt"); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); }}
             tabIndex={0}
             role="button"
             aria-label="Alle Vorgänge anzeigen (Standard-Sortierung)"
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); } }}
+            aria-pressed={activeCard === "gesamt"}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("gesamt"); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -260,12 +266,13 @@ export default function VorgaengeListePage() {
             </CardContent>
           </Card>
           <Card
-            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-400 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => { setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
+            className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-yellow-400 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "gefaehrdet" && "ring-2 ring-yellow-400 shadow-md")}
+            onClick={() => { setActiveCard("gefaehrdet"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
             tabIndex={0}
             role="button"
             aria-label="Fristgefährdete Vorgänge zuerst anzeigen"
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
+            aria-pressed={activeCard === "gefaehrdet"}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("gefaehrdet"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -279,12 +286,13 @@ export default function VorgaengeListePage() {
             </CardContent>
           </Card>
           <Card
-            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-red-500 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => { setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
+            className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-red-500 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "ueberfaellig" && "ring-2 ring-red-500 shadow-md")}
+            onClick={() => { setActiveCard("ueberfaellig"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
             tabIndex={0}
             role="button"
             aria-label="Überfällige Vorgänge zuerst anzeigen"
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
+            aria-pressed={activeCard === "ueberfaellig"}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("ueberfaellig"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -298,12 +306,13 @@ export default function VorgaengeListePage() {
             </CardContent>
           </Card>
           <Card
-            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => { setSortierung("frist_status"); setRichtung("asc"); setSeite(1); }}
+            className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-primary cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "zeitplan" && "ring-2 ring-primary shadow-md")}
+            onClick={() => { setActiveCard("zeitplan"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); }}
             tabIndex={0}
             role="button"
             aria-label="Vorgänge im Zeitplan zuerst anzeigen"
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); } }}
+            aria-pressed={activeCard === "zeitplan"}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("zeitplan"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
