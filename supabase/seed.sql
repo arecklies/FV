@@ -154,13 +154,13 @@ INSERT INTO vorgaenge (id, tenant_id, aktenzeichen, verfahrensart_id, bundesland
 -- 9. Demo-Fristen (alle Ampelfarben)
 -- ==============================
 
-INSERT INTO vorgang_fristen (tenant_id, vorgang_id, typ, bezeichnung, start_datum, end_datum, werktage, status) VALUES
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000001', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2026-03-20', '2026-06-20', 65, 'gruen'),
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', 'vollstaendigkeitspruefung',   'Vollständigkeitsprüfung',     '2026-03-01', '2026-03-30', 10, 'gelb'),
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000003', 'beteiligungsfrist',           'Beteiligungsfrist ToEB',      '2026-03-15', '2026-04-15', 20, 'gruen'),
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000004', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-12-10', '2026-03-28', 65, 'rot'),
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000005', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-09-01', '2025-12-15', 65, 'dunkelrot'),
-  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000006', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-11-15', '2026-04-30', 65, 'gehemmt');
+INSERT INTO vorgang_fristen (tenant_id, vorgang_id, typ, bezeichnung, start_datum, end_datum, werktage, bundesland, status) VALUES
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000001', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2026-03-20', '2026-06-20', 65, 'NW', 'gruen'),
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', 'vollstaendigkeitspruefung',   'Vollständigkeitsprüfung',     '2026-03-01', '2026-03-30', 10, 'NW', 'gelb'),
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000003', 'beteiligungsfrist',           'Beteiligungsfrist ToEB',      '2026-03-15', '2026-04-15', 20, 'NW', 'gruen'),
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000004', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-12-10', '2026-03-28', 65, 'NW', 'rot'),
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000005', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-09-01', '2025-12-15', 65, 'NW', 'dunkelrot'),
+  ('a0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000006', 'gesamtfrist',                'Gesamtfrist Baugenehmigung',  '2025-11-15', '2026-04-30', 65, 'NW', 'gehemmt');
 
 UPDATE vorgang_fristen SET gehemmt = true, hemmung_grund = 'Nachforderung: Standsicherheitsnachweis fehlt', hemmung_start = '2026-03-01'
 WHERE vorgang_id = 'c0000000-0000-4000-8000-000000000006';

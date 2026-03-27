@@ -60,6 +60,7 @@ export const VorgangFristDbSchema = z.object({
   start_datum: z.string(),
   end_datum: z.string(),
   werktage: z.number(),
+  bundesland: z.string(),
   status: AmpelStatusSchema,
   gehemmt: z.boolean(),
   hemmung_grund: z.string().nullable(),
@@ -83,6 +84,8 @@ export const ConfigFristDbSchema = z.object({
   werktage: z.number(),
   rechtsgrundlage: z.string().nullable(),
   aktiv: z.boolean(),
+  gelb_ab: z.number().int().min(1).max(99).nullable().optional(),
+  rot_ab: z.number().int().min(1).max(99).nullable().optional(),
 });
 
 export const ConfigFeiertagDbSchema = z.object({

@@ -5,6 +5,7 @@ import {
   berechneWerktageDazwischen,
   berechneAmpelStatus,
 } from "./werktage";
+import type { AmpelSchwellenwerte } from "./werktage";
 import type {
   VorgangFrist,
   ConfigFrist,
@@ -54,7 +55,7 @@ export async function ladeConfigFristen(
 ): Promise<ConfigFrist[]> {
   const { data, error } = await serviceClient
     .from("config_fristen")
-    .select("id, bundesland, verfahrensart_id, typ, bezeichnung, werktage, rechtsgrundlage, aktiv")
+    .select("id, bundesland, verfahrensart_id, typ, bezeichnung, werktage, rechtsgrundlage, aktiv, gelb_ab, rot_ab")
     .eq("bundesland", bundesland)
     .eq("verfahrensart_id", verfahrensartId)
     .eq("aktiv", true)
@@ -94,6 +95,7 @@ interface CreateFristParams {
   werktage: number;
   startDatum: string;
   bundesland: string;
+  schwellenwerte?: AmpelSchwellenwerte;
 }
 
 export async function createFrist(
@@ -108,9 +110,9 @@ export async function createFrist(
   // Enddatum berechnen (FA-3: Werktage)
   const endDate = addiereWerktage(startDate, params.werktage, feiertage);
 
-  // Ampelstatus berechnen
+  // Ampelstatus berechnen (PROJ-34: konfigurierbare Schwellenwerte)
   const verbleibend = berechneWerktageDazwischen(new Date(), endDate, feiertage);
-  const ampelStatus = berechneAmpelStatus(params.werktage, verbleibend);
+  const ampelStatus = berechneAmpelStatus(params.werktage, verbleibend, params.schwellenwerte);
 
   const { data, error } = await serviceClient
     .from("vorgang_fristen")
@@ -122,6 +124,7 @@ export async function createFrist(
       start_datum: params.startDatum,
       end_datum: endDate.toISOString(),
       werktage: params.werktage,
+      bundesland: params.bundesland,
       status: ampelStatus,
     })
     .select()
@@ -156,6 +159,7 @@ interface VerlaengerungParams {
   zusaetzlicheWerktage: number;
   begruendung: string;
   bundesland: string;
+  schwellenwerte?: AmpelSchwellenwerte;
 }
 
 export async function verlaengereFrist(
@@ -181,10 +185,10 @@ export async function verlaengereFrist(
   const feiertage = await ladeFeiertage(serviceClient, params.bundesland, jahr);
   const neuesEndDatum = addiereWerktage(currentEnd, params.zusaetzlicheWerktage, feiertage);
 
-  // Ampelstatus neu berechnen
+  // Ampelstatus neu berechnen (PROJ-34: konfigurierbare Schwellenwerte)
   const gesamtWerktage = parsed.werktage + params.zusaetzlicheWerktage;
   const verbleibend = berechneWerktageDazwischen(new Date(), neuesEndDatum, feiertage);
-  const ampelStatus = berechneAmpelStatus(gesamtWerktage, verbleibend);
+  const ampelStatus = berechneAmpelStatus(gesamtWerktage, verbleibend, params.schwellenwerte);
 
   const { data: updated, error: updateError } = await serviceClient
     .from("vorgang_fristen")
@@ -289,6 +293,7 @@ interface HemmungAufhebenParams {
   userId: string;
   fristId: string;
   bundesland: string;
+  schwellenwerte?: AmpelSchwellenwerte;
 }
 
 export async function hebeHemmungAuf(
@@ -319,9 +324,9 @@ export async function hebeHemmungAuf(
   const altesEndDatum = new Date(parsed.end_datum);
   const neuesEndDatum = addiereWerktage(altesEndDatum, hemmungsTage, feiertage);
 
-  // Ampelstatus neu berechnen
+  // Ampelstatus neu berechnen (PROJ-34: konfigurierbare Schwellenwerte)
   const verbleibend = berechneWerktageDazwischen(jetzt, neuesEndDatum, feiertage);
-  const ampelStatus = berechneAmpelStatus(parsed.werktage, verbleibend);
+  const ampelStatus = berechneAmpelStatus(parsed.werktage, verbleibend, params.schwellenwerte);
 
   const { data: updated, error: updateError } = await serviceClient
     .from("vorgang_fristen")
@@ -431,46 +436,73 @@ export function gruppiereNachSachbearbeiter(
     .sort((a, b) => b.anzahl - a.anzahl);
 }
 
-// -- Ampelstatus-Aktualisierung (Cron-Job, ADR-008) --
+// -- Ampelstatus-Aktualisierung (Cron-Job, ADR-008, PROJ-22) --
+
+/** Seitengroesse fuer paginierten Cron-Durchlauf (PROJ-22 FA-5) */
+const CRON_PAGE_SIZE = 500;
 
 export async function aktualisiereAlleAmpelStatus(
   serviceClient: SupabaseClient
 ): Promise<{ aktualisiert: number; error: string | null }> {
-  // Alle aktiven, nicht gehemmten Fristen laden
-  const { data: fristen, error } = await serviceClient
-    .from("vorgang_fristen")
-    .select("id, tenant_id, vorgang_id, start_datum, end_datum, werktage, status, gehemmt")
-    .eq("aktiv", true)
-    .eq("gehemmt", false)
-    .limit(1000);
-
-  if (error) return { aktualisiert: 0, error: error.message };
-  if (!fristen || fristen.length === 0) return { aktualisiert: 0, error: null };
-
   const jetzt = new Date();
   const jahr = jetzt.getFullYear();
 
   let aktualisiert = 0;
+  let offset = 0;
+  let hatWeitereSeiten = true;
 
-  for (const frist of fristen) {
-    // Für den Cron-Job: Wir verwenden ein leeres Feiertags-Set als Fallback,
-    // da wir ohne Bundesland-Info keine Feiertage laden können.
-    // Die Fristen-Tabelle hat kein bundesland-Feld — wir müssten über vorgaenge joinen.
-    // Für den MVP: Berechnung ohne Feiertage im Batch-Update ist akzeptabel,
-    // da die Ampel bei Fristanlage und -änderung korrekt berechnet wird.
-    const feiertage = new Set<string>();
+  while (hatWeitereSeiten) {
+    // Paginiert laden (PROJ-22 FA-5): alle aktiven, nicht gehemmten Fristen
+    const { data: fristen, error } = await serviceClient
+      .from("vorgang_fristen")
+      .select("id, tenant_id, vorgang_id, start_datum, end_datum, werktage, status, gehemmt, bundesland")
+      .eq("aktiv", true)
+      .eq("gehemmt", false)
+      .order("id", { ascending: true })
+      .range(offset, offset + CRON_PAGE_SIZE - 1);
 
-    const endDate = new Date(frist.end_datum);
-    const verbleibend = berechneWerktageDazwischen(jetzt, endDate, feiertage);
-    const neuerStatus = berechneAmpelStatus(frist.werktage, verbleibend);
+    if (error) return { aktualisiert, error: error.message };
+    if (!fristen || fristen.length === 0) break;
 
-    if (neuerStatus !== frist.status) {
-      const { error: updateError } = await serviceClient
-        .from("vorgang_fristen")
-        .update({ status: neuerStatus })
-        .eq("id", frist.id);
+    hatWeitereSeiten = fristen.length === CRON_PAGE_SIZE;
+    offset += fristen.length;
 
-      if (!updateError) aktualisiert++;
+    // PROJ-22 FA-3: Fristen nach Bundesland gruppieren, Feiertage pro BL laden
+    const nachBundesland = new Map<string, typeof fristen>();
+    for (const frist of fristen) {
+      const bl = (frist as Record<string, unknown>).bundesland as string;
+      const liste = nachBundesland.get(bl) ?? [];
+      liste.push(frist);
+      nachBundesland.set(bl, liste);
+    }
+
+    for (const [bundesland, blFristen] of nachBundesland) {
+      const feiertage = await ladeFeiertage(serviceClient, bundesland, jahr);
+
+      // PROJ-22 FA-4: Batch-UPDATE pro Status-Gruppe statt Einzel-Queries
+      const statusUpdates = new Map<string, string[]>();
+
+      for (const frist of blFristen) {
+        const endDate = new Date(frist.end_datum);
+        const verbleibend = berechneWerktageDazwischen(jetzt, endDate, feiertage);
+        const neuerStatus = berechneAmpelStatus(frist.werktage, verbleibend);
+
+        if (neuerStatus !== frist.status) {
+          const ids = statusUpdates.get(neuerStatus) ?? [];
+          ids.push(frist.id);
+          statusUpdates.set(neuerStatus, ids);
+        }
+      }
+
+      // Batch-UPDATE: ein UPDATE pro Status-Wert
+      for (const [status, ids] of statusUpdates) {
+        const { error: updateError } = await serviceClient
+          .from("vorgang_fristen")
+          .update({ status })
+          .in("id", ids);
+
+        if (!updateError) aktualisiert += ids.length;
+      }
     }
   }
 

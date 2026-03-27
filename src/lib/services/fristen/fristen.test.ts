@@ -83,6 +83,7 @@ const MOCK_FRIST = {
   start_datum: "2026-03-01T00:00:00.000Z",
   end_datum: "2026-06-01T00:00:00.000Z",
   werktage: 60,
+  bundesland: "NW",
   status: "gruen",
   gehemmt: false,
   hemmung_grund: null,
@@ -197,6 +198,7 @@ describe("ladeConfigFristen", () => {
         id: "cf-1", bundesland: "NW", verfahrensart_id: "va-1",
         typ: "gesamtfrist", bezeichnung: "Gesamtfrist BG", werktage: 60,
         rechtsgrundlage: "§ 75 BauO NRW", aktiv: true,
+        gelb_ab: null, rot_ab: null,
       }],
       error: null,
     });
@@ -213,6 +215,42 @@ describe("ladeConfigFristen", () => {
 
     const result = await ladeConfigFristen(mockClient as any, "NW", "va-1");
     expect(result).toEqual([]);
+  });
+
+  it("sollte konfigurierte Ampel-Schwellenwerte laden (PROJ-34)", async () => {
+    const mockClient = createMockClient();
+    mockClient.setTableResult("config_fristen", {
+      data: [{
+        id: "cf-2", bundesland: "NW", verfahrensart_id: "va-1",
+        typ: "gesamtfrist", bezeichnung: "Gesamtfrist BG", werktage: 60,
+        rechtsgrundlage: "§ 75 BauO NRW", aktiv: true,
+        gelb_ab: 60, rot_ab: 30,
+      }],
+      error: null,
+    });
+
+    const result = await ladeConfigFristen(mockClient as any, "NW", "va-1");
+    expect(result).toHaveLength(1);
+    expect(result[0].gelb_ab).toBe(60);
+    expect(result[0].rot_ab).toBe(30);
+  });
+
+  it("sollte NULL-Schwellenwerte korrekt parsen (PROJ-34 AC-3)", async () => {
+    const mockClient = createMockClient();
+    mockClient.setTableResult("config_fristen", {
+      data: [{
+        id: "cf-3", bundesland: "NW", verfahrensart_id: "va-1",
+        typ: "gesamtfrist", bezeichnung: "Gesamtfrist BG", werktage: 60,
+        rechtsgrundlage: null, aktiv: true,
+        gelb_ab: null, rot_ab: null,
+      }],
+      error: null,
+    });
+
+    const result = await ladeConfigFristen(mockClient as any, "NW", "va-1");
+    expect(result).toHaveLength(1);
+    expect(result[0].gelb_ab).toBeNull();
+    expect(result[0].rot_ab).toBeNull();
   });
 });
 
@@ -510,8 +548,8 @@ describe("listGefaehrdeteFristen mit nurUeberschritten (PROJ-21 US-2)", () => {
   });
 });
 
-describe("aktualisiereAlleAmpelStatus", () => {
-  it("sollte 0 aktualisiert zurückgeben wenn keine Fristen existieren", async () => {
+describe("aktualisiereAlleAmpelStatus (PROJ-22)", () => {
+  it("sollte 0 aktualisiert zurueckgeben wenn keine Fristen existieren", async () => {
     const mockClient = createMockClient();
     mockClient.setTableResult("vorgang_fristen", { data: [], error: null });
 
@@ -520,7 +558,7 @@ describe("aktualisiereAlleAmpelStatus", () => {
     expect(result.error).toBeNull();
   });
 
-  it("sollte Fehler bei DB-Fehler zurückgeben", async () => {
+  it("sollte Fehler bei DB-Fehler zurueckgeben", async () => {
     const mockClient = createMockClient();
     mockClient.setTableResult("vorgang_fristen", { data: null, error: { message: "Connection lost" } });
 
@@ -528,8 +566,8 @@ describe("aktualisiereAlleAmpelStatus", () => {
     expect(result.error).toBe("Connection lost");
   });
 
-  it("sollte Fristen mit veraltetem Status aktualisieren", async () => {
-    // Frist mit status "gruen" aber end_datum in der Vergangenheit → sollte dunkelrot werden
+  it("sollte Fristen mit veraltetem Status per Batch-Update aktualisieren (PROJ-22 FA-4)", async () => {
+    // Frist mit status "gruen" aber end_datum in der Vergangenheit -> sollte dunkelrot werden
     const abgelaufeneFrist = {
       id: "frist-abgelaufen",
       tenant_id: "tenant-1",
@@ -537,15 +575,19 @@ describe("aktualisiereAlleAmpelStatus", () => {
       start_datum: "2025-01-01T00:00:00.000Z",
       end_datum: "2025-06-01T00:00:00.000Z",
       werktage: 60,
+      bundesland: "NW",
       status: "gruen",
       gehemmt: false,
     };
     let callCount = 0;
 
     const mockClient = {
-      from: jest.fn(() => {
+      from: jest.fn((table: string) => {
         callCount++;
-        // 1. select (Fristen laden), 2. update (Status ändern)
+        if (table === "config_feiertage") {
+          return createChainMock({ data: [], error: null }).proxy;
+        }
+        // vorgang_fristen: 1. select (paginated), 2. batch update
         if (callCount === 1) {
           return createChainMock({ data: [abgelaufeneFrist], error: null }).proxy;
         }
@@ -556,5 +598,129 @@ describe("aktualisiereAlleAmpelStatus", () => {
     const result = await aktualisiereAlleAmpelStatus(mockClient as any);
     expect(result.error).toBeNull();
     expect(result.aktualisiert).toBe(1);
+  });
+
+  it("sollte Feiertage pro Bundesland laden (PROJ-22 FA-3)", async () => {
+    const nwFrist = {
+      id: "frist-nw",
+      tenant_id: "tenant-1",
+      vorgang_id: "vorgang-1",
+      start_datum: "2025-01-01T00:00:00.000Z",
+      end_datum: "2025-06-01T00:00:00.000Z",
+      werktage: 60,
+      bundesland: "NW",
+      status: "gruen",
+      gehemmt: false,
+    };
+    const byFrist = {
+      id: "frist-by",
+      tenant_id: "tenant-2",
+      vorgang_id: "vorgang-2",
+      start_datum: "2025-01-01T00:00:00.000Z",
+      end_datum: "2025-06-01T00:00:00.000Z",
+      werktage: 60,
+      bundesland: "BY",
+      status: "gruen",
+      gehemmt: false,
+    };
+
+    const feiertageCallBundeslaender: string[] = [];
+    let callCount = 0;
+
+    const mockClient = {
+      from: jest.fn((table: string) => {
+        callCount++;
+        if (table === "config_feiertage") {
+          // Track which bundesland query is made via the or() filter
+          const mock = createChainMock({ data: [], error: null });
+          const originalOr = mock.chain.or;
+          if (!originalOr) {
+            // Create the or mock to track calls
+            mock.chain.or = jest.fn((filter: string) => {
+              const match = filter.match(/bundesland\.eq\.(\w+)/);
+              if (match) feiertageCallBundeslaender.push(match[1]);
+              return mock.proxy;
+            });
+          }
+          return mock.proxy;
+        }
+        // vorgang_fristen: 1. select page, 2+3. batch updates
+        if (callCount === 1) {
+          return createChainMock({ data: [nwFrist, byFrist], error: null }).proxy;
+        }
+        return createChainMock({ data: null, error: null }).proxy;
+      }),
+    };
+
+    const result = await aktualisiereAlleAmpelStatus(mockClient as any);
+    expect(result.error).toBeNull();
+    // Beide Fristen sind abgelaufen -> dunkelrot, also 2 aktualisiert
+    expect(result.aktualisiert).toBe(2);
+  });
+
+  it("sollte bei unveraendertem Status kein Update ausfuehren", async () => {
+    // Frist mit status "dunkelrot" und end_datum in der Vergangenheit -> bleibt dunkelrot
+    const bereitsKorrekt = {
+      id: "frist-korrekt",
+      tenant_id: "tenant-1",
+      vorgang_id: "vorgang-1",
+      start_datum: "2025-01-01T00:00:00.000Z",
+      end_datum: "2025-06-01T00:00:00.000Z",
+      werktage: 60,
+      bundesland: "NW",
+      status: "dunkelrot",
+      gehemmt: false,
+    };
+
+    let updateCalled = false;
+    let callCount = 0;
+
+    const mockClient = {
+      from: jest.fn((table: string) => {
+        callCount++;
+        if (table === "config_feiertage") {
+          return createChainMock({ data: [], error: null }).proxy;
+        }
+        if (callCount === 1) {
+          return createChainMock({ data: [bereitsKorrekt], error: null }).proxy;
+        }
+        // Should not reach here if status is unchanged
+        updateCalled = true;
+        return createChainMock({ data: null, error: null }).proxy;
+      }),
+    };
+
+    const result = await aktualisiereAlleAmpelStatus(mockClient as any);
+    expect(result.aktualisiert).toBe(0);
+    expect(updateCalled).toBe(false);
+  });
+
+  it("sollte idempotent sein bei mehrfachem Aufruf (NFR-1)", async () => {
+    // Frist korrekt berechnet -> kein Update
+    const korrekteFrist = {
+      id: "frist-ok",
+      tenant_id: "tenant-1",
+      vorgang_id: "vorgang-1",
+      start_datum: "2025-01-01T00:00:00.000Z",
+      end_datum: "2025-06-01T00:00:00.000Z",
+      werktage: 60,
+      bundesland: "NW",
+      status: "dunkelrot",
+      gehemmt: false,
+    };
+
+    const createClient = () => ({
+      from: jest.fn((table: string) => {
+        if (table === "config_feiertage") {
+          return createChainMock({ data: [], error: null }).proxy;
+        }
+        return createChainMock({ data: [korrekteFrist], error: null }).proxy;
+      }),
+    });
+
+    const result1 = await aktualisiereAlleAmpelStatus(createClient() as any);
+    const result2 = await aktualisiereAlleAmpelStatus(createClient() as any);
+    expect(result1.aktualisiert).toBe(0);
+    expect(result2.aktualisiert).toBe(0);
   });
 });
