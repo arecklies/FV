@@ -11,6 +11,45 @@ Technologie-Entscheidungen betreffen XML-Parsing, XSD-Validierung und Schematron
 
 ## Entscheidung
 
+### 0. Architekturprinzip: Ausgelagerter XBau-Service
+
+**Alle XBau-XML-Operationen (Generierung, Parsing, Validierung) werden in einem isolierten XBau-Service ausgeführt, nicht im Fachverfahren.**
+
+Das Fachverfahren (Next.js) kommuniziert ausschließlich über JSON mit dem XBau-Service. Es kennt keine XML-Syntax, keine Namespaces, keine Codelisten-Attribute.
+
+**Begründung:** Bei einem XBau-Versionswechsel (z.B. 2.6 → 2.7) ändert sich ausschließlich der XBau-Service. Das Fachverfahren, die Datenbank und das Frontend bleiben unverändert. Das minimiert Aufwand und Risiko bei Standardaktualisierungen.
+
+**Schnittstelle Fachverfahren → XBau-Service:**
+```
+background_jobs-Tabelle (ADR-008):
+  type: 'xbau_generate' | 'xbau_validate' | 'xbau_parse'
+  input: {
+    nachrichtentyp: '0201' | '0420' | ... ,
+    vorgang_id: uuid,
+    tenant_id: uuid,
+    payload: { ...fachliche Daten als JSON... }
+  }
+  output: {
+    nachricht_id: uuid,     // → xbau_nachrichten.id
+    status: 'completed' | 'failed',
+    fehler?: string
+  }
+```
+
+**Schnittstelle XBau-Service → Fachverfahren:**
+- Liest Vorgangsdaten über Service-Role-Client (gleiche DB)
+- Schreibt generiertes XML in `xbau_nachrichten.roh_xml`
+- Schreibt extrahierte Kerndaten in `xbau_nachrichten.kerndaten` (JSON)
+- Markiert `background_jobs.status = 'completed'`
+
+**Deployment-Optionen für den XBau-Service:**
+- **MVP:** Supabase Edge Function (Deno, gleiche Infrastruktur)
+- **Skaliert:** Separater Container (Node.js/Deno) mit eigenem Deployment-Zyklus
+- **Parallelbetrieb:** v2.6-Service und v2.7-Service gleichzeitig, Routing über `tenant.xbau_version`
+
+**Konsequenz für bestehende Implementierung:**
+Die aktuell synchronen Message Builders (`src/lib/services/xbau/messages/`) werden schrittweise in den XBau-Service migriert. Bis zur vollständigen Migration bleiben sie als Übergangslösung im Fachverfahren, werden aber bereits über die `background_jobs`-Schnittstelle angesprochen.
+
 ### 1. Nachrichtentabelle `xbau_nachrichten`
 
 Zentrale Service-Only-Tabelle für alle ein-/ausgehenden XBau-Nachrichten:
@@ -69,6 +108,7 @@ Fallback: Zuordnungs-Queue für manuelle Zuweisung.
 
 | Alternative | Grund der Ablehnung |
 |---|---|
+| XBau-Generierung direkt im Fachverfahren (synchron) | Bei XBau-Versionswechsel muss das gesamte Fachverfahren angefasst werden. XML-Abhängigkeiten (xmlbuilder2, Saxon-JS) verkomplizieren das Hauptprojekt |
 | libxmljs2 für XSD | Native C++-Binding, Vercel-Build-Probleme |
 | Java-Container für Schematron | Separate Infrastruktur, Deployment-Komplexität |
 | Schematron überspringen | Verletzt XBau-Standard, ungültige Fehlerkennzahlen |
