@@ -10,6 +10,9 @@
 
 import { createClient } from "@supabase/supabase-js";
 import crypto from "node:crypto";
+import { build0201 } from "./messages/build-0201.js";
+import { build1100 } from "./messages/build-1100.js";
+import { build1180 } from "./messages/build-1180.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -146,21 +149,111 @@ async function pollAndProcess() {
 async function processJob(job) {
   switch (job.type) {
     case "xbau_generate":
-      // TODO: Message Builder aufrufen (build-0201, build-0420, etc.)
-      // Vorerst Platzhalter — wird bei Migration der Message Builders befüllt
-      return { status: "not_yet_implemented", nachrichtentyp: job.input.nachrichtentyp };
+      return await processGenerate(job);
 
     case "xbau_validate":
-      // TODO: XSD + Schematron Validierung
-      return { status: "not_yet_implemented" };
+      // TODO: XSD + Schematron Validierung (Saxon-JS)
+      throw new Error("xbau_validate noch nicht implementiert");
 
     case "xbau_parse":
-      // TODO: Eingehende Nachricht parsen
-      return { status: "not_yet_implemented" };
+      // TODO: Eingehende Nachricht parsen (fast-xml-parser)
+      throw new Error("xbau_parse noch nicht implementiert");
 
     default:
       throw new Error(`Unbekannter Job-Typ: ${job.type}`);
   }
+}
+
+/** XBau-Nachricht generieren */
+async function processGenerate(job) {
+  const { nachrichtentyp, vorgang_id, tenant_id, payload } = job.input;
+
+  // Behörde-Daten laden (Platzhalter bis DVDV-Integration)
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("id, name")
+    .eq("id", tenant_id)
+    .single();
+
+  const behoerde = {
+    verzeichnisdienst: "DVDV",
+    kennung: `tenant-${tenant_id}`,
+    name: tenant?.name ?? `Mandant ${tenant_id}`,
+  };
+
+  let xml;
+  switch (nachrichtentyp) {
+    case "0201":
+      xml = build0201({
+        antragVollstaendig: payload.antrag_vollstaendig,
+        befundliste: payload.befundliste,
+        fristDatum: payload.frist_datum,
+        spaetestesGenehmigungsdatum: payload.spaetestes_genehmigungsdatum,
+        anschreiben: payload.anschreiben,
+        bezugNachrichtenUuid: payload.bezug_nachrichten_uuid ?? "",
+        bezugNachrichtentyp: payload.bezug_nachrichtentyp ?? "0200",
+        bezugErstellungszeit: payload.bezug_erstellungszeit ?? new Date().toISOString(),
+        aktenzeichen: payload.aktenzeichen,
+        referenzUuid: payload.referenz_uuid,
+        autor: behoerde,
+        leser: payload.empfaenger ?? behoerde,
+      });
+      break;
+
+    case "1100":
+      xml = build1100({
+        fehlerkennzahl: payload.fehlerkennzahl,
+        fehlertext: payload.fehlertext,
+        abgewieseneNachrichtBase64: payload.abgewiesene_nachricht_base64,
+        abgewieseneNachrichtenUUID: payload.abgewiesene_nachrichten_uuid,
+        abgewiesenerNachrichtentyp: payload.abgewiesener_nachrichtentyp,
+        abgewieseneErstellungszeit: payload.abgewiesene_erstellungszeit,
+        autor: behoerde,
+        leser: payload.empfaenger ?? behoerde,
+      });
+      break;
+
+    case "1180":
+      xml = build1180({
+        quittierteNachrichtenUUID: payload.quittierte_nachrichten_uuid,
+        quittierterNachrichtentyp: payload.quittierter_nachrichtentyp,
+        quittierteErstellungszeit: payload.quittierte_erstellungszeit,
+        aktenzeichen: payload.aktenzeichen,
+        referenzUuid: payload.referenz_uuid,
+        autor: behoerde,
+        leser: payload.empfaenger ?? behoerde,
+      });
+      break;
+
+    default:
+      throw new Error(`Nachrichtentyp ${nachrichtentyp} wird noch nicht unterstützt`);
+  }
+
+  // XML in xbau_nachrichten speichern
+  const { data: nachricht, error: insertError } = await supabase
+    .from("xbau_nachrichten")
+    .insert({
+      tenant_id,
+      nachrichten_uuid: crypto.randomUUID(),
+      nachrichtentyp,
+      richtung: "ausgang",
+      status: "generiert",
+      vorgang_id: vorgang_id ?? null,
+      roh_xml: xml,
+      kerndaten: { nachrichtentyp, ...payload },
+    })
+    .select("id")
+    .single();
+
+  if (insertError) throw new Error(`Speichern fehlgeschlagen: ${insertError.message}`);
+
+  console.log(`[Worker] Nachricht ${nachrichtentyp} generiert: ${nachricht.id}`);
+
+  return {
+    nachricht_id: nachricht.id,
+    nachrichtentyp,
+    vorgang_id,
+  };
 }
 
 // -- Main Loop --
