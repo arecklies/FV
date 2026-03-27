@@ -2,7 +2,7 @@
 <xbau:statistik.bauueberhang.0427 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
   <nachrichtenkopf.g2g>
     <identifikation.nachricht>
-      <nachrichtenUUID>stat-0427-1774645662233</nachrichtenUUID>
+      <nachrichtenUUID>490acb8e-7e02-4ee9-ab24-dc1f58502955</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
         <code>0427</code>
       </nachrichtentyp>
@@ -24,7 +24,7 @@
     </autor>
   </nachrichtenkopf.g2g>
   <xbau:bezug>
-    <xbau:vorgang>2026/0042/BG</xbau:vorgang>
+    <vorgang>2026/0042/BG</vorgang>
     <xbau:uuidGebaeude>550e8400-e29b-41d4-a716-446655440000</xbau:uuidGebaeude>
     <xbau:ordnungsnummer>ORD-001</xbau:ordnungsnummer>
   </xbau:bezug>
@@ -33,7 +33,7 @@
   </xbau:allgemeineAngaben>
   <xbau:datenBauueberhang>
     <xbau:bauueberhang listURI="urn:xoev-de:xbau:codeliste:baufortschritt" listVersionID="2.0">
-      <xbau:code>01</xbau:code>
+      <code>01</code>
     </xbau:bauueberhang>
     <xbau:datumBaubeginn>2026-02</xbau:datumBaubeginn>
   </xbau:datenBauueberhang>

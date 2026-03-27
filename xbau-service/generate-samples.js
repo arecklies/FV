@@ -9,6 +9,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import crypto from "node:crypto";
 
 import { build0201 } from "./src/messages/build-0201.js";
 import { build1100 } from "./src/messages/build-1100.js";
@@ -144,7 +145,7 @@ nachrichten.push({
   datei: "statistik.datenBauvorhaben.0420_sample.xml",
   typ: "0420",
   xml: buildStatistik0420({
-    nachrichtenUUID: "stat-0420-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -178,7 +179,7 @@ nachrichten.push({
   datei: "statistik.baugenehmigung.0421_sample.xml",
   typ: "0421",
   xml: buildStatistik0421({
-    nachrichtenUUID: "stat-0421-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -206,7 +207,7 @@ nachrichten.push({
   datei: "statistik.erloscheneBaugenehmigung.0422_sample.xml",
   typ: "0422",
   xml: buildStatistik0422({
-    nachrichtenUUID: "stat-0422-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -222,7 +223,7 @@ nachrichten.push({
   datei: "statistik.baubeginn.0423_sample.xml",
   typ: "0423",
   xml: buildStatistik0423({
-    nachrichtenUUID: "stat-0423-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -240,7 +241,7 @@ nachrichten.push({
   datei: "statistik.fertigstellungRohbau.0424_sample.xml",
   typ: "0424",
   xml: buildStatistik0424({
-    nachrichtenUUID: "stat-0424-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -259,7 +260,7 @@ nachrichten.push({
   datei: "statistik.baufertigstellung.0425_sample.xml",
   typ: "0425",
   xml: buildStatistik0425({
-    nachrichtenUUID: "stat-0425-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -277,7 +278,7 @@ nachrichten.push({
   datei: "statistik.bauabgang.0426_sample.xml",
   typ: "0426",
   xml: buildStatistik0426({
-    nachrichtenUUID: "stat-0426-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,
@@ -289,6 +290,10 @@ nachrichten.push({
         alterDesGebaeudes: "1",
         umfangDesAbgangs: "1",
         ursacheDesAbgangs: "1",
+        groesseDesAbgangs: {
+          anzahlRaeume: [{ anzahl: 4, raeume: 1 }],
+        },
+        nutzflaeche: 120,
       },
       artDesWohngebaeudes: "01",
     },
@@ -300,7 +305,7 @@ nachrichten.push({
   datei: "statistik.bauueberhang.0427_sample.xml",
   typ: "0427",
   xml: buildStatistik0427({
-    nachrichtenUUID: "stat-0427-" + Date.now(),
+    nachrichtenUUID: crypto.randomUUID(),
     erstellungszeitpunkt: TS,
     autor: BAUAUFSICHT,
     leser: STATISTIK_AMT,

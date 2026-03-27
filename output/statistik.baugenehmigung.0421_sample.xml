@@ -2,7 +2,7 @@
 <xbau:statistik.baugenehmigung.0421 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
   <nachrichtenkopf.g2g>
     <identifikation.nachricht>
-      <nachrichtenUUID>stat-0421-1774645662230</nachrichtenUUID>
+      <nachrichtenUUID>14d428e4-f248-4581-b28d-8e5ab8a72a36</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
         <code>0421</code>
       </nachrichtentyp>
@@ -24,7 +24,7 @@
     </autor>
   </nachrichtenkopf.g2g>
   <xbau:bezug>
-    <xbau:vorgang>2026/0042/BG</xbau:vorgang>
+    <vorgang>2026/0042/BG</vorgang>
     <xbau:uuidGebaeude>550e8400-e29b-41d4-a716-446655440000</xbau:uuidGebaeude>
     <xbau:ordnungsnummer>ORD-001</xbau:ordnungsnummer>
   </xbau:bezug>
@@ -33,7 +33,7 @@
   </xbau:allgemeineAngaben>
   <xbau:datenEinzelnesGebaeude>
     <xbau:artDesBauens listURI="urn:xoev-de:xbau:codeliste:artdesbauens" listVersionID="1.0">
-      <xbau:code>neubau</xbau:code>
+      <code>neubau</code>
     </xbau:artDesBauens>
     <xbau:baugenehmigung>
       <xbau:datumBaugenehmigung>2026-01</xbau:datumBaugenehmigung>
@@ -41,20 +41,20 @@
     </xbau:baugenehmigung>
     <xbau:angabenGebaeude>
       <xbau:artDesWohngebaeudes listURI="urn:xoev-de:xbau:codeliste:wohngebaeudeart" listVersionID="2.0">
-        <xbau:code>01</xbau:code>
+        <code>01</code>
       </xbau:artDesWohngebaeudes>
       <xbau:haustypWohngebaeude listURI="urn:xoev-de:xbau:codeliste:haustypwohngebaeude" listVersionID="2.0">
-        <xbau:code>01</xbau:code>
+        <code>01</code>
       </xbau:haustypWohngebaeude>
     </xbau:angabenGebaeude>
     <xbau:ueberwiegendVerwendeterBaustoff listURI="urn:xoev-de:xbau:codeliste:baustoff" listVersionID="2.0">
-      <xbau:code>01</xbau:code>
+      <code>01</code>
     </xbau:ueberwiegendVerwendeterBaustoff>
     <xbau:kuehlung listURI="urn:xoev-de:xbau:codeliste:kuehlung" listVersionID="2.0">
-      <xbau:code>01</xbau:code>
+      <code>01</code>
     </xbau:kuehlung>
     <xbau:statusSozialerWohnungsbau listURI="urn:xoev-de:xbau:codeliste:statussozialerwohnungsbau" listVersionID="1.0">
-      <xbau:code>00</xbau:code>
+      <code>00</code>
     </xbau:statusSozialerWohnungsbau>
   </xbau:datenEinzelnesGebaeude>
 </xbau:statistik.baugenehmigung.0421>

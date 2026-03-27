@@ -2,11 +2,11 @@
 <prozessnachrichten.rueckweisung.G2G.1100 xmlns="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Kernmodul" version="1.3.0">
   <nachrichtenkopf.g2g xmlns="">
     <identifikation.nachricht>
-      <nachrichtenUUID>f669603a-496b-43ba-a014-41f5cd5bae42</nachrichtenUUID>
+      <nachrichtenUUID>c44c008f-489c-43ae-8ed7-66cee48b5080</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau-kernmodul:codeliste:xbau-kernmodul-nachrichten" listVersionID="3.0">
         <code>1100</code>
       </nachrichtentyp>
-      <erstellungszeitpunkt>2026-03-27T21:10:37.345Z</erstellungszeitpunkt>
+      <erstellungszeitpunkt>2026-03-27T21:14:45.993Z</erstellungszeitpunkt>
     </identifikation.nachricht>
     <leser>
       <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">

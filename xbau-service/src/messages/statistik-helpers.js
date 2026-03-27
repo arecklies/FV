@@ -1,4 +1,4 @@
-import { NS_XBAU, NS_XBAUK, CODELISTE } from "./namespaces.js";
+import { NS_XBAU, NS_XBAUK, NS_BN_G2G, CODELISTE } from "./namespaces.js";
 
 /**
  * Shared helpers for Statistik-Nachrichten 0420-0427 (PROJ-57)
@@ -24,7 +24,8 @@ export function appendCodeElement(parent, elementName, codeValue, codelist, list
   el.att("listURI", codelist.listURI);
   const version = listVersionIDOverride ?? codelist.listVersionID;
   if (version) el.att("listVersionID", version);
-  el.ele(NS_XBAU, "code").txt(codeValue);
+  // code ist unqualified (aus xoev-code.xsd, elementFormDefault="unqualified")
+  el.ele("", "code").txt(codeValue);
   return el;
 }
 
@@ -35,17 +36,20 @@ export function appendCodeElement(parent, elementName, codeValue, codelist, list
  */
 export function appendBezugStatistikmeldung(parent, data) {
   const bezug = parent.ele(NS_XBAU, "bezug");
-  if (data.referenz) bezug.ele(NS_XBAU, "referenz").txt(data.referenz);
-  if (data.vorgang) bezug.ele(NS_XBAU, "vorgang").txt(data.vorgang);
+  // Basis-Typ Bezug: referenz, vorgang, bezugNachricht sind unqualified (form="unqualified" in xbau-baukasten.xsd)
+  if (data.referenz) bezug.ele("", "referenz").txt(data.referenz);
+  if (data.vorgang) bezug.ele("", "vorgang").txt(data.vorgang);
   if (data.bezugNachricht) {
-    const bn = bezug.ele(NS_XBAU, "bezugNachricht");
-    bn.ele(NS_XBAU, "nachrichtenUUID").txt(data.bezugNachricht.nachrichtenUUID);
-    const bnTyp = bn.ele(NS_XBAU, "nachrichtentyp")
+    const bn = bezug.ele("", "bezugNachricht");
+    // Identifikation.NachrichtType-Kinder im bn-g2g Namespace, code unqualified
+    bn.ele(NS_BN_G2G, "nachrichtenUUID").txt(data.bezugNachricht.nachrichtenUUID);
+    const bnTyp = bn.ele(NS_BN_G2G, "nachrichtentyp")
       .att("listURI", CODELISTE.xbauNachrichten.listURI)
       .att("listVersionID", CODELISTE.xbauNachrichten.listVersionID);
-    bnTyp.ele(NS_XBAU, "code").txt(data.bezugNachricht.nachrichtentyp);
-    bn.ele(NS_XBAU, "erstellungszeitpunkt").txt(data.bezugNachricht.erstellungszeitpunkt);
+    bnTyp.ele("", "code").txt(data.bezugNachricht.nachrichtentyp);
+    bn.ele(NS_BN_G2G, "erstellungszeitpunkt").txt(data.bezugNachricht.erstellungszeitpunkt);
   }
+  // Statistik-Erweiterung: uuidGebaeude, ordnungsnummer sind qualified (NS_XBAU)
   bezug.ele(NS_XBAU, "uuidGebaeude").txt(data.uuidGebaeude);
   if (data.ordnungsnummer) bezug.ele(NS_XBAU, "ordnungsnummer").txt(data.ordnungsnummer);
   return bezug;
@@ -57,16 +61,17 @@ export function appendBezugStatistikmeldung(parent, data) {
  */
 export function appendBezugErweitert(parent, data) {
   const bezug = parent.ele(NS_XBAU, "bezug");
-  if (data.referenz) bezug.ele(NS_XBAU, "referenz").txt(data.referenz);
-  if (data.vorgang) bezug.ele(NS_XBAU, "vorgang").txt(data.vorgang);
+  // Basis-Typ Bezug: referenz, vorgang, bezugNachricht sind unqualified
+  if (data.referenz) bezug.ele("", "referenz").txt(data.referenz);
+  if (data.vorgang) bezug.ele("", "vorgang").txt(data.vorgang);
   if (data.bezugNachricht) {
-    const bn = bezug.ele(NS_XBAU, "bezugNachricht");
-    bn.ele(NS_XBAU, "nachrichtenUUID").txt(data.bezugNachricht.nachrichtenUUID);
-    const bnTyp = bn.ele(NS_XBAU, "nachrichtentyp")
+    const bn = bezug.ele("", "bezugNachricht");
+    bn.ele(NS_BN_G2G, "nachrichtenUUID").txt(data.bezugNachricht.nachrichtenUUID);
+    const bnTyp = bn.ele(NS_BN_G2G, "nachrichtentyp")
       .att("listURI", CODELISTE.xbauNachrichten.listURI)
       .att("listVersionID", CODELISTE.xbauNachrichten.listVersionID);
-    bnTyp.ele(NS_XBAU, "code").txt(data.bezugNachricht.nachrichtentyp);
-    bn.ele(NS_XBAU, "erstellungszeitpunkt").txt(data.bezugNachricht.erstellungszeitpunkt);
+    bnTyp.ele("", "code").txt(data.bezugNachricht.nachrichtentyp);
+    bn.ele(NS_BN_G2G, "erstellungszeitpunkt").txt(data.bezugNachricht.erstellungszeitpunkt);
   }
   if (data.referenzAntragsservice) {
     bezug.ele(NS_XBAU, "referenzAntragsservice").txt(data.referenzAntragsservice);
@@ -418,16 +423,17 @@ export function appendDatenBauabgang(parent, data) {
     appendCodeElement(ba, "alterDesGebaeudes", data.bauabgang.alterDesGebaeudes, CODELISTE.gebaeudeAlter);
     appendCodeElement(ba, "umfangDesAbgangs", data.bauabgang.umfangDesAbgangs, CODELISTE.abgangUmfang);
     appendCodeElement(ba, "ursacheDesAbgangs", data.bauabgang.ursacheDesAbgangs, CODELISTE.abgangUrsache);
-    if (data.bauabgang.groesseDesAbgangs) {
-      const gda = ba.ele(NS_XBAU, "groesseDesAbgangs");
-      if (data.bauabgang.groesseDesAbgangs.anzahlRaeume) {
-        for (const wp of data.bauabgang.groesseDesAbgangs.anzahlRaeume) {
-          const ar = gda.ele(NS_XBAU, "anzahlRaeume");
-          if (wp.anzahl != null) ar.ele(NS_XBAU, "anzahl").txt(String(wp.anzahl));
-          if (wp.raeume != null) ar.ele(NS_XBAU, "raeume").txt(String(wp.raeume));
-        }
+    // groesseDesAbgangs (Pflicht laut XSD)
+    const gda = ba.ele(NS_XBAU, "groesseDesAbgangs");
+    if (data.bauabgang.groesseDesAbgangs?.anzahlRaeume) {
+      for (const wp of data.bauabgang.groesseDesAbgangs.anzahlRaeume) {
+        const ar = gda.ele(NS_XBAU, "anzahlRaeume");
+        if (wp.anzahl != null) ar.ele(NS_XBAU, "anzahl").txt(String(wp.anzahl));
+        if (wp.raeume != null) ar.ele(NS_XBAU, "raeume").txt(String(wp.raeume));
       }
     }
+    // nutzflaeche (Pflicht laut XSD)
+    ba.ele(NS_XBAU, "nutzflaeche").txt(String(data.bauabgang.nutzflaeche ?? 0));
   }
   if (data.artDesEigentuemers) {
     appendCodeElement(dba, "artDesEigentuemers", data.artDesEigentuemers, CODELISTE.bauherrOderEigentuemerArt);
