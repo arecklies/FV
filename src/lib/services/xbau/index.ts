@@ -40,7 +40,12 @@ export async function empfangeNachricht(
   userId: string,
   rohXml: string
 ): Promise<{ data: EmpfangeNachrichtErgebnis | null; error: string | null }> {
-  // 1. XML parsen
+  // 1. Grundprüfung: XML-Struktur
+  if (!rohXml.trim().startsWith("<")) {
+    return { data: null, error: "Ungültiges XML: Datei enthält kein XML" };
+  }
+
+  // 2. XML parsen
   let parsed: Record<string, unknown>;
   try {
     parsed = parseRawXml(rohXml);
@@ -48,7 +53,7 @@ export async function empfangeNachricht(
     return { data: null, error: "Ungültiges XML: Datei konnte nicht geparst werden" };
   }
 
-  // 2. Nachrichtenkopf extrahieren
+  // 3. Nachrichtenkopf extrahieren
   const kopf = extractNachrichtenkopf(parsed);
   const nachrichtentyp = detectNachrichtentyp(parsed) ?? kopf?.nachrichtentyp ?? "unbekannt";
   const nachrichtenUuid = kopf?.nachrichtenUUID ?? crypto.randomUUID();
