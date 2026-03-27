@@ -88,8 +88,9 @@ export function AmpelBadge({
   return (
     <Badge
       variant="outline"
-      className={cn(config.className, "gap-1 font-medium", className)}
+      className={cn(config.className, "gap-1 font-medium print-color-exact", className)}
       aria-label={`Friststatus: ${config.label}`}
+      data-ampel-badge
     >
       <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span>{displayLabel}</span>

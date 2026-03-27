@@ -83,3 +83,60 @@
     @apply bg-slate-50 text-foreground;
   }
 }
+
+/* PROJ-42: Print-CSS fuer Frist-Dashboard und Vorgangsliste */
+@media print {
+  /* AC-4: Seitentitel mit Datum */
+  @page {
+    margin: 15mm 10mm;
+  }
+
+  /* Weisser Hintergrund im Druck */
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* AC-1: Seitenumbrueche */
+  tr, .card, [data-slot="card"] {
+    break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  table {
+    break-inside: auto;
+  }
+
+  /* AC-2: Ampelfarben im Druck erhalten */
+  .print-color-exact,
+  [data-ampel-badge] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Statistik-Karten: Rahmenfarben erhalten */
+  .border-l-yellow-400,
+  .border-l-red-500,
+  .border-l-primary {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* AC-4: Drucktitel mit Datum anzeigen */
+  .print-header {
+    display: block !important;
+  }
+
+  /* Mobile Cards im Druck auch auf Desktop zeigen falls Tabelle hidden */
+  .md\:hidden {
+    display: block !important;
+  }
+
+  .hidden.md\:block {
+    display: block !important;
+  }
+}

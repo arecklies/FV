@@ -50,9 +50,9 @@
 | PROJ-36 | Aktenzeichen-Feld auf Vorgang | Deployed | [PROJ-36](PROJ-36-aktenzeichen-feld.md) | 2026-03-27 |
 | PROJ-37 | Frist-Pause bei ruhenden Verfahren | Deployed | [PROJ-37](PROJ-37-frist-pause-ruhende-verfahren.md) | 2026-03-27 |
 | PROJ-38 | E-Mail-Benachrichtigungen Fristeskalation | Planned | [PROJ-38](PROJ-38-email-benachrichtigungen-fristen.md) | 2026-03-27 |
-| PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | Planned | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
+| PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | In Progress | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
 | PROJ-40 | Adress-/Strassenfilter Vorgangsliste | Planned | [PROJ-40](PROJ-40-adressfilter-vorgangsliste.md) | 2026-03-27 |
-| PROJ-42 | Print-CSS Frist-Dashboard und Vorgangsliste | Planned | [PROJ-42](PROJ-42-print-css-fristen.md) | 2026-03-28 |
+| PROJ-42 | Print-CSS Frist-Dashboard und Vorgangsliste | Deployed | [PROJ-42](PROJ-42-print-css-fristen.md) | 2026-03-28 |
 | PROJ-43 | Pause-Begründung als Auswahlliste | Planned | [PROJ-43](PROJ-43-pause-begruendung-auswahlliste.md) | 2026-03-28 |
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |

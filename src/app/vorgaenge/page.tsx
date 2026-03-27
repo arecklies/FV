@@ -211,8 +211,16 @@ export default function VorgaengeListePage() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
+      {/* AC-4: Drucktitel mit Datum (nur im Druck sichtbar) */}
+      <div className="hidden print-header mb-4">
+        <h1 className="text-xl font-bold">Vorgangsliste</h1>
+        <p className="text-sm text-muted-foreground">
+          Gedruckt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })} - {total} Vorgänge
+        </p>
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 print:hidden">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Vorgänge</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -285,7 +293,7 @@ export default function VorgaengeListePage() {
 
       {/* Filter-Leiste */}
       <div
-        className="flex flex-col sm:flex-row gap-3 mb-4"
+        className="flex flex-col sm:flex-row gap-3 mb-4 print:hidden"
         role="search"
         aria-label="Vorgänge filtern"
       >
@@ -358,7 +366,7 @@ export default function VorgaengeListePage() {
           <Button
             variant="outline"
             size="sm"
-            className="mt-2"
+            className="mt-2 print:hidden"
             onClick={() => setSeite(seite)}
           >
             Erneut versuchen
@@ -541,7 +549,7 @@ export default function VorgaengeListePage() {
 
           {/* Paginierung */}
           {totalPages > 1 && (
-            <div className="mt-4">
+            <div className="mt-4 print:hidden">
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>

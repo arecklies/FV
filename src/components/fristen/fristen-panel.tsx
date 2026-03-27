@@ -144,7 +144,7 @@ export function FristenPanel({
               </div>
 
               {/* Aktionen */}
-              <div className="flex flex-wrap gap-2 shrink-0">
+              <div className="flex flex-wrap gap-2 shrink-0 print:hidden">
                 {!frist.gehemmt && (
                   <>
                     <Button
