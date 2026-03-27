@@ -25,7 +25,7 @@
 | PROJ-4 | Fristmanagement | Deployed | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
-| PROJ-7 | XBau-Basisschnittstelle | Planned | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
+| PROJ-7 | XBau-Basisschnittstelle | In Progress | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
 | PROJ-8 | Vollstaendiger Datenexport | Planned | [PROJ-8](PROJ-8-datenexport.md) | 2026-03-25 |
 
 ### Phase 1 - Kern-MVP (Erweiterung)

@@ -38,66 +38,89 @@ XBau-Schnittstelle ist K.O.-Kriterium Nr. 3. Das System muss XBau 2.6 Nachrichte
 
 ### US-1: XBau-Nachricht empfangen und validieren
 Als System moechte ich jede eingehende XBau-Nachricht vor der Verarbeitung validieren, damit nur standardkonforme Nachrichten zu Vorgaengen fuehren.
-- AC-1: XML-Upload ueber UI (MVP-Transportweg)
-- AC-2: XSD-Validierung gegen XBau 2.6 Schema (Pflicht, vor jeder Verarbeitung)
-- AC-3: Schematron-Validierung gegen XBau-Geschaeftsregeln (`Input/sch/xbau-schematron.sch`)
+- AC-1: XML-Upload ueber UI (MVP-Transportweg). Akzeptierte Dateitypen: `.xml`. Max. Dateigroesse: 10 MB
+- AC-2: XSD-Validierung gegen XBau 2.6 Schema (Pflicht, vor jeder Verarbeitung). XSD-Dateien aus `Input/xsd+xsd_dev/xsd/`
+- AC-3: Schematron-Validierung gegen XBau-Geschaeftsregeln (`Input/sch/xbau-schematron.sch`, 759 Regeln)
 - AC-4: Bei valider Nachricht: Eingangsquittung 1180 generieren, dann Nachricht verarbeiten (0200 → Vorgang anlegen)
 - AC-5: Bei nicht-valider Nachricht: Rueckweisungsnachricht 1100 generieren mit standardisierter Fehlerkennzahl (X/V/S/A-Serie), Fehlertext und abgewiesener Nachricht als Base64
-- AC-6: Rueckweisungsnachricht 1100 darf NICHT mit einer weiteren 1100 beantwortet werden (Kettenverbot)
-- AC-7: Nicht-valide Nachricht wird in Fehler-Queue gespeichert (Nachvollziehbarkeit)
+- AC-6: Rueckweisungsnachricht 1100 darf NICHT mit einer weiteren 1100 beantwortet werden (Kettenverbot). Eingehende 1100 wird nur gespeichert, nie mit 1100 quittiert
+- AC-7: Nicht-valide Nachricht wird in Fehler-Queue gespeichert (Nachvollziehbarkeit). Roh-XML, Fehlerkennzahl, Fehlertext, Absender, Zeitpunkt
 - AC-8: Sachbearbeiter sieht Fehler-Queue mit Fehlerbeschreibung und Absender-Information
+- AC-9: Jede empfangene Nachricht (valide oder nicht) wird in `xbau_nachrichten` gespeichert mit: nachrichtenUUID, nachrichtentyp, richtung='eingang', tenant_id, verarbeitungsstatus, roh_xml
+- AC-10: Upload-Endpunkt erfordert Authentifizierung (`requireAuth()`). Nachricht wird dem Tenant des eingeloggten Nutzers zugeordnet
+- AC-11: Nicht-XML-Dateien (z.B. PDF) oder leere Uploads werden mit HTTP 400 abgewiesen (keine Rueckweisung 1100, da kein XBau)
 
 ### US-1a: Vorgang aus validem 0200-Antrag anlegen
 Als Sachbearbeiter moechte ich aus einem validierten XBau-Bauantrag (0200) einen Vorgang anlegen.
-- AC-1: Parsing extrahiert: Bauherr, Grundstueck, Verfahrensart, Bauvorhaben, Anlagen
-- AC-2: Vorgang wird mit extrahierten Daten angelegt (Status: "eingegangen")
-- AC-3: Quellnachricht wird im Vorgang als Transportprotokoll-Eintrag verknuepft
-- AC-4: Bei Parser-Fehler trotz valider XSD: Fehler-Queue mit Benachrichtigung (Implementierungsfehler, nicht XBau-Rueckweisung)
+- AC-1: Parsing extrahiert: Bauherr (Name, Anschrift), Grundstueck (Adresse, Flurstueck, Gemarkung), Verfahrensart, Bauvorhaben (Bezeichnung), Anlagen-Metadaten
+- AC-2: Vorgang wird mit extrahierten Daten ueber `createVorgang()` angelegt (Status: "eingegangen"). Bestehende Pflichtfeld-Validierung (bauherr_name, grundstueck) greift
+- AC-3: Verfahrensart-Mapping: XBau-Verfahrensart-Code wird auf `config_verfahrensarten.kuerzel` gemappt. Bei unbekanntem Code: Fallback auf Default-Verfahrensart oder Fehler-Queue
+- AC-4: `bezug.referenz` (Portal-UUID) wird in `xbau_nachrichten.referenz_uuid` gespeichert (fuer spaetere Folgenachrichten-Zuordnung)
+- AC-5: Quellnachricht wird im Vorgang als Transportprotokoll-Eintrag verknuepft (`xbau_nachrichten.vorgang_id`)
+- AC-6: Audit-Log: `vorgang.created_from_xbau` mit Quellnachrichten-UUID
+- AC-7: Bei Parser-Fehler trotz valider XSD: Fehler-Queue mit Benachrichtigung (Implementierungsfehler, nicht XBau-Rueckweisung)
+- AC-8: Duplikat-Schutz: Wenn dieselbe nachrichtenUUID bereits verarbeitet wurde, kein neuer Vorgang (idempotent). Hinweis an Sachbearbeiter
 
 ### US-1b: Folgenachrichten automatisch zuordnen
 Als System moechte ich eingehende Folgenachrichten (z.B. 0202 Antragsaenderung) automatisch dem richtigen Vorgang zuordnen, damit der Sachbearbeiter keine manuelle Zuordnung vornehmen muss.
 - AC-1: System liest `bezug`-Element der eingehenden Nachricht aus (referenz, vorgang, bezugNachricht)
-- AC-2: Zuordnung priorisiert: (1) `bezug.vorgang` → Match auf `vorgaenge.aktenzeichen`, (2) `bezug.referenz` → Match auf `xbau_nachrichten.referenz_uuid`, (3) `bezug.bezugNachricht.nachrichtenUUID` → Match auf `xbau_nachrichten.nachrichten_uuid`
-- AC-3: Bei eindeutigem Match: Nachricht wird dem Vorgang zugeordnet, Transportprotokoll-Eintrag erstellt
-- AC-4: Bei Mehrfach-Match oder keinem Match: Nachricht landet in Zuordnungs-Queue, Sachbearbeiter ordnet manuell zu
-- AC-5: Sachbearbeiter kann in der Zuordnungs-Queue eine Nachricht einem Vorgang zuweisen (Aktenzeichen-Suche)
-- AC-6: Zugeordnete Folgenachricht ist im Transportprotokoll des Vorgangs sichtbar
+- AC-2: Zuordnung priorisiert: (1) `bezug.vorgang` → Match auf `vorgaenge.aktenzeichen` + `tenant_id`, (2) `bezug.referenz` → Match auf `xbau_nachrichten.referenz_uuid` + `tenant_id`, (3) `bezug.bezugNachricht.nachrichtenUUID` → Match auf `xbau_nachrichten.nachrichten_uuid` + `tenant_id`
+- AC-3: Zuordnung MUSS tenant-isoliert sein. Cross-Tenant-Match ist ausgeschlossen (alle Queries filtern auf `tenant_id`)
+- AC-4: Bei eindeutigem Match: Nachricht wird dem Vorgang zugeordnet, Transportprotokoll-Eintrag erstellt
+- AC-5: Bei Mehrfach-Match oder keinem Match: Nachricht landet in Zuordnungs-Queue, Sachbearbeiter ordnet manuell zu
+- AC-6: Sachbearbeiter kann in der Zuordnungs-Queue eine Nachricht einem Vorgang zuweisen (Aktenzeichen-Suche, nur eigener Tenant)
+- AC-7: Zugeordnete Folgenachricht ist im Transportprotokoll des Vorgangs sichtbar
 
 ### US-1c: Transportprotokoll einsehen
 Als Sachbearbeiter moechte ich im Vorgang eine chronologische Uebersicht aller XBau-Nachrichten sehen, damit ich den Kommunikationsverlauf nachvollziehen kann.
-- AC-1: Tab "Nachrichten" auf der Vorgang-Detailseite
-- AC-2: Chronologische Liste: Zeitpunkt, Nachrichtentyp (z.B. "0200 Bauantrag"), Richtung (Eingang/Ausgang), Status
-- AC-3: Eingehende Nachrichten zeigen Absender-Behoerde
-- AC-4: Ausgehende Nachrichten zeigen Empfaenger und Zustellstatus
+- AC-1: Tab "Nachrichten" auf der Vorgang-Detailseite (neben bestehenden Tabs: Uebersicht, Fristen, Kommentare, Workflow)
+- AC-2: Chronologische Liste: Zeitpunkt, Nachrichtentyp (z.B. "0200 Bauantrag"), Richtung (Eingang ↓ / Ausgang ↑), Verarbeitungsstatus
+- AC-3: Eingehende Nachrichten zeigen Absender-Behoerde (aus Nachrichtenkopf.autor)
+- AC-4: Ausgehende Nachrichten zeigen Empfaenger und Zustellstatus (generiert/heruntergeladen)
 - AC-5: Klick auf Nachricht zeigt Detail-Ansicht mit extrahierten Kerndaten (kein Roh-XML fuer Endnutzer)
+- AC-6: Empty State: "Keine XBau-Nachrichten vorhanden" wenn Tab leer
+- AC-7: Loading State: Skeleton waehrend Laden
 
 ### US-2: Formelle Prüfung versenden (0201)
 Als Sachbearbeiter moechte ich nach der Vollstaendigkeitspruefung eine XBau-Nachricht an den Entwurfsverfasser senden, die mitteilt ob der Antrag vollstaendig ist oder welche Unterlagen fehlen.
 - AC-1: Workflow-Aktion "Formelle Prüfung abschließen" erzeugt 0201-Nachricht
-- AC-2: Bei unvollstaendigem Antrag: `antragVollstaendig=false`, strukturierte Befundliste, Nachforderungsfrist
+- AC-2: Bei unvollstaendigem Antrag: `antragVollstaendig=false`, strukturierte Befundliste (Freitext je Befund), Nachforderungsfrist (Datum)
 - AC-3: Bei vollstaendigem Antrag: `antragVollstaendig=true`, Bearbeitungsfrist-Information
 - AC-4: Optionales Anschreiben (Freitext) mit Hinweis auf Ruecknahmefiktion bei Fristablauf
-- AC-5: Generierte 0201-Nachricht ist XSD-valide
-- AC-6: Nachricht wird im Vorgang als Transportprotokoll-Eintrag gespeichert
+- AC-5: Generierte 0201-Nachricht ist XSD-valide (automatische Validierung vor Speicherung)
+- AC-6: Nachricht wird in `xbau_nachrichten` gespeichert (richtung='ausgang', vorgang_id, verarbeitungsstatus='generiert')
+- AC-7: Nachricht wird als XML-Datei zum Download bereitgestellt (MVP: manueller Download, kein automatischer Versand)
+- AC-8: 0201 kann je Vorgang mehrfach versendet werden (z.B. nach Nachreichung erneute Pruefung mit neuer Befundliste)
+- AC-9: Nachforderungsfrist wird als Frist im Fristmanagement (PROJ-4) angelegt: `createFrist()` mit Typ 'nachforderung'
+- AC-10: Audit-Log: `xbau.0201_generated` mit Vorgang-ID und antragVollstaendig-Wert
 
 ### US-3: Statistik-Nachrichten generieren (0420-0427)
 Als System moechte ich alle 8 XBau-Statistiknachrichten (0420-0427) erzeugen koennen.
 - AC-1: Jede Nachricht enthaelt alle Pflichtfelder laut XSD
-- AC-2: Codelisten-Attribute (listURI, listVersionID) exakt aus XSD
-- AC-3: Alle Nachrichten sind XSD-valide
+- AC-2: Codelisten-Attribute (listURI, listVersionID) exakt aus XSD (Referenz: `xbau-codes.xsd`)
+- AC-3: Alle Nachrichten sind XSD-valide (automatische Validierung vor Speicherung)
 - AC-4: Namespace-Qualifizierung korrekt (xbau: fuer Fachmodule, kein Prefix fuer Kernmodul)
 - AC-5: Jeder Nachrichtentyp hat mindestens einen Unit-Test gegen Referenz-XML
+- AC-6: Codelisten-Mapping DB → XBau nutzt `config_xbau_codelisten`-Tabelle (kein hardcoded Mapping in Generatoren)
+- AC-7: Generierte Nachrichten werden in `xbau_nachrichten` gespeichert (richtung='ausgang')
 
 ### US-4: XBau-Validierung
 Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
-- AC-1: Validierung in CI-Pipeline integriert
+- AC-1: Validierung in CI-Pipeline integriert (Test-Suite prueft alle Nachrichtentypen)
 - AC-2: Referenz-XMLs aus `Input/XBau-Testdateien/2.6/` als Regression-Baseline
+- AC-3: XSD-Schemas werden zur Buildzeit geladen (nicht bei jedem Request). Cache-Strategie fuer Produktivbetrieb
 
 ## 5. Nicht-funktionale Anforderungen
 
-- NFR-1: XML-Generierung serverseitig (nicht im Browser)
-- NFR-2: Codelisten nie hardcoded - immer aus Mapping-Tabelle
+- NFR-1: XML-Generierung und -Validierung serverseitig (nicht im Browser)
+- NFR-2: Codelisten nie hardcoded — immer aus Mapping-Tabelle (`config_xbau_codelisten`)
 - NFR-3: Element-Namen und Attribute immer aus XSD abgeleitet, nie geraten
+- NFR-4: XSD-Validierung < 2 Sekunden je Nachricht (XSD-Schemas gecacht)
+- NFR-5: Schematron-Validierung < 5 Sekunden je Nachricht (759 Regeln)
+- NFR-6: Upload-Limit: 10 MB je XML-Datei
+- NFR-7: `xbau_nachrichten`-Tabelle ist Service-Only (deny-all RLS). Zugriff nur ueber Backend-API mit tenant_id-Filter
+- NFR-8: Roh-XML wird gespeichert aber NICHT an Frontend ausgeliefert (PII-Schutz). Nur extrahierte Kerndaten sichtbar
+- NFR-9: Alle XBau-Service-Funktionen erhalten `SupabaseClient` als Parameter (DI-Pattern wie verfahren/index.ts)
 
 ## 6. Spezialisten-Trigger
 
@@ -109,9 +132,11 @@ Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
 
 ## 7. Offene Fragen
 
-1. Schematron-Validierung: Saxon-JS oder externer Java-Service? (Pflicht fuer MVP — 759 Regeln in `Input/sch/xbau-schematron.sch`)
+1. Schematron-Validierung: Saxon-JS oder externer Java-Service? (Pflicht fuer MVP — 759 Regeln in `Input/sch/xbau-schematron.sch`). Saxon-JS ist ESM-only → Jest-Kompatibilitaet pruefen (backend.md Dependencies)
 2. ~~Welche Statistik-Nachrichtentypen im MVP?~~ **Geklaert:** Alle 8 Typen (0420-0427) im MVP. Vollstaendige OZG-Konformitaet ist K.O.-Kriterium.
 3. XBau-Version pro Tenant konfigurierbar ab wann? (MVP: nur XBau 2.6)
+4. XSD-Validierungsbibliothek fuer Node.js: `libxmljs2` (native, schnell) oder `xmllint` via Child-Process? Beide haben Plattform-Abhaengigkeiten. → `/arch-design` muss entscheiden
+5. Verfahrensart-Mapping 0200 → config_verfahrensarten: Wie werden XBau-Verfahrensart-Codes auf unsere Kuerzel gemappt? Separate Mapping-Tabelle noetig?
 
 ## 8. Annahmen
 
