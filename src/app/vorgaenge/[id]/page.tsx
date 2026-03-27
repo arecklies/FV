@@ -22,6 +22,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import {
   WorkflowStepper,
@@ -52,6 +62,92 @@ interface WorkflowAktionInfo {
   id: string;
   label: string;
   ziel: string;
+}
+
+/** PROJ-46: Bestätigungsdialog vor jeder Workflow-Aktion */
+function WorkflowAktionMitBestaetigung({
+  aktion,
+  istFreigabe,
+  zielLabel,
+  disabled,
+  aktionLoading,
+  aktionError,
+  onExecute,
+}: {
+  aktion: WorkflowAktionInfo;
+  istFreigabe: boolean;
+  zielLabel: string;
+  disabled: boolean;
+  aktionLoading: string | null;
+  aktionError: string | null;
+  onExecute: (aktionId: string) => Promise<boolean>;
+}) {
+  const [open, setOpen] = React.useState(false);
+
+  async function handleConfirm(e: React.MouseEvent) {
+    e.preventDefault();
+    const success = await onExecute(aktion.id);
+    if (success) {
+      setOpen(false);
+    }
+  }
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={disabled}
+          aria-label={`Aktion: ${aktion.label}`}
+        >
+          {aktion.label}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Workflow-Aktion ausführen?</AlertDialogTitle>
+          <AlertDialogDescription asChild>
+            <div>
+              <p>
+                Der Vorgang wechselt zu: <strong>{zielLabel}</strong>.
+                Möchten Sie fortfahren?
+              </p>
+              {istFreigabe && (
+                <p className="mt-2 text-destructive font-medium">
+                  Hinweis: Freigabe-Aktionen haben rechtliche Relevanz und
+                  können nicht ohne weiteres rückgängig gemacht werden.
+                </p>
+              )}
+              {aktionError && (
+                <p className="mt-2 text-destructive text-sm" role="alert">
+                  {aktionError}
+                </p>
+              )}
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={aktionLoading !== null}>
+            Abbrechen
+          </AlertDialogCancel>
+          <Button
+            onClick={handleConfirm}
+            disabled={aktionLoading !== null}
+            variant={istFreigabe ? "destructive" : "default"}
+          >
+            {aktionLoading === aktion.id && (
+              <Loader2
+                className="mr-2 h-4 w-4 animate-spin"
+                aria-hidden="true"
+              />
+            )}
+            Ausführen
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }
 
 interface WorkflowInfo {
@@ -250,8 +346,8 @@ export default function VorgangDetailPage() {
     }
   }
 
-  // Workflow-Aktion ausfuehren
-  async function handleWorkflowAktion(aktionId: string) {
+  // Workflow-Aktion ausfuehren (PROJ-46: gibt true bei Erfolg zurueck)
+  async function handleWorkflowAktion(aktionId: string): Promise<boolean> {
     setAktionLoading(aktionId);
     setAktionError(null);
     try {
@@ -269,13 +365,15 @@ export default function VorgangDetailPage() {
         setAktionError(
           data.error ?? "Aktion konnte nicht ausgeführt werden."
         );
-        return;
+        return false;
       }
       // Vorgang und Historie neu laden
       await loadVorgang();
       await loadWorkflowHistorie();
+      return true;
     } catch {
       setAktionError("Verbindungsfehler.");
+      return false;
     } finally {
       setAktionLoading(null);
     }
@@ -719,24 +817,24 @@ export default function VorgangDetailPage() {
                       </p>
                     )}
                     <div className="flex flex-wrap gap-2">
-                      {workflow.verfuegbare_aktionen.map((a) => (
-                        <Button
-                          key={a.id}
-                          variant="outline"
-                          size="sm"
-                          disabled={aktionLoading !== null}
-                          onClick={() => handleWorkflowAktion(a.id)}
-                          aria-label={`Aktion: ${a.label}`}
-                        >
-                          {aktionLoading === a.id && (
-                            <Loader2
-                              className="mr-2 h-4 w-4 animate-spin"
-                              aria-hidden="true"
-                            />
-                          )}
-                          {a.label}
-                        </Button>
-                      ))}
+                      {workflow.verfuegbare_aktionen.map((a) => {
+                        const istFreigabe = workflow.schritt?.typ === "freigabe";
+                        const zielLabel = workflow.alle_schritte.find(
+                          (s) => s.id === a.ziel
+                        )?.label ?? a.ziel;
+                        return (
+                          <WorkflowAktionMitBestaetigung
+                            key={a.id}
+                            aktion={a}
+                            istFreigabe={istFreigabe}
+                            zielLabel={zielLabel}
+                            disabled={aktionLoading !== null}
+                            aktionLoading={aktionLoading}
+                            aktionError={aktionError}
+                            onExecute={handleWorkflowAktion}
+                          />
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
