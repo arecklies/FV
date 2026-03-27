@@ -1,4 +1,4 @@
-import { NS_XBAUK, PRODUKT_NAME, PRODUKT_HERSTELLER, PRODUKT_VERSION, STANDARD_KERNMODUL, VERSION_KERNMODUL, CODELISTE } from "./namespaces.js";
+import { NS_XBAUK, NS_BN_G2G, PRODUKT_NAME, PRODUKT_HERSTELLER, PRODUKT_VERSION, STANDARD_KERNMODUL, VERSION_KERNMODUL, CODELISTE } from "./namespaces.js";
 import { createXmlDocument, appendNachrichtenkopf } from "./nachrichtenkopf.js";
 import crypto from "node:crypto";
 
@@ -39,13 +39,14 @@ export function build1100(params) {
     .ele("", "code").txt(params.fehlerkennzahl);
   if (params.fehlertext) grund.ele("", "fehlertext").txt(params.fehlertext);
 
+  // idNachricht hat Typ Identifikation.NachrichtType — Kinder im bn-g2g Namespace, code unqualified
   const idNachricht = rueckweisungDaten.ele("", "idNachricht");
-  idNachricht.ele("", "nachrichtenUUID").txt(params.abgewieseneNachrichtenUUID ?? params.bezugNachrichtenUuid);
-  idNachricht.ele("", "nachrichtentyp")
+  idNachricht.ele(NS_BN_G2G, "nachrichtenUUID").txt(params.abgewieseneNachrichtenUUID ?? params.bezugNachrichtenUuid);
+  idNachricht.ele(NS_BN_G2G, "nachrichtentyp")
     .att("listURI", CODELISTE.kernmodulNachrichten.listURI)
     .att("listVersionID", CODELISTE.kernmodulNachrichten.listVersionID)
     .ele("", "code").txt(params.abgewiesenerNachrichtentyp ?? params.bezugNachrichtentyp);
-  idNachricht.ele("", "erstellungszeitpunkt").txt(params.abgewieseneErstellungszeit ?? params.bezugErstellungszeit ?? "");
+  idNachricht.ele(NS_BN_G2G, "erstellungszeitpunkt").txt(params.abgewieseneErstellungszeit ?? params.bezugErstellungszeit ?? "");
 
   rueckweisungDaten.ele("", "nachricht").txt(params.abgewieseneNachrichtBase64 ?? params.abgewieseNeNachrichtBase64);
 
