@@ -14,7 +14,7 @@ import crypto from "node:crypto";
 import { build0201 } from "./src/messages/build-0201.js";
 import { build1100 } from "./src/messages/build-1100.js";
 import { build1180 } from "./src/messages/build-1180.js";
-import { buildStatistik0420 } from "./src/messages/build-0420.js";
+// build-0420 nicht importiert: 0420 wird nur empfangen, nicht generiert
 import { buildStatistik0421 } from "./src/messages/build-0421.js";
 import { buildStatistik0422 } from "./src/messages/build-0422.js";
 import { buildStatistik0423 } from "./src/messages/build-0423.js";
@@ -141,39 +141,8 @@ nachrichten.push({
   }),
 });
 
-// 0420: Statistik Daten Bauvorhaben
-nachrichten.push({
-  datei: "statistik.datenBauvorhaben.0420_sample.xml",
-  typ: "0420",
-  xml: buildStatistik0420({
-    nachrichtenUUID: crypto.randomUUID(),
-    erstellungszeitpunkt: TS,
-    autor: BAUAUFSICHT,
-    leser: STATISTIK_AMT,
-    bezug: { vorgang: "2026/0042/BG" },
-    allgemeineAngaben: { anzahlDerGebaeudeImBauvorhaben: 2 },
-    bauvorhabenGebaeude: [
-      {
-        identifikationGebaeude: {
-          uuidGebaeude: "550e8400-e29b-41d4-a716-446655440000",
-          gebaeudenummer: 1,
-        },
-      },
-      {
-        identifikationGebaeude: {
-          uuidGebaeude: "660f9500-f30c-52e5-b827-557766551111",
-          gebaeudenummer: 2,
-        },
-      },
-    ],
-    ansprechpartner: {
-      name: "Ralf Meier",
-      telefon: "0231-555-4200",
-      email: "ralf.meier@stadt-dortmund.de",
-      einwilligung: true,
-    },
-  }),
-});
+// 0420: statistik.datenBauvorhaben — wird NICHT generiert, nur empfangen (eingehend vom Portal)
+// Builder existiert fuer Testzwecke, aber die Bauaufsicht sendet diese Nachricht nicht.
 
 // 0421: Statistik Baugenehmigung
 nachrichten.push({
