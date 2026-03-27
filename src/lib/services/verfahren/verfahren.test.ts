@@ -15,11 +15,16 @@ jest.mock("@/lib/supabase-server", () => ({
   createServiceRoleClient: jest.fn(),
 }));
 
+jest.mock("@/lib/services/user-resolver", () => ({
+  resolveUserEmails: jest.fn().mockResolvedValue(new Map([["u-001", "mueller@freiburg.de"]])),
+}));
+
 import {
   listVerfahrensarten,
   getVerfahrensart,
   createVorgang,
   listVorgaenge,
+  getVorgaengeStatistik,
   getVorgang,
   updateVorgang,
   softDeleteVorgang,
@@ -28,6 +33,7 @@ import {
   createKommentar,
 } from "./index";
 import { writeAuditLog } from "@/lib/services/audit";
+import { resolveUserEmails } from "@/lib/services/user-resolver";
 import type { Verfahrensart, Vorgang, VorgangListItem, VorgangKommentar } from "./types";
 
 // -- Hilfsfunktionen fuer Supabase-Mock --
@@ -630,7 +636,7 @@ describe("zuweiseVorgang", () => {
 describe("listKommentare", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it("gibt Kommentarliste zurueck (Happy Path)", async () => {
+  it("gibt Kommentarliste mit autor_email zurueck (PROJ-47 US-1)", async () => {
     const client = createMockClient();
     client.setResult("vorgang_kommentare", {
       data: [MOCK_KOMMENTAR],
@@ -641,7 +647,25 @@ describe("listKommentare", () => {
 
     expect(result.data).toHaveLength(1);
     expect(result.data[0].inhalt).toBe("Unterlagen vollständig.");
+    expect(result.data[0].autor_email).toBe("mueller@freiburg.de");
     expect(result.error).toBeNull();
+    expect(resolveUserEmails).toHaveBeenCalledWith(
+      expect.anything(),
+      [USER_ID]
+    );
+  });
+
+  it("setzt autor_email auf null wenn E-Mail nicht auflösbar (AC-3)", async () => {
+    (resolveUserEmails as jest.Mock).mockResolvedValueOnce(new Map());
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", {
+      data: [MOCK_KOMMENTAR],
+      error: null,
+    });
+
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID);
+
+    expect(result.data[0].autor_email).toBeNull();
   });
 
   it("gibt leere Liste bei Fehler zurueck", async () => {
@@ -695,5 +719,121 @@ describe("createKommentar", () => {
 
     expect(result.data).toBeNull();
     expect(result.error).toBe("violates FK constraint");
+  });
+});
+
+describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it("berechnet Statistik korrekt (Happy Path)", async () => {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      vorgaenge: [
+        // 1. Aufruf: count (head: true)
+        { count: 3, error: null },
+        // 2. Aufruf: select IDs
+        { data: [{ id: "v-1" }, { id: "v-2" }, { id: "v-3" }] },
+      ],
+      vorgang_fristen: [
+        // Frist-Status-Batch
+        {
+          data: [
+            { vorgang_id: "v-1", status: "gruen" },
+            { vorgang_id: "v-2", status: "gelb" },
+            { vorgang_id: "v-3", status: "rot" },
+          ],
+        },
+      ],
+    };
+
+    const mockFrom = jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+
+    const result = await getVorgaengeStatistik({ from: mockFrom } as any, TENANT_ID);
+
+    expect(result.error).toBeNull();
+    expect(result.data).toEqual({
+      gesamt: 3,
+      gefaehrdet: 2,    // gelb + rot
+      ueberfaellig: 1,  // rot
+      im_zeitplan: 1,    // gruen
+    });
+  });
+
+  it("zählt Vorgänge ohne Frist als im_zeitplan", async () => {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      vorgaenge: [
+        { count: 2, error: null },
+        { data: [{ id: "v-1" }, { id: "v-2" }] },
+      ],
+      vorgang_fristen: [
+        { data: [] },  // keine Fristen
+      ],
+    };
+
+    const mockFrom = jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+
+    const result = await getVorgaengeStatistik({ from: mockFrom } as any, TENANT_ID);
+
+    expect(result.data.im_zeitplan).toBe(2);
+    expect(result.data.gefaehrdet).toBe(0);
+    expect(result.data.ueberfaellig).toBe(0);
+  });
+
+  it("gibt Nullen bei DB-Fehler zurueck", async () => {
+    const client = createMockClient();
+    client.setResult("vorgaenge", { count: null, error: { message: "timeout" } });
+
+    const result = await getVorgaengeStatistik(client as any, TENANT_ID);
+
+    expect(result.error).toBe("timeout");
+    expect(result.data).toEqual({
+      gesamt: 0,
+      gefaehrdet: 0,
+      ueberfaellig: 0,
+      im_zeitplan: 0,
+    });
+  });
+
+  it("klassifiziert dunkelrot als gefährdet UND überfällig", async () => {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      vorgaenge: [
+        { count: 1, error: null },
+        { data: [{ id: "v-1" }] },
+      ],
+      vorgang_fristen: [
+        { data: [{ vorgang_id: "v-1", status: "dunkelrot" }] },
+      ],
+    };
+
+    const mockFrom = jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+
+    const result = await getVorgaengeStatistik({ from: mockFrom } as any, TENANT_ID);
+
+    expect(result.data.gefaehrdet).toBe(1);
+    expect(result.data.ueberfaellig).toBe(1);
+    expect(result.data.im_zeitplan).toBe(0);
   });
 });

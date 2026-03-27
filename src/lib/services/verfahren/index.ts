@@ -2,8 +2,9 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { writeAuditLog } from "@/lib/services/audit";
 import { generateAktenzeichen } from "./aktenzeichen";
-import type { Vorgang, VorgangListItem, VorgangKommentar, Verfahrensart } from "./types";
+import type { Vorgang, VorgangListItem, VorgangKommentar, VorgangKommentarMitEmail, Verfahrensart, VorgaengeStatistik } from "./types";
 import { VerfahrensartDbSchema, VorgangDbSchema, VorgangListItemDbSchema, VorgangKommentarDbSchema } from "./types";
+import { resolveUserEmails } from "@/lib/services/user-resolver";
 
 /** Zod-Schema fuer Frist-Batch-Query (B-20-03: statt Type Assertion) */
 const FristStatusRowSchema = z.object({
@@ -308,6 +309,65 @@ export async function listVorgaenge(
   return { data: parsed, total: count ?? 0, error: null };
 }
 
+/**
+ * PROJ-47 US-3: Aggregierte Statistik über alle aktiven Vorgänge eines Mandanten.
+ * Separate Query, unabhängig von Filtern/Paginierung der Vorgangsliste.
+ */
+export async function getVorgaengeStatistik(
+  serviceClient: SupabaseClient,
+  tenantId: string
+): Promise<{ data: VorgaengeStatistik; error: string | null }> {
+  // 1. Gesamtanzahl aktiver Vorgänge
+  const { count: gesamt, error: countError } = await serviceClient
+    .from("vorgaenge")
+    .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
+    .is("deleted_at", null);
+
+  if (countError) {
+    return {
+      data: { gesamt: 0, gefaehrdet: 0, ueberfaellig: 0, im_zeitplan: 0 },
+      error: countError.message,
+    };
+  }
+
+  const total = gesamt ?? 0;
+
+  // 2. Frist-Status aller aktiven Vorgänge laden (für Ampel-Klassifizierung)
+  const { data: vorgangIds } = await serviceClient
+    .from("vorgaenge")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .is("deleted_at", null)
+    .limit(10000);
+
+  const ids = (vorgangIds ?? []).map((v: Record<string, unknown>) => v.id as string);
+  const fristStatusMap = await ladeFristStatusBatch(serviceClient, tenantId, ids);
+
+  // 3. Klassifizierung: gefährdet (gelb+rot+dunkelrot), überfällig (rot+dunkelrot), im_zeitplan (grün oder keine Frist)
+  let gefaehrdet = 0;
+  let ueberfaellig = 0;
+  let imZeitplan = 0;
+
+  for (const id of ids) {
+    const status = fristStatusMap.get(id);
+    if (!status || status === "gruen") {
+      imZeitplan++;
+    } else if (status === "gelb") {
+      gefaehrdet++;
+    } else if (status === "rot" || status === "dunkelrot") {
+      gefaehrdet++;
+      ueberfaellig++;
+    }
+    // "gehemmt" zählt weder als gefährdet noch als im_zeitplan
+  }
+
+  return {
+    data: { gesamt: total, gefaehrdet, ueberfaellig, im_zeitplan: imZeitplan },
+    error: null,
+  };
+}
+
 export async function getVorgang(
   serviceClient: SupabaseClient,
   tenantId: string,
@@ -440,7 +500,7 @@ export async function listKommentare(
   serviceClient: SupabaseClient,
   tenantId: string,
   vorgangId: string
-): Promise<{ data: VorgangKommentar[]; error: string | null }> {
+): Promise<{ data: VorgangKommentarMitEmail[]; error: string | null }> {
   const { data, error } = await serviceClient
     .from("vorgang_kommentare")
     .select("id, vorgang_id, autor_user_id, inhalt, created_at")
@@ -451,7 +511,17 @@ export async function listKommentare(
 
   if (error) return { data: [], error: error.message };
   const parsed = (data ?? []).map((d: unknown) => VorgangKommentarDbSchema.parse(d));
-  return { data: parsed, error: null };
+
+  // PROJ-47 US-1: E-Mail-Adressen der Autoren auflösen
+  const userIds = parsed.map((k) => k.autor_user_id);
+  const emailMap = await resolveUserEmails(serviceClient, userIds);
+
+  const enriched: VorgangKommentarMitEmail[] = parsed.map((k) => ({
+    ...k,
+    autor_email: emailMap.get(k.autor_user_id) ?? null,
+  }));
+
+  return { data: enriched, error: null };
 }
 
 export async function createKommentar(

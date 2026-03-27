@@ -4,7 +4,7 @@ import { requireAuth, isAuthContext } from "@/lib/api/auth";
 import { jsonResponse } from "@/lib/api/security-headers";
 import { validationError, serverError } from "@/lib/api/errors";
 import { createServiceRoleClient } from "@/lib/supabase-server";
-import { listVorgaenge, createVorgang } from "@/lib/services/verfahren";
+import { listVorgaenge, createVorgang, getVorgaengeStatistik } from "@/lib/services/verfahren";
 import { CreateVorgangSchema, ListVorgaengeQuerySchema } from "@/lib/services/verfahren/types";
 
 /**
@@ -27,10 +27,15 @@ export async function GET(request: NextRequest) {
   }
 
   const serviceClient = createServiceRoleClient();
-  const result = await listVorgaenge(serviceClient, {
-    tenantId: auth.tenantId,
-    ...parsed.data,
-  });
+
+  // PROJ-47 US-3: Vorgangsliste und Statistik parallel laden
+  const [result, statistikResult] = await Promise.all([
+    listVorgaenge(serviceClient, {
+      tenantId: auth.tenantId,
+      ...parsed.data,
+    }),
+    getVorgaengeStatistik(serviceClient, auth.tenantId),
+  ]);
 
   if (result.error) {
     return serverError("[PROJ-3] GET /api/vorgaenge failed", result.error);
@@ -41,6 +46,7 @@ export async function GET(request: NextRequest) {
     total: result.total,
     seite: parsed.data.seite,
     pro_seite: parsed.data.pro_seite,
+    statistik: statistikResult.data,
   });
 }
 

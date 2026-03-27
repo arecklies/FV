@@ -116,10 +116,24 @@ export const VorgangKommentarDbSchema = z.object({
   created_at: z.string(),
 });
 
+/** PROJ-47 US-1: Kommentar mit aufgelöster E-Mail-Adresse */
+export const VorgangKommentarMitEmailSchema = VorgangKommentarDbSchema.extend({
+  autor_email: z.string().nullable(),
+});
+
 // -- TypeScript-Interfaces (abgeleitet aus Zod-Schemas) --
 
 export type Vorgang = z.infer<typeof VorgangDbSchema>;
 export type VorgangListItem = z.infer<typeof VorgangListItemDbSchema>;
 export type VorgangKommentar = z.infer<typeof VorgangKommentarDbSchema>;
+export type VorgangKommentarMitEmail = z.infer<typeof VorgangKommentarMitEmailSchema>;
 export type Verfahrensart = z.infer<typeof VerfahrensartDbSchema>;
+
+/** PROJ-47 US-3: Statistik-Aggregation über alle Vorgänge */
+export interface VorgaengeStatistik {
+  gesamt: number;
+  gefaehrdet: number;
+  ueberfaellig: number;
+  im_zeitplan: number;
+}
 

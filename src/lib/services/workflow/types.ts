@@ -89,3 +89,10 @@ export const WorkflowSchrittHistorieDbSchema = z.object({
   /** PROJ-35: Vertretung */
   vertretung_fuer: z.string().nullable().default(null),
 });
+
+/** PROJ-47 US-1 AC-5: Historie mit aufgelöster E-Mail */
+export const WorkflowSchrittHistorieMitEmailSchema = WorkflowSchrittHistorieDbSchema.extend({
+  ausgefuehrt_von_email: z.string().nullable(),
+});
+
+export type WorkflowSchrittHistorieMitEmail = z.infer<typeof WorkflowSchrittHistorieMitEmailSchema>;

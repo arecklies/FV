@@ -5,8 +5,9 @@ import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
 
 const VALID_ROLES: Set<string> = new Set(["sachbearbeiter", "referatsleiter", "amtsleiter", "tenant_admin", "platform_admin"]);
-import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie, WorkflowAktion } from "./types";
+import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie, WorkflowSchrittHistorieMitEmail, WorkflowAktion } from "./types";
 import { WorkflowDefinitionDbSchema, WorkflowSchrittHistorieDbSchema } from "./types";
+import { resolveUserEmails } from "@/lib/services/user-resolver";
 
 /**
  * WorkflowService (ADR-011, ADR-003)
@@ -278,7 +279,7 @@ export async function getWorkflowHistorie(
   serviceClient: SupabaseClient,
   tenantId: string,
   vorgangId: string
-): Promise<{ data: WorkflowSchrittHistorie[]; error: string | null }> {
+): Promise<{ data: WorkflowSchrittHistorieMitEmail[]; error: string | null }> {
   const { data, error } = await serviceClient
     .from("vorgang_workflow_schritte")
     .select("id, vorgang_id, schritt_id, aktion_id, begruendung, uebersprungen, ausgefuehrt_von, ausgefuehrt_am, vertretung_fuer")
@@ -289,5 +290,17 @@ export async function getWorkflowHistorie(
 
   if (error) return { data: [], error: error.message };
   const parsed = (data ?? []).map((d: unknown) => WorkflowSchrittHistorieDbSchema.parse(d));
-  return { data: parsed, error: null };
+
+  // PROJ-47 US-1 AC-5: E-Mail-Adressen der ausführenden User auflösen
+  const userIds = parsed
+    .map((s) => s.ausgefuehrt_von)
+    .filter((id): id is string => id !== null);
+  const emailMap = await resolveUserEmails(serviceClient, userIds);
+
+  const enriched: WorkflowSchrittHistorieMitEmail[] = parsed.map((s) => ({
+    ...s,
+    ausgefuehrt_von_email: s.ausgefuehrt_von ? (emailMap.get(s.ausgefuehrt_von) ?? null) : null,
+  }));
+
+  return { data: enriched, error: null };
 }

@@ -3,7 +3,17 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Loader2, Send, Pause, Play } from "lucide-react";
+import { Loader2, Send, Pause, Play } from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,11 +53,11 @@ import { useFristen } from "@/hooks/use-fristen";
 
 import type {
   Vorgang,
-  VorgangKommentar,
+  VorgangKommentarMitEmail,
 } from "@/lib/services/verfahren/types";
 import type {
   WorkflowSchritt,
-  WorkflowSchrittHistorie,
+  WorkflowSchrittHistorieMitEmail,
 } from "@/lib/services/workflow/types";
 
 /**
@@ -172,7 +182,7 @@ export default function VorgangDetailPage() {
   const [error, setError] = React.useState<string | null>(null);
 
   // Kommentare
-  const [kommentare, setKommentare] = React.useState<VorgangKommentar[]>([]);
+  const [kommentare, setKommentare] = React.useState<VorgangKommentarMitEmail[]>([]);
   const [kommentareLoading, setKommentareLoading] = React.useState(false);
   const [neuerKommentar, setNeuerKommentar] = React.useState("");
   const [kommentarSubmitting, setKommentarSubmitting] = React.useState(false);
@@ -180,7 +190,7 @@ export default function VorgangDetailPage() {
 
   // Workflow-Historie
   const [workflowHistorie, setWorkflowHistorie] = React.useState<
-    WorkflowSchrittHistorie[]
+    WorkflowSchrittHistorieMitEmail[]
   >([]);
 
   // Workflow-Aktion
@@ -287,6 +297,7 @@ export default function VorgangDetailPage() {
       setPauseBegruendung("");
       await loadVorgang();
       fristenHook.reload();
+      toast.success("Verfahren pausiert");
     } catch {
       setPauseError("Verbindungsfehler.");
     } finally {
@@ -309,6 +320,7 @@ export default function VorgangDetailPage() {
       }
       await loadVorgang();
       fristenHook.reload();
+      toast.success("Verfahren fortgesetzt");
     } catch {
       setAktionError("Verbindungsfehler.");
     } finally {
@@ -339,6 +351,7 @@ export default function VorgangDetailPage() {
       const data = await res.json();
       setKommentare((prev) => [...prev, data.kommentar]);
       setNeuerKommentar("");
+      toast.success("Kommentar gespeichert");
     } catch {
       setKommentarError("Verbindungsfehler.");
     } finally {
@@ -370,6 +383,10 @@ export default function VorgangDetailPage() {
       // Vorgang und Historie neu laden
       await loadVorgang();
       await loadWorkflowHistorie();
+      // PROJ-47 US-5 AC-3: Toast nach erfolgreicher Workflow-Aktion
+      const zielAktion = workflow?.verfuegbare_aktionen.find((a) => a.id === aktionId);
+      const zielLabel = workflow?.alle_schritte?.find((s) => s.id === zielAktion?.ziel)?.label ?? zielAktion?.ziel;
+      toast.success(`Vorgang wechselt zu: ${zielLabel ?? "nächster Schritt"}`);
       return true;
     } catch {
       setAktionError("Verbindungsfehler.");
@@ -407,12 +424,15 @@ export default function VorgangDetailPage() {
   if (error || !vorgang) {
     return (
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link href="/vorgaenge">
-            <ArrowLeft className="mr-1 h-4 w-4" aria-hidden="true" />
-            Zurück zur Liste
-          </Link>
-        </Button>
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/vorgaenge">Vorgänge</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div
           className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center"
           role="alert"
@@ -437,13 +457,20 @@ export default function VorgangDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
-      {/* Navigation */}
-      <Button variant="ghost" size="sm" asChild className="mb-4">
-        <Link href="/vorgaenge">
-          <ArrowLeft className="mr-1 h-4 w-4" aria-hidden="true" />
-          Zurück zur Liste
-        </Link>
-      </Button>
+      {/* PROJ-47 US-2: Breadcrumb-Navigation */}
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/vorgaenge">Vorgänge</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{vorgang.aktenzeichen}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       {/* Kopfbereich */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -507,7 +534,7 @@ export default function VorgangDetailPage() {
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="gap-1 min-h-[36px]" aria-label="Verfahren pausieren">
                 <Pause className="h-4 w-4" />
-                Verfahren ruht
+                Verfahren pausieren
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -682,7 +709,7 @@ export default function VorgangDetailPage() {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-medium text-muted-foreground">
-                          {k.autor_user_id.slice(0, 8)}...
+                          {k.autor_email ?? `${k.autor_user_id.slice(0, 8)}...`}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(k.created_at).toLocaleString(
@@ -878,11 +905,12 @@ export default function VorgangDetailPage() {
                             </p>
                           )}
                         </div>
-                        <span className="text-xs text-muted-foreground shrink-0">
-                          {new Date(h.ausgefuehrt_am).toLocaleString(
-                            "de-DE"
+                        <div className="text-xs text-muted-foreground shrink-0 text-right">
+                          <div>{new Date(h.ausgefuehrt_am).toLocaleString("de-DE")}</div>
+                          {h.ausgefuehrt_von_email && (
+                            <div>{h.ausgefuehrt_von_email}</div>
                           )}
-                        </span>
+                        </div>
                       </div>
                     ))}
                   </div>

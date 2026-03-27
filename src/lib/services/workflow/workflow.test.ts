@@ -15,6 +15,10 @@ jest.mock("@/lib/supabase-server", () => ({
   createServiceRoleClient: jest.fn(),
 }));
 
+jest.mock("@/lib/services/user-resolver", () => ({
+  resolveUserEmails: jest.fn().mockResolvedValue(new Map([["u-001", "mueller@freiburg.de"]])),
+}));
+
 import {
   getSchritt,
   getVerfuegbareAktionen,
@@ -699,6 +703,9 @@ describe("getWorkflowHistorie", () => {
     expect(result.data).toHaveLength(2);
     expect(result.data[0].schritt_id).toBe("eingegangen");
     expect(result.data[1].aktion_id).toBe("weiter");
+    // PROJ-47 US-1 AC-5: E-Mail-Auflösung in Workflow-Historie
+    expect(result.data[0].ausgefuehrt_von_email).toBe("mueller@freiburg.de");
+    expect(result.data[1].ausgefuehrt_von_email).toBe("mueller@freiburg.de");
     expect(result.error).toBeNull();
   });
 

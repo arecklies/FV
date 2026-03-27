@@ -34,7 +34,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import type { VorgangListItem, Verfahrensart } from "@/lib/services/verfahren/types";
+import type { VorgangListItem, Verfahrensart, VorgaengeStatistik } from "@/lib/services/verfahren/types";
 import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
 
 /**
@@ -56,6 +56,7 @@ interface VorgaengeResponse {
   total: number;
   seite: number;
   pro_seite: number;
+  statistik?: VorgaengeStatistik;
 }
 
 export default function VorgaengeListePage() {
@@ -64,6 +65,7 @@ export default function VorgaengeListePage() {
   // State
   const [vorgaenge, setVorgaenge] = React.useState<VorgangListItem[]>([]);
   const [total, setTotal] = React.useState(0);
+  const [statistik, setStatistik] = React.useState<VorgaengeStatistik | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -155,6 +157,7 @@ export default function VorgaengeListePage() {
         const data: VorgaengeResponse = await res.json();
         setVorgaenge(data.vorgaenge ?? []);
         setTotal(data.total ?? 0);
+        if (data.statistik) setStatistik(data.statistik);
       } catch {
         setError("Verbindungsfehler. Bitte versuchen Sie es erneut.");
       } finally {
@@ -224,8 +227,8 @@ export default function VorgaengeListePage() {
         </Button>
       </div>
 
-      {/* Statistik-Karten (PROJ-31) */}
-      {!loading && !error && vorgaenge.length > 0 && (
+      {/* PROJ-47 US-3: Statistik-Karten mit serverseitigen Daten */}
+      {!error && (
         <div
           className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"
           role="region"
@@ -233,31 +236,47 @@ export default function VorgaengeListePage() {
         >
           <Card className="bg-background">
             <CardContent className="pt-4 pb-3">
-              <p className="text-3xl font-bold tracking-tight">{total}</p>
+              {statistik ? (
+                <p className="text-3xl font-bold tracking-tight">{statistik.gesamt}</p>
+              ) : (
+                <Skeleton className="h-9 w-12" />
+              )}
               <p className="text-sm text-muted-foreground">Vorgänge gesamt</p>
             </CardContent>
           </Card>
           <Card className="bg-background border-l-4 border-l-yellow-400">
             <CardContent className="pt-4 pb-3">
-              <p className="text-3xl font-bold tracking-tight text-yellow-700">
-                {vorgaenge.filter((v) => v.frist_status === "gelb" || v.frist_status === "rot").length}
-              </p>
+              {statistik ? (
+                <p className="text-3xl font-bold tracking-tight text-yellow-700">
+                  {statistik.gefaehrdet}
+                </p>
+              ) : (
+                <Skeleton className="h-9 w-12" />
+              )}
               <p className="text-sm text-muted-foreground">Fristgefährdet</p>
             </CardContent>
           </Card>
           <Card className="bg-background border-l-4 border-l-red-500">
             <CardContent className="pt-4 pb-3">
-              <p className="text-3xl font-bold tracking-tight text-red-700">
-                {vorgaenge.filter((v) => v.frist_status === "dunkelrot").length}
-              </p>
+              {statistik ? (
+                <p className="text-3xl font-bold tracking-tight text-red-700">
+                  {statistik.ueberfaellig}
+                </p>
+              ) : (
+                <Skeleton className="h-9 w-12" />
+              )}
               <p className="text-sm text-muted-foreground">Überfällig</p>
             </CardContent>
           </Card>
           <Card className="bg-background border-l-4 border-l-primary">
             <CardContent className="pt-4 pb-3">
-              <p className="text-3xl font-bold tracking-tight text-primary">
-                {vorgaenge.filter((v) => v.frist_status === "gruen" || !v.frist_status).length}
-              </p>
+              {statistik ? (
+                <p className="text-3xl font-bold tracking-tight text-primary">
+                  {statistik.im_zeitplan}
+                </p>
+              ) : (
+                <Skeleton className="h-9 w-12" />
+              )}
               <p className="text-sm text-muted-foreground">Im Zeitplan</p>
             </CardContent>
           </Card>
@@ -395,7 +414,7 @@ export default function VorgaengeListePage() {
                   <TableHead>
                     <button
                       type="button"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors rounded focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                       onClick={() => handleSort("aktenzeichen")}
                       aria-label="Nach Aktenzeichen sortieren"
                     >
@@ -408,7 +427,7 @@ export default function VorgaengeListePage() {
                   <TableHead>
                     <button
                       type="button"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors rounded focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                       onClick={() => handleSort("workflow_schritt_id")}
                       aria-label="Nach Status sortieren"
                     >
@@ -419,7 +438,7 @@ export default function VorgaengeListePage() {
                   <TableHead>
                     <button
                       type="button"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors rounded focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                       onClick={() => handleSort("frist_status")}
                       aria-label="Nach Fristdringlichkeit sortieren"
                     >
@@ -430,7 +449,7 @@ export default function VorgaengeListePage() {
                   <TableHead>
                     <button
                       type="button"
-                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      className="flex items-center gap-1 hover:text-foreground transition-colors rounded focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                       onClick={() => handleSort("eingangsdatum")}
                       aria-label="Nach Eingangsdatum sortieren"
                     >
@@ -444,7 +463,7 @@ export default function VorgaengeListePage() {
                 {vorgaenge.map((v) => (
                   <TableRow
                     key={v.id}
-                    className="cursor-pointer hover:bg-primary/5 even:bg-muted/30 transition-colors"
+                    className="cursor-pointer hover:bg-primary/5 even:bg-muted/30 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none scroll-mt-16"
                     onClick={() => router.push(`/vorgaenge/${v.id}`)}
                     tabIndex={0}
                     role="link"
