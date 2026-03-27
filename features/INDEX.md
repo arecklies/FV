@@ -52,6 +52,8 @@
 > PROJ-19/20/21 aus PROJ-4 QS-Review extrahiert (offene ACs als separate Items)
 > PROJ-22-27 aus PROJ-4 Retro extrahiert (technische Schulden + Prozessverbesserungen)
 > PROJ-28/29 aus Kundentermin 26.03.2026 (Feedback F-05: interne Fristen, F-08: Tagesansicht)
+> PROJ-33 vorgezogen aus PROJ-9 (Phase 2): Pilotblocker Soest + Leipzig (Zoom-Demo 27.03.2026)
+> PROJ-34 aus Dortmund-Feedback: Ampel-Schwellenwerte zu starr (Zoom-Demo 27.03.2026)
 
 ### Phase 2 - Compliance und Integration
 
@@ -84,8 +86,10 @@
 
 | PROJ-31 | Visuelles Redesign und Branding | Planned | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
 | PROJ-32 | Kundenrückmeldungen (Sammelitem) | Planned | [PROJ-32](PROJ-32-kundenrueckmeldungen.md) | 2026-03-27 |
+| PROJ-33 | Vier-Augen-Lite (einfache Freigabe) | Planned | [PROJ-33](PROJ-33-vier-augen-lite.md) | 2026-03-27 |
+| PROJ-34 | Konfigurierbare Ampel-Schwellenwerte | Planned | [PROJ-34](PROJ-34-konfigurierbare-ampel-schwellenwerte.md) | 2026-03-27 |
 
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
 
-## Next Available ID: PROJ-33
+## Next Available ID: PROJ-35
