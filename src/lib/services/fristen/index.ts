@@ -125,6 +125,8 @@ export async function createFrist(
       end_datum: endDate.toISOString(),
       werktage: params.werktage,
       bundesland: params.bundesland,
+      gelb_ab: params.schwellenwerte?.gelb_ab ?? null,
+      rot_ab: params.schwellenwerte?.rot_ab ?? null,
       status: ampelStatus,
     })
     .select()
@@ -455,7 +457,7 @@ export async function aktualisiereAlleAmpelStatus(
     // Paginiert laden (PROJ-22 FA-5): alle aktiven, nicht gehemmten Fristen
     const { data: fristen, error } = await serviceClient
       .from("vorgang_fristen")
-      .select("id, tenant_id, vorgang_id, start_datum, end_datum, werktage, status, gehemmt, bundesland")
+      .select("id, tenant_id, vorgang_id, start_datum, end_datum, werktage, status, gehemmt, bundesland, gelb_ab, rot_ab")
       .eq("aktiv", true)
       .eq("gehemmt", false)
       .order("id", { ascending: true })
@@ -485,7 +487,11 @@ export async function aktualisiereAlleAmpelStatus(
       for (const frist of blFristen) {
         const endDate = new Date(frist.end_datum);
         const verbleibend = berechneWerktageDazwischen(jetzt, endDate, feiertage);
-        const neuerStatus = berechneAmpelStatus(frist.werktage, verbleibend);
+        const schwellenwerte = {
+          gelb_ab: (frist as Record<string, unknown>).gelb_ab as number | null,
+          rot_ab: (frist as Record<string, unknown>).rot_ab as number | null,
+        };
+        const neuerStatus = berechneAmpelStatus(frist.werktage, verbleibend, schwellenwerte);
 
         if (neuerStatus !== frist.status) {
           const ids = statusUpdates.get(neuerStatus) ?? [];

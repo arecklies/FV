@@ -61,6 +61,8 @@ export const VorgangFristDbSchema = z.object({
   end_datum: z.string(),
   werktage: z.number(),
   bundesland: z.string(),
+  gelb_ab: z.number().nullable().optional(),
+  rot_ab: z.number().nullable().optional(),
   status: AmpelStatusSchema,
   gehemmt: z.boolean(),
   hemmung_grund: z.string().nullable(),
