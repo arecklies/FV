@@ -13,6 +13,7 @@ import crypto from "node:crypto";
 import { build0201 } from "./messages/build-0201.js";
 import { build1100 } from "./messages/build-1100.js";
 import { build1180 } from "./messages/build-1180.js";
+import { validateSchematron, toRueckweisungParams } from "./schematron-validator.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -152,8 +153,7 @@ async function processJob(job) {
       return await processGenerate(job);
 
     case "xbau_validate":
-      // TODO: XSD + Schematron Validierung (Saxon-JS)
-      throw new Error("xbau_validate noch nicht implementiert");
+      return await processValidate(job);
 
     case "xbau_parse":
       // TODO: Eingehende Nachricht parsen (fast-xml-parser)
@@ -253,6 +253,105 @@ async function processGenerate(job) {
     nachricht_id: nachricht.id,
     nachrichtentyp,
     vorgang_id,
+  };
+}
+
+/** XBau-Nachricht validieren (XSD + Schematron) */
+async function processValidate(job) {
+  const { xml_string, nachrichtentyp, nachrichten_uuid, erstellungszeit, tenant_id } = job.input;
+
+  if (!xml_string) {
+    throw new Error("xml_string ist Pflicht fuer xbau_validate");
+  }
+
+  console.log(`[Worker] Validiere Nachricht ${nachrichtentyp || "unbekannt"} (Schematron)...`);
+
+  // Schematron-Validierung
+  const schematronResult = await validateSchematron(xml_string);
+
+  console.log(
+    `[Worker] Schematron: ${schematronResult.valid ? "GUELTIG" : `${schematronResult.errors.length} Fehler`} ` +
+      `(${schematronResult.durationMs}ms, ${schematronResult.ruleCount} Regeln geprueft)`
+  );
+
+  if (!schematronResult.valid) {
+    // Rueckweisung 1100 generieren
+    const rueckweisungParams = toRueckweisungParams(schematronResult);
+
+    // Behoerde-Daten laden
+    const { data: tenant } = await supabase
+      .from("tenants")
+      .select("id, name")
+      .eq("id", tenant_id)
+      .single();
+
+    const behoerde = {
+      verzeichnisdienst: "DVDV",
+      kennung: `tenant-${tenant_id}`,
+      name: tenant?.name ?? `Mandant ${tenant_id}`,
+    };
+
+    const rueckweisungXml = build1100({
+      fehlerkennzahl: rueckweisungParams.fehlerkennzahl,
+      fehlertext: rueckweisungParams.fehlertext,
+      abgewieseneNachrichtBase64: Buffer.from(xml_string, "utf-8").toString("base64"),
+      abgewieseneNachrichtenUUID: nachrichten_uuid ?? "",
+      abgewiesenerNachrichtentyp: nachrichtentyp ?? "unbekannt",
+      abgewieseneErstellungszeit: erstellungszeit ?? new Date().toISOString(),
+      autor: behoerde,
+      leser: behoerde, // Wird vom Fachverfahren ueberschrieben
+    });
+
+    // Rueckweisung in xbau_nachrichten speichern
+    const { data: nachricht, error: insertError } = await supabase
+      .from("xbau_nachrichten")
+      .insert({
+        tenant_id,
+        nachrichten_uuid: crypto.randomUUID(),
+        nachrichtentyp: "1100",
+        richtung: "ausgang",
+        status: "generiert",
+        roh_xml: rueckweisungXml,
+        kerndaten: {
+          nachrichtentyp: "1100",
+          grund: "schematron_validierung",
+          fehler: schematronResult.errors.map((e) => ({
+            id: e.id,
+            fehlerkennzahl: e.fehlerkennzahl,
+            text: e.text,
+          })),
+        },
+      })
+      .select("id")
+      .single();
+
+    if (insertError) {
+      console.error("[Worker] Rueckweisung speichern fehlgeschlagen:", insertError.message);
+    }
+
+    return {
+      valid: false,
+      schematron: {
+        errors: schematronResult.errors.length,
+        durationMs: schematronResult.durationMs,
+        ruleCount: schematronResult.ruleCount,
+        details: schematronResult.errors,
+      },
+      rueckweisung: {
+        nachricht_id: nachricht?.id ?? null,
+        fehlerkennzahl: rueckweisungParams.fehlerkennzahl,
+      },
+    };
+  }
+
+  // Validierung erfolgreich
+  return {
+    valid: true,
+    schematron: {
+      errors: 0,
+      durationMs: schematronResult.durationMs,
+      ruleCount: schematronResult.ruleCount,
+    },
   };
 }
 

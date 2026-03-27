@@ -25,7 +25,7 @@
 | PROJ-4 | Fristmanagement | Deployed | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
-| PROJ-7 | XBau-Basisschnittstelle | Deployed (Conditional: PROJ-57, PROJ-58, PROJ-59) | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
+| PROJ-7 | XBau-Basisschnittstelle | Deployed | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
 | PROJ-8 | Vollstaendiger Datenexport | Planned | [PROJ-8](PROJ-8-datenexport.md) | 2026-03-25 |
 
 ### Phase 1 - Kern-MVP (Erweiterung)
@@ -66,9 +66,9 @@
 | PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | In Progress | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
 | PROJ-55 | Statistik-Karten echtes Filtern statt Sortierung | Deployed | [PROJ-55](PROJ-55-statistik-karten-filter.md) | 2026-03-27 |
 | PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Planned | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
-| PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Planned | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
-| PROJ-58 | XBau CI-Pipeline XSD-Validierung | Planned | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
-| PROJ-59 | XBau Schematron-Runtime-Validierung | Planned | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
+| PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Deployed | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
+| PROJ-58 | XBau CI-Pipeline XSD-Validierung | Deployed | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
+| PROJ-59 | XBau Schematron-Runtime-Validierung | Deployed | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)

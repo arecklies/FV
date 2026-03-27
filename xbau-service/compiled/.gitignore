@@ -1,0 +1,4 @@
+# Build-Artefakte der Schematron-Kompilierung
+# Werden per `npm run prebuild:schematron` generiert
+*.sef.json
+.tmp/
