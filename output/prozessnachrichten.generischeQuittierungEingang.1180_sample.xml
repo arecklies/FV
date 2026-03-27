@@ -2,11 +2,11 @@
 <prozessnachrichten.generischeQuittierungEingang.1180 xmlns="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Kernmodul" version="1.3.0">
   <nachrichtenkopf.g2g xmlns="">
     <identifikation.nachricht>
-      <nachrichtenUUID>f41bc76f-4076-4c6c-a7a8-e9327185898f</nachrichtenUUID>
+      <nachrichtenUUID>1decd3a6-1684-44f0-996f-8d1c79612f80</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau-kernmodul:codeliste:xbau-kernmodul-nachrichten" listVersionID="3.0">
         <code>1180</code>
       </nachrichtentyp>
-      <erstellungszeitpunkt>2026-03-27T21:20:59.416Z</erstellungszeitpunkt>
+      <erstellungszeitpunkt>2026-03-27T21:23:03.121Z</erstellungszeitpunkt>
     </identifikation.nachricht>
     <leser>
       <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">

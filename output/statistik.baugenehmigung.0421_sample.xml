@@ -2,7 +2,7 @@
 <xbau:statistik.baugenehmigung.0421 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
   <nachrichtenkopf.g2g>
     <identifikation.nachricht>
-      <nachrichtenUUID>c769c6f1-d651-47ab-bd09-2a437d159a68</nachrichtenUUID>
+      <nachrichtenUUID>64f67fe8-f9d6-44c3-bf30-5aec23ad5747</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
         <code>0421</code>
       </nachrichtentyp>
@@ -33,7 +33,7 @@
   </xbau:allgemeineAngaben>
   <xbau:datenEinzelnesGebaeude>
     <xbau:artDesBauens listURI="urn:xoev-de:xbau:codeliste:artdesbauens" listVersionID="1.0">
-      <code>neubau</code>
+      <code>1</code>
     </xbau:artDesBauens>
     <xbau:baugenehmigung>
       <xbau:verfahrensart listURI="urn:xoev-de:xbau:codeliste:verfahrensartanstatistik" listVersionID="1.0">
@@ -46,20 +46,20 @@
     </xbau:baugenehmigung>
     <xbau:angabenGebaeude>
       <xbau:artDesWohngebaeudes listURI="urn:xoev-de:xbau:codeliste:wohngebaeudeart" listVersionID="2.0">
-        <code>01</code>
+        <code>1</code>
       </xbau:artDesWohngebaeudes>
       <xbau:haustypWohngebaeude listURI="urn:xoev-de:xbau:codeliste:haustypwohngebaeude" listVersionID="2.0">
-        <code>01</code>
+        <code>1</code>
       </xbau:haustypWohngebaeude>
     </xbau:angabenGebaeude>
     <xbau:ueberwiegendVerwendeterBaustoff listURI="urn:xoev-de:xbau:codeliste:baustoff" listVersionID="2.0">
-      <code>01</code>
+      <code>1</code>
     </xbau:ueberwiegendVerwendeterBaustoff>
     <xbau:kuehlung listURI="urn:xoev-de:xbau:codeliste:kuehlung" listVersionID="2.0">
-      <code>01</code>
+      <code>1</code>
     </xbau:kuehlung>
     <xbau:statusSozialerWohnungsbau listURI="urn:xoev-de:xbau:codeliste:statussozialerwohnungsbau" listVersionID="1.0">
-      <code>00</code>
+      <code>001</code>
     </xbau:statusSozialerWohnungsbau>
   </xbau:datenEinzelnesGebaeude>
 </xbau:statistik.baugenehmigung.0421>

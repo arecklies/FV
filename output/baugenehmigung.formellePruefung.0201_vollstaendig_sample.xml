@@ -2,11 +2,11 @@
 <xbau:baugenehmigung.formellePruefung.0201 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
   <nachrichtenkopf.g2g>
     <identifikation.nachricht>
-      <nachrichtenUUID>aac9fada-a103-4ffb-8bb7-487be3fa5d5f</nachrichtenUUID>
+      <nachrichtenUUID>3b1f3122-6ea9-47f1-b09e-a4d0057b97d5</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
         <code>0201</code>
       </nachrichtentyp>
-      <erstellungszeitpunkt>2026-03-27T21:20:59.415Z</erstellungszeitpunkt>
+      <erstellungszeitpunkt>2026-03-27T21:23:03.120Z</erstellungszeitpunkt>
     </identifikation.nachricht>
     <leser>
       <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">

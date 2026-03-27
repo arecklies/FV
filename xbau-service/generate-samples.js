@@ -187,20 +187,19 @@ nachrichten.push({
     bezug: BEZUG_STATISTIK,
     allgemeineAngaben: ALLGEMEINE_ANGABEN,
     datenEinzelnesGebaeude: {
-      artDesBauens: "neubau",
+      artDesBauens: "1",
       baugenehmigung: {
         verfahrensart: "1",
         artDerBautaetigkeit: "1",
         datumBaugenehmigung: "2026-01",
-        aktenzeichen: "2026/0042/BG",
       },
-      ueberwiegendVerwendeterBaustoff: "01",
+      ueberwiegendVerwendeterBaustoff: "1",
       angabenGebaeude: {
-        artDesWohngebaeudes: "01",
-        haustypWohngebaeude: "01",
+        artDesWohngebaeudes: "1",
+        haustypWohngebaeude: "1",
       },
-      kuehlung: "01",
-      statusSozialerWohnungsbau: "00",
+      kuehlung: "1",
+      statusSozialerWohnungsbau: "001",
     },
   }),
 });
