@@ -53,4 +53,10 @@ Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren
 - Implementierte Komponenten (Code)
 - shadcn/ui-Verwendung dokumentiert
 - State-Übersicht
+- **AC-Prueftabelle (Pflicht):**
+
+| AC | Implementiert | Stelle (Datei:Zeile) | Anmerkung |
+|---|---|---|---|
+| US-X AC-Y | ✅ / ❌ (ausgelassen) | [datei.tsx:42] | [Begruendung bei Auslassung] |
+
 - **Nächster Schritt:** Bei >3 neuen/geänderten Dateien: `/frontend-review` vor QS. Sonst: `/frontend-integrate` für API-Anbindung oder `/qs-review` für Verifikation

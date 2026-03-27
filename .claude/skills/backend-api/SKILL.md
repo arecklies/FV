@@ -56,4 +56,10 @@ Entwirf und implementiere API-Endpunkte für ein Feature.
 - Implementierung (Code)
 - Validierungsregeln (Zod)
 - Fehlerbehandlung
+- **AC-Prueftabelle (Pflicht):**
+
+| AC | Implementiert | Stelle (Datei:Zeile) | Anmerkung |
+|---|---|---|---|
+| US-X AC-Y | ✅ / ❌ (ausgelassen) | [datei.ts:42] | [Begruendung bei Auslassung] |
+
 - **Nächster Schritt:** `/qs-review` für Verifikation oder `/frontend-integrate` für Frontend-Anbindung

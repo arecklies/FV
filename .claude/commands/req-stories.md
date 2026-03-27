@@ -8,9 +8,12 @@ Lies zuerst:
 - `features/INDEX.md` – Kontext und Abhängigkeiten
 - `.claude/rules/general.md`
 
-## Voraussetzung
-Die Feature-Spec (`features/PROJ-X-*.md`) muss existieren und mindestens Ziel, Scope und Stakeholder enthalten.
-Wenn die Datei fehlt oder nur ein Skeleton ist → Nutzer informieren und `/po-backlog` oder `/po-scope` vorschlagen.
+## Voraussetzung (STOPP bei Verletzung)
+1. Pruefe `features/INDEX.md`: PROJ-ID existiert und Status ist `Planned`?
+2. Pruefe `features/PROJ-X-*.md`: Spec existiert mit mindestens Ziel, Scope und Stakeholder?
+Bei Verletzung: **STOPP. Keine Stories schreiben.** Nutzer informieren:
+- Fehlende Spec → "`/po-backlog` vorschlagen"
+- Status nicht Planned → "Feature ist im Status [X], erwartet: Planned."
 
 Agiere als **Requirements Engineer** gemäß `.claude/agents/requirements-engineer.md`.
 

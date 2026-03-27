@@ -9,6 +9,13 @@ Lies zuerst:
 - Feature-Spec: `features/PROJ-X-*.md`
 - `features/INDEX.md`
 
+## Voraussetzung (STOPP bei Verletzung)
+1. Pruefe `features/INDEX.md`: PROJ-ID existiert und Status ist `In Review`?
+2. QS-Bericht (Ausgabe von `/qs-release`) liegt vor?
+Bei Verletzung: **STOPP.** Nutzer informieren:
+- Status nicht In Review → "Feature ist im Status [X], erwartet: In Review. Zuerst `/qs-release` ausfuehren."
+- Kein QS-Bericht → "Kein QS-Bericht vorhanden. Zuerst `/qs-release` ausfuehren."
+
 Agiere als **Product Owner** gemäß `.claude/agents/product-owner.md`.
 
 ## Aufgabe

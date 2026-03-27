@@ -9,6 +9,11 @@ Lies zuerst:
 - Implementierungsdateien: `git ls-files src/`
 - `.claude/rules/testing.md` – Qualitätsgates
 
+## Voraussetzung (STOPP bei Verletzung)
+1. Pruefe `features/INDEX.md`: PROJ-ID existiert und Status ist `In Progress`?
+2. Pruefe `features/PROJ-X-*.md`: Spec enthaelt mindestens 1 User Story mit ACs?
+Bei Verletzung: **STOPP.** Nutzer informieren. Bei falschem Status: "Feature ist im Status [X], erwartet: In Progress."
+
 Agiere als **Senior QS Engineer** gemäß `.claude/agents/senior-qs-engineer.md`.
 
 ## Aufgabe
@@ -48,10 +53,38 @@ Verifiziere eine fertiggestellte Implementierung.
 11. Identifiziere Testlücken
 12. Dokumentiere Befunde mit Reproduktionsschritten
 
-## Ausgabe
-- Verifikationsergebnis
-- Befunde (kritisch / major / minor) mit Reproduktionsschritten
-- Testlücken
-- **Nächster Schritt:** `/qs-release` bei bestandener Prüfung oder `/backend-api` / `/frontend-component` bei Nacharbeit
+## Ausgabe (Pflicht-Template — MUSS in dieser Struktur geliefert werden)
+
+```markdown
+## QS-Review: [Feature-Name] (PROJ-X)
+**Verifikationsstatus:** BESTANDEN / NICHT BESTANDEN (X Befunde)
+
+### AC-Prueftabelle
+| AC | Pruefung | Stelle (Datei:Zeile) | Status |
+|---|---|---|---|
+| US-1 AC-1 | [Was geprueft wurde] | [datei.ts:42] | ✅ / ❌ |
+
+### Qualitaetsgates
+| Gate | Ergebnis | Anmerkung |
+|---|---|---|
+| Regressionstests (X/Y) | ✅ / ❌ | |
+| Testabdeckung neue Dateien | X% / n.a. | |
+| RLS-Tests | ✅ / n.a. | |
+| Auth-Tests | ✅ / n.a. | |
+| Build | ✅ / ❌ | |
+| BITV 2.0 | ✅ / n.a. | |
+| Zeichensatz UTF-8 | ✅ | |
+
+### Befunde (sortiert: Kritisch → Major → Minor)
+| ID | Schwere | Beschreibung | Reproduktion | Status |
+|---|---|---|---|---|
+| B-XX-01 | Kritisch/Major/Minor | ... | ... | Offen/Behoben |
+
+### Testluecken
+[Liste oder "Keine"]
+
+### Naechster Schritt
+`/qs-release PROJ-X` bei BESTANDEN, sonst `/backend-api` oder `/frontend-component` fuer Nacharbeit.
+```
 
 **Hinweis:** Dieser Skill aendert NICHT den Status in INDEX.md. Die Status-Aktualisierung auf "In Review" erfolgt ausschliesslich durch `/qs-release`.
