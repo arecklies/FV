@@ -1,6 +1,6 @@
 # PROJ-44: LBO Baden-Württemberg Regelwerk-Konfiguration
 
-**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-28
+**Status:** Deployed | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-28
 **Herkunft:** Kunden-Session 28.03.2026, F-03 (Herr Yilmaz, Freiburg, P1)
 **Prioritaet:** Hoch (Pilotblocker Freiburg)
 
