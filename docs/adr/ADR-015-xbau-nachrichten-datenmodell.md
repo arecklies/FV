@@ -42,13 +42,28 @@ background_jobs-Tabelle (ADR-008):
 - Schreibt extrahierte Kerndaten in `xbau_nachrichten.kerndaten` (JSON)
 - Markiert `background_jobs.status = 'completed'`
 
-**Deployment-Optionen für den XBau-Service:**
-- **MVP:** Supabase Edge Function (Deno, gleiche Infrastruktur)
-- **Skaliert:** Separater Container (Node.js/Deno) mit eigenem Deployment-Zyklus
-- **Parallelbetrieb:** v2.6-Service und v2.7-Service gleichzeitig, Routing über `tenant.xbau_version`
+**Entschiedene Architekturparameter (2026-03-28):**
+
+| Parameter | Entscheidung |
+|---|---|
+| **Deployment** | Docker-Container (Fly.io oder Railway), ~5-15€/Monat. Volle Kontrolle, kein Timeout-Limit, Saxon-JS + xmllint problemlos |
+| **Kommunikation** | Webhook: XBau-Service ruft Fachverfahren-Endpunkt nach Job-Abschluss. Webhook-Auth (HMAC-Secret), Retry bei Fehlschlag |
+| **Retry-Strategie** | 3 Versuche, 30s/60s/120s Delay. Danach Dead-Letter (Sachbearbeiter sieht Fehler in Queue) |
+| **Datenbank** | Gleiche Supabase-Instanz, Service-Role-Key. Kein Sync, kein Extra-Hosting |
+| **Versionierung** | Spalte `xbau_version` auf `tenants`-Tabelle, MVP-Default '2.6'. Routing erst bei Parallelbetrieb aktiv |
+| **Schnittstellenvertrag** | Zod-Schemas in beiden Services separat definiert. XBau-Service definiert was er akzeptiert, Fachverfahren schickt passend |
+
+**Webhook-Ablauf:**
+```
+1. Fachverfahren → background_jobs INSERT (type: 'xbau_generate', status: 'pending')
+2. XBau-Service pollt background_jobs (pg_cron oder Long-Polling)
+3. XBau-Service verarbeitet → schreibt xbau_nachrichten + background_jobs.status = 'completed'
+4. XBau-Service → POST {fachverfahren}/api/internal/xbau/webhook (HMAC-signiert)
+5. Fachverfahren empfängt Webhook → benachrichtigt Frontend (oder Frontend pollt Job-Status)
+```
 
 **Konsequenz für bestehende Implementierung:**
-Die aktuell synchronen Message Builders (`src/lib/services/xbau/messages/`) werden schrittweise in den XBau-Service migriert. Bis zur vollständigen Migration bleiben sie als Übergangslösung im Fachverfahren, werden aber bereits über die `background_jobs`-Schnittstelle angesprochen.
+Die aktuell synchronen Message Builders (`src/lib/services/xbau/messages/`) werden schrittweise in den Docker-Container migriert. Bis zur vollständigen Migration bleiben sie als Übergangslösung im Fachverfahren, werden aber bereits über die `background_jobs`-Schnittstelle angesprochen.
 
 ### 1. Nachrichtentabelle `xbau_nachrichten`
 
