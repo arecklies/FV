@@ -27,12 +27,13 @@
 | [ADR-010](ADR-010-pdf-generierung.md) | PDF-Generierung und Bescheid-Rendering | **Accepted** | 2026-03-26 |
 | [ADR-011](ADR-011-workflow-engine.md) | Workflow Engine fuer prozessgesteuerte Vorgangsbearbeitung | **Accepted** | 2026-03-26 |
 | [ADR-012](ADR-012-vorgang-datenmodell.md) | Vorgang-Datenmodell | **Accepted** | 2026-03-26 |
+| [ADR-013](ADR-013-stellvertreter-freigabe.md) | Stellvertreter-Modell fuer Vier-Augen-Freigabe | **Accepted** | 2026-03-27 |
 
-> Alle 12 ADRs sind accepted (Review 2026-03-26). Keine offenen Architekturentscheidungen fuer Phase 0/1.
+> Alle 13 ADRs sind accepted (Review 2026-03-27).
 
 ## Konventionen
 
 - Dateiformat: `ADR-XXX-titel-in-kebab-case.md`
 - Jeder ADR wird ueber `/arch-adr` erstellt und ueber `/docs-adr` in diesen Index eingepflegt
 - ADR-Nummern sind sequenziell und werden nie wiederverwendet
-- Naechste verfuegbare Nummer: **ADR-013**
+- Naechste verfuegbare Nummer: **ADR-014**

@@ -62,6 +62,7 @@ Als Product Owner moechte ich ein Mapping-Dokument, damit ich Feature-Paritaet b
 2. Gibt es bestehende Export-Werkzeuge oder nur Datenbank-Zugriff?
 3. Welche Kommune ist Pilot?
 4. Historische Vorgaenge nur als PDF-Archiv? Ab welchem Jahrgang?
+5. **Leipzig (Kunden-Session 27.03.2026):** Herr Dr. Wiesner (Amtsleiter) hat 12.000 Altverfahren in ProBauG. Braucht Machbarkeitsaussage zur Migration vor Budgetfreigabe. Priorisierung MIGRATION-1 pruefen.
 
 ## Annahmen
 

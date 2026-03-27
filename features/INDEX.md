@@ -46,6 +46,12 @@
 | PROJ-28 | Nicht-gesetzliche Fristen (intern) | Planned | [PROJ-28](PROJ-28-nicht-gesetzliche-fristen.md) | 2026-03-26 |
 | PROJ-29 | Persoenliche Tagesansicht | Planned | [PROJ-29](PROJ-29-persoenliche-tagesansicht.md) | 2026-03-26 |
 | PROJ-30 | Workflow-Aktionen mit Kontextinformation | Planned | [PROJ-30](PROJ-30-workflow-aktionen-kontext.md) | 2026-03-26 |
+| PROJ-35 | Vertretungsregelung Vier-Augen-Freigabe | Deployed | [PROJ-35](PROJ-35-vertretungsregelung-freigabe.md) | 2026-03-27 |
+| PROJ-36 | Aktenzeichen-Feld auf Vorgang | Deployed | [PROJ-36](PROJ-36-aktenzeichen-feld.md) | 2026-03-27 |
+| PROJ-37 | Frist-Pause bei ruhenden Verfahren | In Progress | [PROJ-37](PROJ-37-frist-pause-ruhende-verfahren.md) | 2026-03-27 |
+| PROJ-38 | E-Mail-Benachrichtigungen Fristeskalation | Planned | [PROJ-38](PROJ-38-email-benachrichtigungen-fristen.md) | 2026-03-27 |
+| PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | Planned | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
+| PROJ-40 | Adress-/Strassenfilter Vorgangsliste | Planned | [PROJ-40](PROJ-40-adressfilter-vorgangsliste.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -54,6 +60,10 @@
 > PROJ-28/29 aus Kundentermin 26.03.2026 (Feedback F-05: interne Fristen, F-08: Tagesansicht)
 > PROJ-33 vorgezogen aus PROJ-9 (Phase 2): Pilotblocker Soest + Leipzig (Zoom-Demo 27.03.2026)
 > PROJ-34 aus Dortmund-Feedback: Ampel-Schwellenwerte zu starr (Zoom-Demo 27.03.2026)
+> PROJ-35/36/37 aus Kunden-Session 27.03.2026: Pilotblocker Soest (Vertretung, Aktenzeichen, Frist-Pause)
+> PROJ-38 aus Dortmund-Feedback: E-Mail-Benachrichtigung bei Fristeskalation
+> PROJ-39 aus Leipzig-Feedback: Wizard fuer Berufseinsteiger
+> PROJ-40 aus Soest-Feedback: Gebietsfilter nach Strasse
 
 ### Phase 2 - Compliance und Integration
 
@@ -63,9 +73,11 @@
 | PROJ-10 | Audit-Trail (revisionssicher) | Planned | | 2026-03-25 |
 | PROJ-11 | XTA-Anbindung (OSCI-Transport) | Planned | [PROJ-11](PROJ-11-xta-anbindung.md) | 2026-03-25 |
 | PROJ-18 | FIT-Connect-Anbindung (OZG-Portal) | Planned | [PROJ-18](PROJ-18-fit-connect.md) | 2026-03-26 |
+| PROJ-41 | Loeschkonzept und Aufbewahrungsfristen (DSGVO) | Planned | [PROJ-41](PROJ-41-loeschkonzept-dsgvo.md) | 2026-03-27 |
 
 > PROJ-11 umbenannt: XTA statt FIT-Connect (Kundenfeedback 2026-03-26: Bestandskunden haben kein FIT-Connect)
 > PROJ-18 neu: FIT-Connect als strategisches Ziel in Phase 3, XTA-Sunset nach Migration
+> PROJ-41 aus Leipzig-Feedback: Datenschutzbeauftragter verlangt Loeschkonzept vor Vertragsschluss
 
 ### Phase 3 - Fuehrung und Optimierung
 
@@ -92,4 +104,4 @@
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
 
-## Next Available ID: PROJ-35
+## Next Available ID: PROJ-42
