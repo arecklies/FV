@@ -5,6 +5,8 @@
 
 export const NS_XBAU = "http://www.xleitstelle.de/xbau/2/6";
 export const NS_XBAUK = "http://www.xleitstelle.de/xbau/kernmodul/1/3/0";
+/** Basisnachricht G2G Namespace (fuer bezugNachricht-Kinder, Identifikation.Nachricht) */
+export const NS_BN_G2G = "http://xoev.de/schemata/basisnachricht/g2g/1_1";
 
 export const PRODUKT_NAME = "FV-SaaS";
 export const PRODUKT_HERSTELLER = "Fachverfahren SaaS";

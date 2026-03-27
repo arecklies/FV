@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbau:statistik.datenBauvorhaben.0420 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
+  <nachrichtenkopf.g2g>
+    <identifikation.nachricht>
+      <nachrichtenUUID>stat-0420-1774645280115</nachrichtenUUID>
+      <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
+        <code>0420</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt>2026-03-27T14:30:00Z</erstellungszeitpunkt>
+    </identifikation.nachricht>
+    <leser>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>S2</code>
+      </verzeichnisdienst>
+      <kennung>urn:de:bund:destatis:bfs:intern:statistik:nrw</kennung>
+      <name>Information und Technik Nordrhein-Westfalen (IT.NRW)</name>
+    </leser>
+    <autor>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>S2</code>
+      </verzeichnisdienst>
+      <kennung>urn:de:bund:destatis:bfs:intern:bauaufsicht:dortmund</kennung>
+      <name>Bauordnungsamt Stadt Dortmund</name>
+    </autor>
+  </nachrichtenkopf.g2g>
+  <xbau:bezug>
+    <xbau:vorgang>2026/0042/BG</xbau:vorgang>
+  </xbau:bezug>
+  <xbau:allgemeineAngaben>
+    <xbau:anzahlDerGebaeudeImBauvorhaben>2</xbau:anzahlDerGebaeudeImBauvorhaben>
+  </xbau:allgemeineAngaben>
+  <xbau:bauvorhabenGebaeude>
+    <xbau:datenEinzelnesGebaeude>
+      <xbau:identifikationGebaeude>
+        <xbau:uuidGebaeude>550e8400-e29b-41d4-a716-446655440000</xbau:uuidGebaeude>
+        <xbau:gebaeudenummer>1</xbau:gebaeudenummer>
+      </xbau:identifikationGebaeude>
+    </xbau:datenEinzelnesGebaeude>
+    <xbau:datenEinzelnesGebaeude>
+      <xbau:identifikationGebaeude>
+        <xbau:uuidGebaeude>660f9500-f30c-52e5-b827-557766551111</xbau:uuidGebaeude>
+        <xbau:gebaeudenummer>2</xbau:gebaeudenummer>
+      </xbau:identifikationGebaeude>
+    </xbau:datenEinzelnesGebaeude>
+  </xbau:bauvorhabenGebaeude>
+  <xbau:ansprechpartner>
+    <xbau:datenAnsprechpartner/>
+  </xbau:ansprechpartner>
+</xbau:statistik.datenBauvorhaben.0420>

@@ -1,4 +1,4 @@
-import { NS_XBAU, NS_XBAUK, PRODUKT_NAME, PRODUKT_HERSTELLER, PRODUKT_VERSION, STANDARD_HOCHBAU, VERSION_HOCHBAU, CODELISTE } from "./namespaces.js";
+import { NS_XBAU, NS_XBAUK, NS_BN_G2G, PRODUKT_NAME, PRODUKT_HERSTELLER, PRODUKT_VERSION, STANDARD_HOCHBAU, VERSION_HOCHBAU, CODELISTE } from "./namespaces.js";
 import { createXmlDocument, appendNachrichtenkopf } from "./nachrichtenkopf.js";
 import crypto from "node:crypto";
 
@@ -33,13 +33,16 @@ export function build0201(params) {
   const bezug = root.ele(NS_XBAU, "bezug");
   if (params.referenzUuid) bezug.ele("", "referenz").txt(params.referenzUuid);
   if (params.aktenzeichen) bezug.ele("", "vorgang").txt(params.aktenzeichen);
+  // bezugNachricht hat Typ xbau:Identifikation.Nachricht (restriction von bn-uq-g2g)
+  // Kinder-Elemente: nachrichtenUUID, nachrichtentyp, erstellungszeitpunkt im bn-g2g Namespace
+  // ABER: code innerhalb nachrichtentyp ist unqualified (kein Namespace)
   const bezugNachricht = bezug.ele("", "bezugNachricht");
-  bezugNachricht.ele("", "nachrichtenUUID").txt(params.bezugNachrichtenUuid);
-  const bnTyp = bezugNachricht.ele("", "nachrichtentyp")
+  bezugNachricht.ele(NS_BN_G2G, "nachrichtenUUID").txt(params.bezugNachrichtenUuid);
+  const bnTyp = bezugNachricht.ele(NS_BN_G2G, "nachrichtentyp")
     .att("listURI", CODELISTE.xbauNachrichten.listURI)
     .att("listVersionID", CODELISTE.xbauNachrichten.listVersionID);
   bnTyp.ele("", "code").txt(params.bezugNachrichtentyp);
-  bezugNachricht.ele("", "erstellungszeitpunkt").txt(params.bezugErstellungszeit);
+  bezugNachricht.ele(NS_BN_G2G, "erstellungszeitpunkt").txt(params.bezugErstellungszeitpunkt ?? params.bezugErstellungszeit ?? "");
 
   root.ele(NS_XBAU, "antragVollstaendig").txt(params.antragVollstaendig ? "true" : "false");
 
@@ -64,7 +67,17 @@ export function build0201(params) {
       .txt(params.spaetestesGenehmigungsdatum ?? new Date().toISOString().split("T")[0]);
   }
 
-  if (params.anschreiben) root.ele(NS_XBAU, "anschreiben").txt(params.anschreiben);
+  // anschreiben ist xbauk:Text = Sequenz von textabsatz-Elementen (kein Freitext)
+  if (params.anschreiben) {
+    const anschreiben = root.ele(NS_XBAU, "anschreiben");
+    const absaetze = typeof params.anschreiben === "string"
+      ? params.anschreiben.split("\n").filter(Boolean)
+      : Array.isArray(params.anschreiben) ? params.anschreiben : [String(params.anschreiben)];
+    // textabsatz ist unqualified (Kernmodul elementFormDefault="unqualified")
+    for (const absatz of absaetze) {
+      anschreiben.ele("", "textabsatz").txt(absatz);
+    }
+  }
 
   return doc.end({ prettyPrint: true });
 }

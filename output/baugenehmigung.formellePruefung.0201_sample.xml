@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbau:baugenehmigung.formellePruefung.0201 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
+  <nachrichtenkopf.g2g>
+    <identifikation.nachricht>
+      <nachrichtenUUID>1ac51bf5-d787-4ddf-9fe3-73a6a210c92a</nachrichtenUUID>
+      <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
+        <code>0201</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt>2026-03-27T21:01:20.108Z</erstellungszeitpunkt>
+    </identifikation.nachricht>
+    <leser>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>S2</code>
+      </verzeichnisdienst>
+      <kennung>urn:de:bund:destatis:bfs:intern:architekt:ev001</kennung>
+      <name>Architekturbuero Schmidt &amp; Partner</name>
+    </leser>
+    <autor>
+      <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
+        <code>S2</code>
+      </verzeichnisdienst>
+      <kennung>urn:de:bund:destatis:bfs:intern:bauaufsicht:dortmund</kennung>
+      <name>Bauordnungsamt Stadt Dortmund</name>
+    </autor>
+  </nachrichtenkopf.g2g>
+  <xbau:bezug>
+    <referenz>a1b2c3d4-e5f6-7890-abcd-ef1234567890</referenz>
+    <vorgang>2026/0042/BG</vorgang>
+    <bezugNachricht>
+      <nachrichtenUUID xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1">f0e1d2c3-b4a5-6789-0123-456789abcdef</nachrichtenUUID>
+      <nachrichtentyp xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1" listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
+        <code xmlns="">0200</code>
+      </nachrichtentyp>
+      <erstellungszeitpunkt xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1">2026-03-20T09:00:00Z</erstellungszeitpunkt>
+    </bezugNachricht>
+  </xbau:bezug>
+  <xbau:antragVollstaendig>false</xbau:antragVollstaendig>
+  <xbau:anschreiben>
+    <textabsatz>Sehr geehrte Damen und Herren,</textabsatz>
+    <textabsatz>die formelle Pruefung Ihres Bauantrags hat ergeben, dass die oben aufgefuehrten Unterlagen fehlen oder unvollstaendig sind. Bitte reichen Sie diese bis zum 27.04.2026 nach.</textabsatz>
+    <textabsatz>Bei Fristablauf ohne Nachreichung gilt der Antrag gemaess § 72 Abs. 2 BauO NRW als zurueckgenommen.</textabsatz>
+    <textabsatz>Mit freundlichen Gruessen</textabsatz>
+    <textabsatz>Bauordnungsamt Stadt Dortmund</textabsatz>
+  </xbau:anschreiben>
+</xbau:baugenehmigung.formellePruefung.0201>

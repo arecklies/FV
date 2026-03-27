@@ -1,6 +1,7 @@
 import {
   NS_XBAU,
   NS_XBAUK,
+  NS_BN_G2G,
   PRODUKT_NAME,
   PRODUKT_HERSTELLER,
   PRODUKT_VERSION,
@@ -109,15 +110,17 @@ export function build0201(params: Build0201Params): string {
   if (params.aktenzeichen) {
     bezug.ele("", "vorgang").txt(params.aktenzeichen);
   }
+  // bezugNachricht hat Typ xbau:Identifikation.Nachricht (restriction von bn-uq-g2g)
+  // Kinder im bn-g2g Namespace, code innerhalb nachrichtentyp ist unqualified
   const bezugNachricht = bezug.ele("", "bezugNachricht");
-  bezugNachricht.ele("", "nachrichtenUUID").txt(params.bezugNachrichtenUuid);
+  bezugNachricht.ele(NS_BN_G2G, "nachrichtenUUID").txt(params.bezugNachrichtenUuid);
   const bnTyp = bezugNachricht
-    .ele("", "nachrichtentyp")
+    .ele(NS_BN_G2G, "nachrichtentyp")
     .att("listURI", CODELISTE.xbauNachrichten.listURI)
     .att("listVersionID", CODELISTE.xbauNachrichten.listVersionID);
   bnTyp.ele("", "code").txt(params.bezugNachrichtentyp);
   bezugNachricht
-    .ele("", "erstellungszeitpunkt")
+    .ele(NS_BN_G2G, "erstellungszeitpunkt")
     .txt(params.bezugErstellungszeit);
 
   // antragVollstaendig (xs:boolean)
@@ -159,9 +162,14 @@ export function build0201(params: Build0201Params): string {
       .txt(params.spaetestesGenehmigungsdatum ?? new Date().toISOString().split("T")[0]);
   }
 
-  // anschreiben (optional)
+  // anschreiben (optional, xbauk:Text = Sequenz von textabsatz-Elementen)
   if (params.anschreiben) {
-    root.ele(NS_XBAU, "anschreiben").txt(params.anschreiben);
+    const anschreiben = root.ele(NS_XBAU, "anschreiben");
+    const absaetze = params.anschreiben.split("\n").filter(Boolean);
+    // textabsatz ist unqualified (Kernmodul elementFormDefault="unqualified")
+    for (const absatz of absaetze) {
+      anschreiben.ele("", "textabsatz").txt(absatz);
+    }
   }
 
   return doc.end({ prettyPrint: true });
