@@ -314,7 +314,7 @@ nachrichten.push({
     bezug: BEZUG_STATISTIK,
     allgemeineAngaben: ALLGEMEINE_ANGABEN,
     datenBauueberhang: {
-      bauueberhang: "01",
+      bauueberhang: "1",
       datumBaubeginn: "2026-02",
     },
     datenEinzelnesGebaeude: DATEN_EINZELNES_GEBAEUDE,
