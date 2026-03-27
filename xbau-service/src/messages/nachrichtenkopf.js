@@ -11,8 +11,10 @@ export function appendNachrichtenkopf(parent, params) {
       ? CODELISTE.xbauNachrichten
       : CODELISTE.kernmodulNachrichten;
 
-  const useEmptyNs = params.codeliste === "hochbau";
-  const eleNs = (p, name) => (useEmptyNs ? p.ele("", name) : p.ele(name));
+  // nachrichtenkopf.g2g und Kinder sind IMMER unqualified (kein Namespace),
+  // unabhaengig ob Hochbau oder Kernmodul (elementFormDefault="unqualified" im Kernmodul,
+  // form="unqualified" auf den Elementen im Hochbau-Baukasten)
+  const eleNs = (p, name) => p.ele("", name);
 
   const kopf = eleNs(parent, "nachrichtenkopf.g2g");
 
@@ -24,12 +26,12 @@ export function appendNachrichtenkopf(parent, params) {
   eleNs(nachrichtentyp, "code").txt(params.nachrichtentyp);
   eleNs(ident, "erstellungszeitpunkt").txt(params.erstellungszeitpunkt);
 
-  appendBehoerde(kopf, "leser", params.leser, useEmptyNs);
-  appendBehoerde(kopf, "autor", params.autor, useEmptyNs);
+  appendBehoerde(kopf, "leser", params.leser);
+  appendBehoerde(kopf, "autor", params.autor);
 }
 
-function appendBehoerde(parent, elementName, behoerde, useEmptyNs = false) {
-  const eleNs = (p, name) => (useEmptyNs ? p.ele("", name) : p.ele(name));
+function appendBehoerde(parent, elementName, behoerde) {
+  const eleNs = (p, name) => p.ele("", name);
   const el = eleNs(parent, elementName);
   const vz = eleNs(el, "verzeichnisdienst")
     .att("listURI", CODELISTE.verzeichnisdienst.listURI)
