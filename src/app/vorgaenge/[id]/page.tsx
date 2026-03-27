@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Pause, Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   WorkflowStepper,
@@ -80,6 +90,13 @@ export default function VorgangDetailPage() {
   // Workflow-Aktion
   const [aktionLoading, setAktionLoading] = React.useState<string | null>(null);
   const [aktionError, setAktionError] = React.useState<string | null>(null);
+
+  // PROJ-37: Pause-State
+  const [pauseDialogOpen, setPauseDialogOpen] = React.useState(false);
+  const [pauseBegruendung, setPauseBegruendung] = React.useState("");
+  const [pauseLoading, setPauseLoading] = React.useState(false);
+  const [pauseError, setPauseError] = React.useState<string | null>(null);
+  const [resumeLoading, setResumeLoading] = React.useState(false);
 
   // Fristen (PROJ-4)
   const fristenHook = useFristen(vorgangId);
@@ -153,6 +170,59 @@ export default function VorgangDetailPage() {
   }, [vorgangId]);
 
   // Kommentar absenden
+  // PROJ-37: Verfahren pausieren
+  async function handlePause() {
+    if (pauseBegruendung.trim().length < 3) return;
+    setPauseLoading(true);
+    setPauseError(null);
+    try {
+      const res = await fetch(`/api/vorgaenge/${vorgangId}/pause`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ begruendung: pauseBegruendung }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setPauseError(data.error ?? "Pausieren fehlgeschlagen.");
+        return;
+      }
+      setPauseDialogOpen(false);
+      setPauseBegruendung("");
+      await loadVorgang();
+      fristenHook.reload();
+    } catch {
+      setPauseError("Verbindungsfehler.");
+    } finally {
+      setPauseLoading(false);
+    }
+  }
+
+  // PROJ-37: Verfahren fortsetzen
+  async function handleResume() {
+    setResumeLoading(true);
+    try {
+      const res = await fetch(`/api/vorgaenge/${vorgangId}/fortsetzen`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setAktionError(data.error ?? "Fortsetzen fehlgeschlagen.");
+        return;
+      }
+      await loadVorgang();
+      fristenHook.reload();
+    } catch {
+      setAktionError("Verbindungsfehler.");
+    } finally {
+      setResumeLoading(false);
+    }
+  }
+
+  // PROJ-37: Prüfe ob Vorgang pausiert ist (mindestens eine Frist mit status='pausiert')
+  const istVorgangPausiert = fristenHook.fristen.some((f) => f.status === "pausiert");
+
   async function handleKommentarSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!neuerKommentar.trim()) return;
@@ -304,6 +374,86 @@ export default function VorgangDetailPage() {
           })()}
         </div>
       </div>
+
+      {/* PROJ-37: Pause-Banner und Aktionen */}
+      {istVorgangPausiert && (
+        <Alert className="mb-4 border-gray-300 bg-gray-50 dark:bg-gray-900" role="status">
+          <Pause className="h-4 w-4 text-gray-600" aria-hidden="true" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="text-gray-700 dark:text-gray-300">
+              Verfahren ruht seit {(() => {
+                const pausierteFrist = fristenHook.fristen.find((f) => f.status === "pausiert");
+                return pausierteFrist
+                  ? new Date(pausierteFrist.updated_at).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })
+                  : "unbekannt";
+              })()} — Fristen sind pausiert.
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1 min-h-[36px]"
+              onClick={handleResume}
+              disabled={resumeLoading}
+              aria-label="Verfahren fortsetzen"
+            >
+              {resumeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+              Fortsetzen
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!istVorgangPausiert && (
+        <div className="mb-4 flex justify-end">
+          <Dialog open={pauseDialogOpen} onOpenChange={setPauseDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1 min-h-[36px]" aria-label="Verfahren pausieren">
+                <Pause className="h-4 w-4" />
+                Verfahren ruht
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Verfahren pausieren</DialogTitle>
+                <DialogDescription>
+                  Alle laufenden Fristen werden pausiert. Gehemmte Fristen bleiben unverändert.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                {pauseError && (
+                  <Alert variant="destructive" role="alert" aria-live="assertive">
+                    <AlertDescription>{pauseError}</AlertDescription>
+                  </Alert>
+                )}
+                <Textarea
+                  placeholder="Begründung (z.B. Warten auf Stellungnahme TöB)..."
+                  value={pauseBegruendung}
+                  onChange={(e) => setPauseBegruendung(e.target.value)}
+                  disabled={pauseLoading}
+                  aria-label="Begründung für die Verfahrensruhe"
+                  className="min-h-[80px]"
+                />
+                <p className="text-xs text-muted-foreground">Mindestens 3 Zeichen</p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => { setPauseDialogOpen(false); setPauseError(null); }} disabled={pauseLoading}>
+                  Abbrechen
+                </Button>
+                <Button
+                  onClick={handlePause}
+                  disabled={pauseLoading || pauseBegruendung.trim().length < 3}
+                  className="gap-1 min-h-[44px]"
+                  aria-label="Pause bestätigen"
+                >
+                  {pauseLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <Pause className="h-4 w-4" />
+                  Pausieren
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs

@@ -7,8 +7,8 @@ import { z } from "zod";
 
 // -- Zod-Schemas (Validierung) --
 
-/** Ampelstatus gemäß FA-4 */
-export const AmpelStatusSchema = z.enum(["gruen", "gelb", "rot", "dunkelrot", "gehemmt"]);
+/** Ampelstatus gemäß FA-4, PROJ-37 (pausiert) */
+export const AmpelStatusSchema = z.enum(["gruen", "gelb", "rot", "dunkelrot", "gehemmt", "pausiert"]);
 export type AmpelStatus = z.infer<typeof AmpelStatusSchema>;
 
 /** Fristtypen gemäß config_fristen */
@@ -72,9 +72,30 @@ export const VorgangFristDbSchema = z.object({
   verlaengert: z.boolean(),
   verlaengerung_grund: z.string().nullable(),
   original_end_datum: z.string().nullable(),
+  /** PROJ-37: Kumulierte Pause-Werktage */
+  pause_tage_gesamt: z.number().default(0),
   aktiv: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
+});
+
+/** PROJ-37: Vorgang-Pause (Verfahrensruhe) */
+export const VorgangPauseDbSchema = z.object({
+  id: z.string(),
+  tenant_id: z.string(),
+  vorgang_id: z.string(),
+  begruendung: z.string(),
+  pause_start: z.string(),
+  pause_ende: z.string().nullable(),
+  pause_werktage: z.number().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+export type VorgangPause = z.infer<typeof VorgangPauseDbSchema>;
+
+/** PROJ-37: POST /api/vorgaenge/[id]/pause */
+export const PauseVorgangSchema = z.object({
+  begruendung: z.string().min(3, "Begründung muss mindestens 3 Zeichen lang sein"),
 });
 
 export const ConfigFristDbSchema = z.object({

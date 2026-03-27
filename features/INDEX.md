@@ -48,7 +48,7 @@
 | PROJ-30 | Workflow-Aktionen mit Kontextinformation | Planned | [PROJ-30](PROJ-30-workflow-aktionen-kontext.md) | 2026-03-26 |
 | PROJ-35 | Vertretungsregelung Vier-Augen-Freigabe | Deployed | [PROJ-35](PROJ-35-vertretungsregelung-freigabe.md) | 2026-03-27 |
 | PROJ-36 | Aktenzeichen-Feld auf Vorgang | Deployed | [PROJ-36](PROJ-36-aktenzeichen-feld.md) | 2026-03-27 |
-| PROJ-37 | Frist-Pause bei ruhenden Verfahren | In Progress | [PROJ-37](PROJ-37-frist-pause-ruhende-verfahren.md) | 2026-03-27 |
+| PROJ-37 | Frist-Pause bei ruhenden Verfahren | Deployed | [PROJ-37](PROJ-37-frist-pause-ruhende-verfahren.md) | 2026-03-27 |
 | PROJ-38 | E-Mail-Benachrichtigungen Fristeskalation | Planned | [PROJ-38](PROJ-38-email-benachrichtigungen-fristen.md) | 2026-03-27 |
 | PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | Planned | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
 | PROJ-40 | Adress-/Strassenfilter Vorgangsliste | Planned | [PROJ-40](PROJ-40-adressfilter-vorgangsliste.md) | 2026-03-27 |

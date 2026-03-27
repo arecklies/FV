@@ -8,6 +8,7 @@ import {
 import type { AmpelSchwellenwerte } from "./werktage";
 import type {
   VorgangFrist,
+  VorgangPause,
   ConfigFrist,
   AmpelStatus,
   GefaehrdeteFrist,
@@ -15,6 +16,7 @@ import type {
 } from "./types";
 import {
   VorgangFristDbSchema,
+  VorgangPauseDbSchema,
   ConfigFristDbSchema,
   ConfigFeiertagDbSchema,
 } from "./types";
@@ -438,6 +440,217 @@ export function gruppiereNachSachbearbeiter(
     .sort((a, b) => b.anzahl - a.anzahl);
 }
 
+// -- Verfahrensruhe / Pause (PROJ-37, ADR-014) --
+
+/**
+ * Prüft ob ein Vorgang aktuell pausiert ist (offene Pause ohne Ende).
+ * Wird vom WorkflowService (PROJ-19) genutzt fuer Auto-Fristen-Schutz.
+ */
+export async function pruefeVorgangPausiert(
+  serviceClient: SupabaseClient,
+  vorgangId: string
+): Promise<boolean> {
+  const { data } = await serviceClient
+    .from("vorgang_pausen")
+    .select("id")
+    .eq("vorgang_id", vorgangId)
+    .is("pause_ende", null)
+    .limit(1);
+
+  return (data ?? []).length > 0;
+}
+
+interface PauseVorgangParams {
+  tenantId: string;
+  userId: string;
+  vorgangId: string;
+  begruendung: string;
+}
+
+/**
+ * Pausiert alle aktiven, nicht gehemmten Fristen eines Vorgangs (AC-1.1).
+ * Gehemmte Fristen bleiben gehemmt (FA-7, ADR-014).
+ */
+export async function pausiereVorgang(
+  serviceClient: SupabaseClient,
+  params: PauseVorgangParams
+): Promise<{ pauseId: string | null; anzahlPausiert: number; error: string | null }> {
+  const { tenantId, userId, vorgangId, begruendung } = params;
+
+  // AC-1.7: Bereits pausiert? (409)
+  const istPausiert = await pruefeVorgangPausiert(serviceClient, vorgangId);
+  if (istPausiert) {
+    return { pauseId: null, anzahlPausiert: 0, error: "Vorgang ist bereits pausiert" };
+  }
+
+  // Pause-Datensatz anlegen
+  const { data: pause, error: insertError } = await serviceClient
+    .from("vorgang_pausen")
+    .insert({
+      tenant_id: tenantId,
+      vorgang_id: vorgangId,
+      begruendung,
+    })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    return { pauseId: null, anzahlPausiert: 0, error: insertError.message };
+  }
+
+  // Alle aktiven, nicht gehemmten, nicht bereits pausierten Fristen auf 'pausiert' setzen
+  const { data: pausierteIds, error: updateError } = await serviceClient
+    .from("vorgang_fristen")
+    .update({ status: "pausiert" as AmpelStatus })
+    .eq("tenant_id", tenantId)
+    .eq("vorgang_id", vorgangId)
+    .eq("aktiv", true)
+    .eq("gehemmt", false)
+    .neq("status", "pausiert")
+    .select("id");
+
+  if (updateError) {
+    console.error("[PROJ-37] Fristen-Pause-Update fehlgeschlagen", updateError.message);
+  }
+
+  const anzahl = (pausierteIds ?? []).length;
+
+  // Audit-Log (AC-1.8)
+  await writeAuditLog({
+    tenantId,
+    userId,
+    action: "verfahren.pausiert",
+    resourceType: "vorgang",
+    resourceId: vorgangId,
+    payload: {
+      pause_id: pause.id,
+      begruendung,
+      anzahl_pausierter_fristen: anzahl,
+    },
+  });
+
+  return { pauseId: pause.id, anzahlPausiert: anzahl, error: null };
+}
+
+interface FortsetzungParams {
+  tenantId: string;
+  userId: string;
+  vorgangId: string;
+  bundesland: string;
+  schwellenwerte?: AmpelSchwellenwerte;
+}
+
+/**
+ * Setzt alle pausierten Fristen eines Vorgangs fort (AC-2.1).
+ * Berechnet Pause-Werktage und verlaengert Enddatum (AC-2.2).
+ */
+export async function setzeVorgangFort(
+  serviceClient: SupabaseClient,
+  params: FortsetzungParams
+): Promise<{ pauseWerktage: number; anzahlFortgesetzt: number; error: string | null }> {
+  const { tenantId, userId, vorgangId, bundesland } = params;
+
+  // Offene Pause laden
+  const { data: pause, error: pauseError } = await serviceClient
+    .from("vorgang_pausen")
+    .select("id, pause_start")
+    .eq("vorgang_id", vorgangId)
+    .eq("tenant_id", tenantId)
+    .is("pause_ende", null)
+    .limit(1)
+    .single();
+
+  if (pauseError || !pause) {
+    return { pauseWerktage: 0, anzahlFortgesetzt: 0, error: "Keine offene Pause gefunden" };
+  }
+
+  // Pause-Werktage berechnen (AC-2.2: exkl. Feiertage/Wochenenden)
+  const pauseStart = new Date(pause.pause_start);
+  const jetzt = new Date();
+  const jahr = jetzt.getFullYear();
+
+  // Feiertage fuer beide Jahre laden falls Jahreswechsel (Risiko R-1 aus ADR-014)
+  const feiertage = await ladeFeiertage(serviceClient, bundesland, jahr);
+  if (pauseStart.getFullYear() !== jahr) {
+    const feiertageVorjahr = await ladeFeiertage(serviceClient, bundesland, pauseStart.getFullYear());
+    feiertageVorjahr.forEach((f) => feiertage.add(f));
+  }
+
+  const pauseWerktage = berechneWerktageDazwischen(pauseStart, jetzt, feiertage);
+
+  // Pause abschliessen
+  const { error: pauseUpdateError } = await serviceClient
+    .from("vorgang_pausen")
+    .update({
+      pause_ende: jetzt.toISOString(),
+      pause_werktage: pauseWerktage,
+    })
+    .eq("id", pause.id);
+
+  if (pauseUpdateError) {
+    console.error("[PROJ-37] Pause-Abschluss fehlgeschlagen", pauseUpdateError.message);
+  }
+
+  // Alle pausierten Fristen laden und fortsetzen
+  const { data: pausierteFristen } = await serviceClient
+    .from("vorgang_fristen")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .eq("vorgang_id", vorgangId)
+    .eq("aktiv", true)
+    .eq("status", "pausiert")
+    .limit(50);
+
+  let anzahlFortgesetzt = 0;
+
+  for (const fristRaw of (pausierteFristen ?? [])) {
+    const frist = VorgangFristDbSchema.parse(fristRaw);
+
+    // Enddatum um Pause-Werktage verlaengern (AC-2.2)
+    const altesEndDatum = new Date(frist.end_datum);
+    const neuesEndDatum = addiereWerktage(altesEndDatum, pauseWerktage, feiertage);
+
+    // Kumulierte Pause-Tage (AC-2.4)
+    const neuePauseTageGesamt = (frist.pause_tage_gesamt ?? 0) + pauseWerktage;
+
+    // Ampelstatus neu berechnen (AC-2.5)
+    const verbleibend = berechneWerktageDazwischen(jetzt, neuesEndDatum, feiertage);
+    const neuerStatus = berechneAmpelStatus(
+      frist.werktage,
+      verbleibend,
+      params.schwellenwerte ?? { gelb_ab: frist.gelb_ab, rot_ab: frist.rot_ab }
+    );
+
+    const { error: fristUpdateError } = await serviceClient
+      .from("vorgang_fristen")
+      .update({
+        status: neuerStatus,
+        end_datum: neuesEndDatum.toISOString(),
+        pause_tage_gesamt: neuePauseTageGesamt,
+      })
+      .eq("id", frist.id)
+      .eq("tenant_id", tenantId);
+
+    if (!fristUpdateError) anzahlFortgesetzt++;
+  }
+
+  // Audit-Log (AC-2.7)
+  await writeAuditLog({
+    tenantId,
+    userId,
+    action: "verfahren.fortgesetzt",
+    resourceType: "vorgang",
+    resourceId: vorgangId,
+    payload: {
+      pause_id: pause.id,
+      pause_dauer_werktage: pauseWerktage,
+      anzahl_fortgesetzter_fristen: anzahlFortgesetzt,
+    },
+  });
+
+  return { pauseWerktage, anzahlFortgesetzt, error: null };
+}
+
 // -- Ampelstatus-Aktualisierung (Cron-Job, ADR-008, PROJ-22) --
 
 /** Seitengroesse fuer paginierten Cron-Durchlauf (PROJ-22 FA-5) */
@@ -454,12 +667,13 @@ export async function aktualisiereAlleAmpelStatus(
   let hatWeitereSeiten = true;
 
   while (hatWeitereSeiten) {
-    // Paginiert laden (PROJ-22 FA-5): alle aktiven, nicht gehemmten Fristen
+    // Paginiert laden (PROJ-22 FA-5): alle aktiven, nicht gehemmten, nicht pausierten Fristen
     const { data: fristen, error } = await serviceClient
       .from("vorgang_fristen")
       .select("id, tenant_id, vorgang_id, start_datum, end_datum, werktage, status, gehemmt, bundesland, gelb_ab, rot_ab")
       .eq("aktiv", true)
       .eq("gehemmt", false)
+      .neq("status", "pausiert")
       .order("id", { ascending: true })
       .range(offset, offset + CRON_PAGE_SIZE - 1);
 

@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
-import { ladeConfigFristen, createFrist } from "@/lib/services/fristen";
+import { ladeConfigFristen, createFrist, pruefeVorgangPausiert } from "@/lib/services/fristen";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
 
@@ -203,8 +203,13 @@ export async function executeWorkflowAktion(
   });
 
   // 8. PROJ-19: Auto-Frist bei Schritt-Wechsel
+  // PROJ-37 AC-3.1: Pruefen ob Vorgang pausiert ist
   let fristErstellt: FristErstellt | null = null;
   if (zielSchritt.frist) {
+    const istPausiert = await pruefeVorgangPausiert(serviceClient, params.vorgangId);
+    if (istPausiert) {
+      console.warn(`[PROJ-37] Vorgang ${params.vorgangId} ist pausiert, Auto-Frist "${zielSchritt.frist}" nicht angelegt`);
+    } else {
     // Lookup in config_fristen: frist-Attribut ist der Typ-Key
     const configFristen = await ladeConfigFristen(
       serviceClient,
@@ -263,6 +268,7 @@ export async function executeWorkflowAktion(
     } else {
       console.warn(`[PROJ-19] Keine config_fristen fuer typ="${zielSchritt.frist}" bundesland="${params.bundesland}" verfahrensart="${params.verfahrensartId}"`);
     }
+    } // Ende else (nicht pausiert) — PROJ-37
   }
 
   return { neuerSchrittId: aktion.ziel, fristErstellt, error: null };

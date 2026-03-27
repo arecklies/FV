@@ -28,12 +28,13 @@
 | [ADR-011](ADR-011-workflow-engine.md) | Workflow Engine fuer prozessgesteuerte Vorgangsbearbeitung | **Accepted** | 2026-03-26 |
 | [ADR-012](ADR-012-vorgang-datenmodell.md) | Vorgang-Datenmodell | **Accepted** | 2026-03-26 |
 | [ADR-013](ADR-013-stellvertreter-freigabe.md) | Stellvertreter-Modell fuer Vier-Augen-Freigabe | **Accepted** | 2026-03-27 |
+| [ADR-014](ADR-014-frist-pause-verfahrensruhe.md) | Frist-Pause bei Verfahrensruhe | **Accepted** | 2026-03-27 |
 
-> Alle 13 ADRs sind accepted (Review 2026-03-27).
+> Alle 14 ADRs sind accepted (Review 2026-03-27).
 
 ## Konventionen
 
 - Dateiformat: `ADR-XXX-titel-in-kebab-case.md`
 - Jeder ADR wird ueber `/arch-adr` erstellt und ueber `/docs-adr` in diesen Index eingepflegt
 - ADR-Nummern sind sequenziell und werden nie wiederverwendet
-- Naechste verfuegbare Nummer: **ADR-014**
+- Naechste verfuegbare Nummer: **ADR-015**

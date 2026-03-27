@@ -1,6 +1,6 @@
 # PROJ-37: Frist-Pause bei ruhenden Verfahren
 
-**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
+**Status:** Deployed | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
 **Herkunft:** Kunden-Session 27.03.2026, F-07 (Herr Brandt, Soest, P1)
 **Prioritaet:** Pilotblocker
 **Letzte Verfeinerung:** 2026-03-27 (req-stories: 4 User Stories, Abgrenzung Hemmung/Pause, Cross-Spec-Analyse, DB-Empfehlung)

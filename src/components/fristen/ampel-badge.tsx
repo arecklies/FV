@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
  * Nie nur Farbe — immer auch Icon und Text.
  */
 
-export type AmpelStatus = "gruen" | "gelb" | "rot" | "dunkelrot" | "gehemmt";
+export type AmpelStatus = "gruen" | "gelb" | "rot" | "dunkelrot" | "gehemmt" | "pausiert";
 
 interface AmpelBadgeProps {
   status: AmpelStatus;
@@ -66,6 +66,12 @@ const AMPEL_CONFIG: Record<
     shortLabel: "Gehemmt",
     icon: PauseCircle,
     className: "bg-slate-100 text-slate-700 border-slate-300",
+  },
+  pausiert: {
+    label: "Verfahren ruht",
+    shortLabel: "Pausiert",
+    icon: PauseCircle,
+    className: "bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600",
   },
 };
 
