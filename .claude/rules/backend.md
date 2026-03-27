@@ -90,6 +90,21 @@
   - UUID: `crypto.randomUUID()` statt `nanoid`
 - Bei unvermeidbarer ESM-Dependency: `transformIgnorePatterns` in `jest.config.ts` anpassen
 
+## Service-Isolation (ADR-015)
+- Externe Standards (XBau, XTA, FIT-Connect) werden in isolierten Services implementiert, nicht im Fachverfahren
+- Fachverfahren kommuniziert ueber JSON via `background_jobs`-Tabelle (ADR-008)
+- Vor Implementierung eines Standards: `/arch-design` mit Frage "Direkt oder isolierter Service?"
+- Isolierte Services liegen unter `<service-name>/` im Repo-Root (eigenes package.json, Dockerfile)
+- Message Builder im Fachverfahren sind Uebergangloesungen — bei Service-Migration entfernen
+
+## XBau-Service Migrationsstatus
+- **Zielzustand:** Alle XML-Operationen ausschliesslich im `xbau-service/` Docker-Container
+- **Uebergangszustand (aktuell):** Message Builders existieren doppelt:
+  - `src/lib/services/xbau/messages/` (TypeScript, synchron im Fachverfahren)
+  - `xbau-service/src/messages/` (JS ESM, Docker-Worker)
+- **Regel:** Neue Message Builder NUR in `xbau-service/` erstellen. Bestehende im Fachverfahren werden bei Docker-Go-Live entfernt.
+- **Bei Aenderung an bestehendem Builder:** Beide Stellen aktualisieren, bis Migration abgeschlossen
+
 ## XBau / XML-Generierung
 - Vor jeder Änderung an XML-Generatoren: XSD-Quelldateien unter `Input/xsd+xsd_dev/xsd/` lesen
 - Element-Namen, Namespace-Qualifizierung (`form="qualified"` vs `form="unqualified"`), Typ-Strukturen und Code-Attribute NIEMALS raten – immer aus der XSD ableiten

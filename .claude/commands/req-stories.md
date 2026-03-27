@@ -27,6 +27,12 @@ Formuliere vollständige User Stories mit messbaren Akzeptanzkriterien.
    - `git ls-files supabase/migrations/` – existierende Tabellen und Felder
    - Abhängige Features (aus INDEX.md) auf Schnittstellen prüfen
    - Stories müssen mit bestehenden APIs und Schemas konsistent sein
+2a. **Bei Standard-Integrationen (XBau, XTA, FIT-Connect, OSCI):**
+    - Welche Nachrichtentypen gibt es (eingehend/ausgehend)? XSD-Quelldateien unter `Input/xsd+xsd_dev/` lesen
+    - Wie werden Folgenachrichten dem Vorgang zugeordnet (Korrelation/bezug-Element)?
+    - Was passiert bei nicht-validen eingehenden Nachrichten (Standardvorschrift fuer Rueckweisung)?
+    - Welche Prozessnachrichten (Quittung, Rueckweisung) sind Pflicht laut Standard?
+    - Muss der Service isoliert werden (ADR-015, `.claude/rules/backend.md` Service-Isolation)?
 3. Leite User Stories ab: `Als [Rolle] möchte ich [Aktion], damit [Nutzen]`
 4. Formuliere messbare Akzeptanzkriterien je Story (inkl. Negativ- und Randfälle)
 5. Identifiziere Trigger für Spezialisten (Security / DB / Migration)

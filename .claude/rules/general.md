@@ -6,6 +6,8 @@
 - **Datenbank**: Supabase (PostgreSQL, Row Level Security, Auth)
 - **.NET-Client**: .NET Framework 4.8, WebView2, xUnit
 - **Deployment**: Vercel (Next.js Hosting), Supabase Cloud (Datenbank)
+- **Isolierte Services**: Docker-Container (Fly.io/Railway), Kommunikation via background_jobs (ADR-008, ADR-015)
+- **XBau-Service**: Node.js ESM, xmlbuilder2, fast-xml-parser, Saxon-JS — liegt unter `xbau-service/`
 
 ## Dateistruktur Agenten & Skills
 - Rollen-Prompts liegen in `.claude/agents/<rollenname>.md`
@@ -122,6 +124,14 @@ Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 - Im Zweifel über den Projektstatus: `features/INDEX.md` zuerst lesen
 - `git diff` ausführen, um bereits durchgeführte Änderungen zu prüfen
 - Import-Pfade, Komponentennamen und API-Routen niemals raten – immer verifizieren
+
+## Durchlauf-Modus
+- Wenn der Nutzer explizit "weiter", "weitermachen" oder "ohne Rückfragen" sagt, gilt der **Durchlauf-Modus**:
+  - Skills werden sequenziell ausgefuehrt gemaess Routing-Matrix (CLAUDE.md)
+  - Rueckfragen nur bei: fehlender Information, Fehler der Weiterarbeit blockiert, Human-in-the-Loop-Pflicht (RLS, Auth, destruktive Operationen)
+  - Naechster Skill wird OHNE "Soll ich fortfahren?"-Frage gestartet
+  - Modus endet bei: QS-Fehler (NICHT BESTANDEN), PO-Entscheidung (Go/No-Go), Session-Ende
+- Durchlauf-Modus aendert NICHT die Human-in-the-Loop-Pflichten aus CLAUDE.md
 
 ## Zeichensatz-Enforcement (Pflicht bei jedem Commit)
 - Vor jedem Commit mit deutschen Texten: `grep -rn "ae\b\|oe\b\|ue\b" <geänderte-dateien>` ausführen
