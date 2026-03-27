@@ -45,6 +45,8 @@ export interface WorkflowSchrittHistorie {
   uebersprungen: boolean;
   ausgefuehrt_von: string | null;
   ausgefuehrt_am: string;
+  /** PROJ-35: User-ID des vertretenen Referatsleiters bei Stellvertreter-Freigabe */
+  vertretung_fuer: string | null;
 }
 
 /** Zod-Schemas fuer DB-Ergebnisse (B-19-03: statt Type Assertions) */
@@ -84,4 +86,6 @@ export const WorkflowSchrittHistorieDbSchema = z.object({
   uebersprungen: z.boolean(),
   ausgefuehrt_von: z.string().nullable(),
   ausgefuehrt_am: z.string(),
+  /** PROJ-35: Vertretung */
+  vertretung_fuer: z.string().nullable().default(null),
 });

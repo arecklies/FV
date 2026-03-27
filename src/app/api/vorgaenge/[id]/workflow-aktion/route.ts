@@ -1,13 +1,14 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuth, isAuthContext } from "@/lib/api/auth";
+import { requireAuth, isAuthContext, hasMinRole } from "@/lib/api/auth";
 import { jsonResponse } from "@/lib/api/security-headers";
 import { validationError, notFoundError, serverError } from "@/lib/api/errors";
 import { createServiceRoleClient } from "@/lib/supabase-server";
 import { getVorgang } from "@/lib/services/verfahren";
-import { executeWorkflowAktion } from "@/lib/services/workflow";
+import { executeWorkflowAktion, getWorkflowDefinition, getSchritt } from "@/lib/services/workflow";
 import { WorkflowAktionSchema } from "@/lib/services/workflow/types";
 import { UuidParamSchema } from "@/lib/services/verfahren/types";
+import { getVertreteneReferatsleiterIds } from "@/lib/services/stellvertreter";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -15,6 +16,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * POST /api/vorgaenge/[id]/workflow-aktion
  * Workflow-Schritt ausfuehren (ADR-011).
  * PROJ-3 US-7, PROJ-19 (Auto-Frist bei Schritt-Wechsel)
+ * PROJ-35: Stellvertreter-Freigabe (ADR-013)
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   const auth = await requireAuth();
@@ -47,6 +49,48 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   }
 
   const vorgang = vorgangResult.data;
+
+  // PROJ-35: Stellvertreter-Kontext ermitteln bei Freigabe-Schritten
+  let vertreteneIds: string[] | undefined;
+  let vertretungFuerId: string | undefined;
+  let vertretungFuerName: string | undefined;
+
+  const definition = await getWorkflowDefinition(
+    serviceClient,
+    vorgang.verfahrensart_id,
+    vorgang.bundesland
+  );
+
+  if (definition) {
+    const schritt = getSchritt(definition, vorgang.workflow_schritt_id);
+    if (schritt?.typ === "freigabe" && schritt.minRolle) {
+      // Nur Stellvertreter-Lookup wenn User nicht selbst berechtigt ist
+      if (!hasMinRole(auth.role, schritt.minRolle as typeof auth.role)) {
+        vertreteneIds = await getVertreteneReferatsleiterIds(
+          serviceClient,
+          auth.tenantId,
+          auth.userId
+        );
+        if (vertreteneIds.length > 0) {
+          // Modell A (ADR-013): Erster passender Referatsleiter als Vertretungs-Kontext
+          vertretungFuerId = vertreteneIds[0];
+          // E-Mail als Name laden (fuer Audit-Trail)
+          const { data: vertretenerMember } = await serviceClient
+            .from("tenant_members")
+            .select("user_id")
+            .eq("tenant_id", auth.tenantId)
+            .eq("user_id", vertretungFuerId)
+            .limit(1)
+            .single();
+          if (vertretenerMember) {
+            const { data: authData } = await serviceClient.auth.admin.getUserById(vertretungFuerId);
+            vertretungFuerName = authData?.user?.email ?? undefined;
+          }
+        }
+      }
+    }
+  }
+
   const result = await executeWorkflowAktion(serviceClient, {
     tenantId: auth.tenantId,
     userId: auth.userId,
@@ -57,6 +101,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     begruendung: body.begruendung,
     verfahrensartId: vorgang.verfahrensart_id,
     bundesland: vorgang.bundesland,
+    vertreteneIds,
+    vertretungFuerId,
+    vertretungFuerName,
   });
 
   if (result.error) {
@@ -78,5 +125,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     message: "Workflow-Schritt ausgeführt",
     neuer_schritt: result.neuerSchrittId,
     frist_erstellt: result.fristErstellt ?? null,
+    vertretung_fuer: vertretungFuerId ?? null,
   });
 }

@@ -183,6 +183,49 @@ describe("getVerfuegbareAktionen", () => {
     expect(result.aktionen).toHaveLength(0);
     expect(result.schritt).toBeNull();
   });
+
+  // PROJ-35: Stellvertreter-Tests
+  it("erlaubt Freigabe fuer Sachbearbeiter MIT Stellvertreter-IDs (PROJ-35)", () => {
+    const result = getVerfuegbareAktionen(
+      testWorkflow,
+      "freizeichnung",
+      "sachbearbeiter",
+      ["user-referatsleiter-1"]
+    );
+    expect(result.aktionen).toHaveLength(2);
+    expect(result.aktionen[0].id).toBe("freigeben");
+  });
+
+  it("verweigert Freigabe fuer Sachbearbeiter OHNE Stellvertreter-IDs (PROJ-35)", () => {
+    const result = getVerfuegbareAktionen(
+      testWorkflow,
+      "freizeichnung",
+      "sachbearbeiter",
+      []
+    );
+    expect(result.aktionen).toHaveLength(0);
+  });
+
+  it("erlaubt Freigabe fuer Referatsleiter auch ohne Stellvertreter-IDs (PROJ-35)", () => {
+    const result = getVerfuegbareAktionen(
+      testWorkflow,
+      "freizeichnung",
+      "referatsleiter",
+      undefined
+    );
+    expect(result.aktionen).toHaveLength(2);
+  });
+
+  it("gibt Aktionen fuer manuellen Schritt unabhaengig von vertreteneIds (PROJ-35)", () => {
+    const result = getVerfuegbareAktionen(
+      testWorkflow,
+      "pruefung",
+      "sachbearbeiter",
+      ["some-id"]
+    );
+    // Manueller Schritt ignoriert vertreteneIds
+    expect(result.aktionen).toHaveLength(2);
+  });
 });
 
 // =====================================================================
@@ -538,6 +581,85 @@ describe("executeWorkflowAktion — PROJ-33 Begruendungspflicht", () => {
       })
     );
   });
+
+  // PROJ-35 B-35-01: Test fuer Stellvertreter-Kontext im Audit-Payload
+  it("schreibt Vertretungs-Kontext in Audit-Payload (PROJ-35 AC-2.4)", async () => {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      config_workflows: [{ data: { definition: testWorkflow } }],
+      vorgaenge: [{ error: null }],
+      vorgang_workflow_schritte: [{ error: null }],
+    };
+
+    const mockFrom = jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      aktuellerSchrittId: "freizeichnung",
+      aktionId: "freigeben",
+      userRole: "sachbearbeiter",
+      vertreteneIds: ["user-referatsleiter-1"],
+      vertretungFuerId: "user-referatsleiter-1",
+      vertretungFuerName: "referatsleiter@behoerde.de",
+    });
+
+    expect(result.neuerSchrittId).toBe("abgeschlossen");
+    expect(result.error).toBeNull();
+
+    // Audit-Payload muss vertretung_fuer enthalten
+    expect(writeAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "vorgang.workflow_schritt",
+        payload: expect.objectContaining({
+          vertretung_fuer: "user-referatsleiter-1",
+          vertretung_fuer_name: "referatsleiter@behoerde.de",
+        }),
+      })
+    );
+  });
+
+  it("schreibt KEINEN Vertretungs-Kontext bei regulaerer Freigabe (PROJ-35)", async () => {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      config_workflows: [{ data: { definition: testWorkflow } }],
+      vorgaenge: [{ error: null }],
+      vorgang_workflow_schritte: [{ error: null }],
+    };
+
+    const mockFrom = jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      aktuellerSchrittId: "freizeichnung",
+      aktionId: "freigeben",
+      userRole: "referatsleiter",
+      // Keine vertreteneIds, kein vertretungFuerId
+    });
+
+    expect(result.neuerSchrittId).toBe("abgeschlossen");
+    // Audit-Payload darf KEINE vertretung_fuer enthalten
+    expect(writeAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.not.objectContaining({
+          vertretung_fuer: expect.anything(),
+        }),
+      })
+    );
+  });
 });
 
 describe("getWorkflowHistorie", () => {
@@ -554,6 +676,7 @@ describe("getWorkflowHistorie", () => {
         uebersprungen: false,
         ausgefuehrt_von: USER_ID,
         ausgefuehrt_am: "2026-03-26T10:00:00Z",
+        vertretung_fuer: null,
       },
       {
         id: "wh-002",
@@ -564,6 +687,7 @@ describe("getWorkflowHistorie", () => {
         uebersprungen: false,
         ausgefuehrt_von: USER_ID,
         ausgefuehrt_am: "2026-03-26T11:00:00Z",
+        vertretung_fuer: null,
       },
     ];
 

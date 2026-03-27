@@ -41,10 +41,17 @@ export function getSchritt(
   return definition.schritte.find((s) => s.id === schrittId);
 }
 
+/**
+ * PROJ-35: Optionale Stellvertreter-IDs.
+ * Wenn der User selbst nicht die Mindestrolle hat, aber als Stellvertreter
+ * fuer mindestens einen Referatsleiter eingetragen ist, werden die Aktionen
+ * trotzdem zurueckgegeben (Modell A, ADR-013).
+ */
 export function getVerfuegbareAktionen(
   definition: WorkflowDefinition,
   aktuellerSchrittId: string,
-  userRole: UserRole
+  userRole: UserRole,
+  vertreteneIds?: string[]
 ): { aktionen: WorkflowSchritt["aktionen"]; schritt: WorkflowSchritt | null } {
   const schritt = getSchritt(definition, aktuellerSchrittId);
   if (!schritt) return { aktionen: [], schritt: null };
@@ -55,9 +62,15 @@ export function getVerfuegbareAktionen(
       console.warn(`[PROJ-33] Ungueltige minRolle "${schritt.minRolle}" in Workflow-Schritt "${schritt.id}"`);
       return { aktionen: [], schritt };
     }
-    if (!hasMinRole(userRole, schritt.minRolle as UserRole)) {
-      return { aktionen: [], schritt };
+    // Pfad 1: User hat selbst die Mindestrolle
+    if (hasMinRole(userRole, schritt.minRolle as UserRole)) {
+      return { aktionen: schritt.aktionen, schritt };
     }
+    // Pfad 2 (PROJ-35): User ist Stellvertreter fuer mindestens einen Referatsleiter
+    if (vertreteneIds && vertreteneIds.length > 0) {
+      return { aktionen: schritt.aktionen, schritt };
+    }
+    return { aktionen: [], schritt };
   }
 
   return { aktionen: schritt.aktionen, schritt };
@@ -82,6 +95,12 @@ interface ExecuteAktionParams {
   begruendung?: string;
   verfahrensartId: string;
   bundesland: string;
+  /** PROJ-35: IDs der vertretenen Referatsleiter (fuer Stellvertreter-Freigabe) */
+  vertreteneIds?: string[];
+  /** PROJ-35: User-ID des vertretenen Referatsleiters (fuer Audit-Trail) */
+  vertretungFuerId?: string;
+  /** PROJ-35: Anzeigename des vertretenen Referatsleiters (fuer Audit-Trail) */
+  vertretungFuerName?: string;
 }
 
 interface FristErstellt {
@@ -106,11 +125,12 @@ export async function executeWorkflowAktion(
     return { neuerSchrittId: null, fristErstellt: null, error: "Keine Workflow-Definition gefunden" };
   }
 
-  // 2. Aktuellen Schritt und Aktionen pruefen
+  // 2. Aktuellen Schritt und Aktionen pruefen (PROJ-35: mit Stellvertreter-IDs)
   const { aktionen, schritt } = getVerfuegbareAktionen(
     definition,
     params.aktuellerSchrittId,
-    params.userRole
+    params.userRole,
+    params.vertreteneIds
   );
 
   if (!schritt) {
@@ -147,7 +167,7 @@ export async function executeWorkflowAktion(
     return { neuerSchrittId: null, fristErstellt: null, error: updateError.message };
   }
 
-  // 6. Workflow-Schritt protokollieren
+  // 6. Workflow-Schritt protokollieren (PROJ-35: vertretung_fuer)
   const { error: insertError } = await serviceClient.from("vorgang_workflow_schritte").insert({
     tenant_id: params.tenantId,
     vorgang_id: params.vorgangId,
@@ -156,6 +176,7 @@ export async function executeWorkflowAktion(
     begruendung: params.begruendung ?? null,
     uebersprungen: false,
     ausgefuehrt_von: params.userId,
+    vertretung_fuer: params.vertretungFuerId ?? null,
   });
   if (insertError) {
     console.error("[PROJ-3] Workflow-Schritt-Insert fehlgeschlagen", insertError.message);
@@ -173,6 +194,11 @@ export async function executeWorkflowAktion(
       nach: aktion.ziel,
       aktion: params.aktionId,
       begruendung: params.begruendung ?? null,
+      // PROJ-35 AC-2.4: Vertretungs-Kontext im Audit-Trail
+      ...(params.vertretungFuerId ? {
+        vertretung_fuer: params.vertretungFuerId,
+        vertretung_fuer_name: params.vertretungFuerName ?? null,
+      } : {}),
     },
   });
 
@@ -249,7 +275,7 @@ export async function getWorkflowHistorie(
 ): Promise<{ data: WorkflowSchrittHistorie[]; error: string | null }> {
   const { data, error } = await serviceClient
     .from("vorgang_workflow_schritte")
-    .select("id, vorgang_id, schritt_id, aktion_id, begruendung, uebersprungen, ausgefuehrt_von, ausgefuehrt_am")
+    .select("id, vorgang_id, schritt_id, aktion_id, begruendung, uebersprungen, ausgefuehrt_von, ausgefuehrt_am, vertretung_fuer")
     .eq("tenant_id", tenantId)
     .eq("vorgang_id", vorgangId)
     .order("ausgefuehrt_am", { ascending: true })

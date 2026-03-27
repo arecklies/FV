@@ -623,6 +623,12 @@ export default function VorgangDetailPage() {
                               {h.begruendung}
                             </p>
                           )}
+                          {/* PROJ-35 AC-2.5: Vertretungs-Information */}
+                          {h.vertretung_fuer && (
+                            <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                              Freigabe in Vertretung
+                            </p>
+                          )}
                         </div>
                         <span className="text-xs text-muted-foreground shrink-0">
                           {new Date(h.ausgefuehrt_am).toLocaleString(
