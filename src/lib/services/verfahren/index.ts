@@ -222,6 +222,8 @@ interface ListVorgaengeParams {
   suche?: string;
   sortierung?: string;
   richtung?: string;
+  /** PROJ-55: Frist-Schnellfilter (ueberfaellig, gefaehrdet, zeitplan) */
+  frist_filter?: string;
   seite?: number;
   pro_seite?: number;
 }
@@ -264,8 +266,16 @@ export async function listVorgaenge(
 
   const ascending = params.richtung === "asc";
   const isFristSort = params.sortierung === "frist_status";
+  const hasFristFilter = !!params.frist_filter;
 
-  if (!isFristSort) {
+  // PROJ-55: Frist-Filter-Zuordnung (welche AmpelStatus-Werte gehoeren zu welcher Karte)
+  const FRIST_FILTER_STATUS: Record<string, Set<string | null>> = {
+    ueberfaellig: new Set(["rot", "dunkelrot"]),
+    gefaehrdet: new Set(["gelb"]),
+    zeitplan: new Set(["gruen", null]),
+  };
+
+  if (!isFristSort && !hasFristFilter) {
     // Standard-Sortierung: DB-seitig + Paginierung
     const sortCol = params.sortierung ?? "eingangsdatum";
     query = query.order(sortCol, { ascending });
@@ -286,8 +296,8 @@ export async function listVorgaenge(
     return { data: parsed, total: count ?? 0, error: null };
   }
 
-  // PROJ-20 US-2: Frist-Sortierung — IDs laden, Frist-Status berechnen, sortieren, dann paginieren
-  // B-20-01 Fix: Sortierung VOR Paginierung auf vollstaendigem Ergebnis
+  // PROJ-20 US-2 + PROJ-55: Frist-Sortierung oder Frist-Filter erfordert
+  // vollstaendiges Laden, Frist-Status berechnen, optional filtern, sortieren, dann paginieren
   query = query.order("eingangsdatum", { ascending: false });
   const { data: alleData, count, error } = await query.limit(1000);
   if (error) return { data: [], total: 0, error: error.message };
@@ -295,26 +305,45 @@ export async function listVorgaenge(
   const alleIds = (alleData ?? []).map((d: Record<string, unknown>) => d.id as string);
   const fristStatusMap = await ladeFristStatusBatch(serviceClient, params.tenantId, alleIds);
 
+  // PROJ-55: Frist-Filter anwenden (vor Sortierung und Paginierung)
+  let gefiltertData = alleData ?? [];
+  let filteredTotal = count ?? 0;
+
+  if (hasFristFilter && params.frist_filter) {
+    const erlaubteStatus = FRIST_FILTER_STATUS[params.frist_filter];
+    if (erlaubteStatus) {
+      gefiltertData = gefiltertData.filter((d: Record<string, unknown>) => {
+        const fristInfo = fristStatusMap.get(d.id as string);
+        const status = fristInfo?.status ?? null;
+        return erlaubteStatus.has(status);
+      });
+      filteredTotal = gefiltertData.length;
+    }
+  }
+
   // B-20-02 Fix: Korrekte Sortierrichtung (desc = dringendste zuerst)
   const SORT_PRIO: Record<string, number> = { dunkelrot: 0, rot: 1, gelb: 2, gehemmt: 3, gruen: 4 };
   const nullPrio = 5;
-  const sortiert = (alleData ?? []).sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
-    const sa = fristStatusMap.get(a.id as string);
-    const sb = fristStatusMap.get(b.id as string);
-    const pa = sa ? (SORT_PRIO[sa.status] ?? nullPrio) : nullPrio;
-    const pb = sb ? (SORT_PRIO[sb.status] ?? nullPrio) : nullPrio;
-    return ascending ? pa - pb : pb - pa;
-  });
 
-  // Paginierung auf sortiertes Ergebnis anwenden
-  const paginiert = sortiert.slice(offset, offset + proSeite);
+  if (isFristSort) {
+    gefiltertData = [...gefiltertData].sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+      const sa = fristStatusMap.get(a.id as string);
+      const sb = fristStatusMap.get(b.id as string);
+      const pa = sa ? (SORT_PRIO[sa.status] ?? nullPrio) : nullPrio;
+      const pb = sb ? (SORT_PRIO[sb.status] ?? nullPrio) : nullPrio;
+      return ascending ? pa - pb : pb - pa;
+    });
+  }
+
+  // Paginierung auf gefiltertes/sortiertes Ergebnis anwenden
+  const paginiert = gefiltertData.slice(offset, offset + proSeite);
   const parsed = paginiert.map((d: unknown) => {
     const item = VorgangListItemDbSchema.parse(d);
     const fristInfo = fristStatusMap.get(item.id);
     return { ...item, frist_status: fristInfo?.status ?? null, frist_end_datum: fristInfo?.end_datum ?? null };
   });
 
-  return { data: parsed, total: count ?? 0, error: null };
+  return { data: parsed, total: filteredTotal, error: null };
 }
 
 /**
@@ -352,7 +381,8 @@ export async function getVorgaengeStatistik(
   const ids = (vorgangIds ?? []).map((v: Record<string, unknown>) => v.id as string);
   const fristStatusMap = await ladeFristStatusBatch(serviceClient, tenantId, ids);
 
-  // 3. Klassifizierung: gefährdet (gelb+rot+dunkelrot), überfällig (rot+dunkelrot), im_zeitplan (grün oder keine Frist)
+  // 3. Klassifizierung (PROJ-55: nicht-ueberlappend, passend zu Schnellfiltern)
+  // gefaehrdet = nur gelb, ueberfaellig = rot+dunkelrot, im_zeitplan = gruen oder keine Frist
   let gefaehrdet = 0;
   let ueberfaellig = 0;
   let imZeitplan = 0;
@@ -365,7 +395,6 @@ export async function getVorgaengeStatistik(
     } else if (status === "gelb") {
       gefaehrdet++;
     } else if (status === "rot" || status === "dunkelrot") {
-      gefaehrdet++;
       ueberfaellig++;
     }
     // "gehemmt" zählt weder als gefährdet noch als im_zeitplan

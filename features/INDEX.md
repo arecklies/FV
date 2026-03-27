@@ -25,7 +25,7 @@
 | PROJ-4 | Fristmanagement | Deployed | [PROJ-4](PROJ-4-fristmanagement.md) | 2026-03-25 |
 | PROJ-5 | Dokumentenverwaltung | Planned | [PROJ-5](PROJ-5-dokumentenverwaltung.md) | 2026-03-25 |
 | PROJ-6 | Bescheiderzeugung | Planned | [PROJ-6](PROJ-6-bescheiderzeugung.md) | 2026-03-25 |
-| PROJ-7 | XBau-Basisschnittstelle | Deployed (Conditional: US-3, US-4, Schematron-Runtime) | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
+| PROJ-7 | XBau-Basisschnittstelle | Deployed (Conditional: PROJ-57, PROJ-58, PROJ-59) | [PROJ-7](PROJ-7-xbau-basisschnittstelle.md) | 2026-03-25 |
 | PROJ-8 | Vollstaendiger Datenexport | Planned | [PROJ-8](PROJ-8-datenexport.md) | 2026-03-25 |
 
 ### Phase 1 - Kern-MVP (Erweiterung)
@@ -57,10 +57,18 @@
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Deployed | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
-| PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: B-48-01 Bestandsdaten-Nachpflege) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
+| PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: PROJ-56) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
 | PROJ-49 | Volltextsuche über mehrere Spalten | Deployed | [PROJ-49](PROJ-49-volltextsuche-erweitern.md) | 2026-03-27 |
 | PROJ-50 | Statistik-Karten als Schnellfilter | Deployed | [PROJ-50](PROJ-50-statistik-karten-schnellfilter.md) | 2026-03-27 |
 | PROJ-51 | Fristdatum statt Eingangsdatum in Vorgangsliste | Deployed | [PROJ-51](PROJ-51-fristdatum-statt-eingang.md) | 2026-03-27 |
+| PROJ-52 | Interne Vorgang-Notizen (privat) | Planned | [PROJ-52](PROJ-52-interne-vorgang-notizen.md) | 2026-03-27 |
+| PROJ-53 | Wiedervorlagen mit Erinnerung | Planned | [PROJ-53](PROJ-53-wiedervorlagen-erinnerung.md) | 2026-03-27 |
+| PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | In Progress | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
+| PROJ-55 | Statistik-Karten echtes Filtern statt Sortierung | Deployed | [PROJ-55](PROJ-55-statistik-karten-filter.md) | 2026-03-27 |
+| PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Planned | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
+| PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Planned | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
+| PROJ-58 | XBau CI-Pipeline XSD-Validierung | Planned | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
+| PROJ-59 | XBau Schematron-Runtime-Validierung | Planned | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -78,7 +86,8 @@
 > PROJ-45 aus Freiburg-Feedback: service-bw REST-API Evaluation (Spike)
 > PROJ-46 aus UX-Beobachtung: Workflow-Aktionen ohne Bestaetigungsdialog (kritisch)
 > PROJ-47 aus UX-Beobachtungen: Sammelitem UX-Haertung (Breadcrumbs, Fokus, Toast, etc.)
-> PROJ-7 Conditional Go: Follow-ups (US-3 Statistik 0420-0427, US-4 CI-XSD-Validierung, Schematron-Runtime) muessen als eigene PROJ-IDs angelegt werden via /po-backlog
+> PROJ-7 Conditional Go: Follow-ups als PROJ-57 (Statistik 0420-0427), PROJ-58 (CI-XSD), PROJ-59 (Schematron-Runtime) angelegt
+> PROJ-48 Conditional Go: Follow-up als PROJ-56 (Bestandsdaten Geltungsdauer-Nachpflege) angelegt (korrigiert von B-48-01 auf PROJ-ID, Retro R-2)
 
 ### Phase 2 - Compliance und Integration
 
@@ -126,4 +135,12 @@
 
 > PROJ-50 Quick-Fix: Statistik-Karten als klickbare Schnellfilter (UX-Feedback Demo)
 
-## Next Available ID: PROJ-51
+> PROJ-52 aus Nutzertest Afterwork 14.05.2026: Interne Notizen die nicht in die Akte gehoeren (Erweiterung Kommentar-System)
+> PROJ-53 aus Nutzertest Afterwork 14.05.2026: 200 Outlook-Wiedervorlagen ersetzen (Soest, Referatsleiterin)
+> PROJ-54 aus Nutzertest Tag 2 (Einsteiger): 5/6 brauchen Fachbegriff-Erklaerungen (vorgezogen aus PROJ-16)
+> PROJ-55 aus Nutzertest Tag 1: PROJ-50 Korrektur -- Karten sollen filtern statt sortieren (Dortmund)
+
+> PROJ-56 Follow-up aus PROJ-48: Bestandsdaten ohne Geltungsdauer nachpflegen
+> PROJ-57/58/59 Follow-ups aus PROJ-7: XBau Statistik, CI-XSD, Schematron-Runtime
+
+## Next Available ID: PROJ-60

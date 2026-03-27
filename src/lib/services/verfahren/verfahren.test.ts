@@ -458,6 +458,88 @@ describe("listVorgaenge", () => {
     expect(result.total).toBe(0);
     expect(result.error).toBe("timeout");
   });
+
+  // PROJ-55: Frist-Filter-Tests
+  describe("frist_filter (PROJ-55)", () => {
+    const VORGAENGE_DATA = [
+      { id: "v-1", aktenzeichen: "2026/0001/BG", bauherr_name: "A", grundstueck_adresse: null, bezeichnung: null, workflow_schritt_id: "eingegangen", zustaendiger_user_id: null, eingangsdatum: "2026-03-01", verfahrensart_id: "va-001" },
+      { id: "v-2", aktenzeichen: "2026/0002/BG", bauherr_name: "B", grundstueck_adresse: null, bezeichnung: null, workflow_schritt_id: "eingegangen", zustaendiger_user_id: null, eingangsdatum: "2026-03-02", verfahrensart_id: "va-001" },
+      { id: "v-3", aktenzeichen: "2026/0003/BG", bauherr_name: "C", grundstueck_adresse: null, bezeichnung: null, workflow_schritt_id: "eingegangen", zustaendiger_user_id: null, eingangsdatum: "2026-03-03", verfahrensart_id: "va-001" },
+      { id: "v-4", aktenzeichen: "2026/0004/BG", bauherr_name: "D", grundstueck_adresse: null, bezeichnung: null, workflow_schritt_id: "eingegangen", zustaendiger_user_id: null, eingangsdatum: "2026-03-04", verfahrensart_id: "va-001" },
+    ];
+
+    const FRISTEN_DATA = [
+      { vorgang_id: "v-1", status: "gruen", end_datum: "2026-06-01" },
+      { vorgang_id: "v-2", status: "gelb", end_datum: "2026-04-15" },
+      { vorgang_id: "v-3", status: "rot", end_datum: "2026-04-01" },
+      { vorgang_id: "v-4", status: "dunkelrot", end_datum: "2026-03-28" },
+    ];
+
+    function createFristFilterClient() {
+      const callCounts: Record<string, number> = {};
+      const resolveQueue: Record<string, any[]> = {
+        vorgaenge: [{ data: VORGAENGE_DATA, count: 4, error: null }],
+        vorgang_fristen: [{ data: FRISTEN_DATA }],
+      };
+
+      const mockFrom = jest.fn((table: string) => {
+        if (!callCounts[table]) callCounts[table] = 0;
+        const idx = callCounts[table];
+        callCounts[table]++;
+        const results = resolveQueue[table];
+        const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+        return createChainMock(result).proxy;
+      });
+
+      return { from: mockFrom } as any;
+    }
+
+    it("filtert auf ueberfaellig (rot + dunkelrot)", async () => {
+      const client = createFristFilterClient();
+      const result = await listVorgaenge(client, { tenantId: TENANT_ID, frist_filter: "ueberfaellig" });
+
+      expect(result.error).toBeNull();
+      expect(result.total).toBe(2);
+      expect(result.data.map((d) => d.id)).toEqual(expect.arrayContaining(["v-3", "v-4"]));
+      expect(result.data.every((d) => d.frist_status === "rot" || d.frist_status === "dunkelrot")).toBe(true);
+    });
+
+    it("filtert auf gefaehrdet (nur gelb)", async () => {
+      const client = createFristFilterClient();
+      const result = await listVorgaenge(client, { tenantId: TENANT_ID, frist_filter: "gefaehrdet" });
+
+      expect(result.error).toBeNull();
+      expect(result.total).toBe(1);
+      expect(result.data[0].id).toBe("v-2");
+      expect(result.data[0].frist_status).toBe("gelb");
+    });
+
+    it("filtert auf zeitplan (gruen + null)", async () => {
+      const client = createFristFilterClient();
+      const result = await listVorgaenge(client, { tenantId: TENANT_ID, frist_filter: "zeitplan" });
+
+      expect(result.error).toBeNull();
+      expect(result.total).toBe(1);
+      expect(result.data[0].id).toBe("v-1");
+      expect(result.data[0].frist_status).toBe("gruen");
+    });
+
+    it("kombiniert frist_filter mit frist_status-Sortierung", async () => {
+      const client = createFristFilterClient();
+      const result = await listVorgaenge(client, {
+        tenantId: TENANT_ID,
+        frist_filter: "ueberfaellig",
+        sortierung: "frist_status",
+        richtung: "asc",
+      });
+
+      expect(result.error).toBeNull();
+      expect(result.total).toBe(2);
+      // asc = dringendste zuerst: dunkelrot(0) vor rot(1)
+      expect(result.data[0].frist_status).toBe("dunkelrot");
+      expect(result.data[1].frist_status).toBe("rot");
+    });
+  });
 });
 
 describe("getVorgang", () => {
@@ -758,9 +840,10 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
     const result = await getVorgaengeStatistik({ from: mockFrom } as any, TENANT_ID);
 
     expect(result.error).toBeNull();
+    // PROJ-55: gefaehrdet zaehlt nur gelb (nicht-ueberlappend mit ueberfaellig)
     expect(result.data).toEqual({
       gesamt: 3,
-      gefaehrdet: 2,    // gelb + rot
+      gefaehrdet: 1,    // nur gelb
       ueberfaellig: 1,  // rot
       im_zeitplan: 1,    // gruen
     });
@@ -809,7 +892,8 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
     });
   });
 
-  it("klassifiziert dunkelrot als gefährdet UND überfällig", async () => {
+  // PROJ-55: dunkelrot zaehlt NUR als ueberfaellig, nicht als gefaehrdet (nicht-ueberlappend)
+  it("klassifiziert dunkelrot als ueberfaellig (nicht gefaehrdet)", async () => {
     const callCounts: Record<string, number> = {};
     const resolveQueue: Record<string, any[]> = {
       vorgaenge: [
@@ -832,7 +916,7 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
 
     const result = await getVorgaengeStatistik({ from: mockFrom } as any, TENANT_ID);
 
-    expect(result.data.gefaehrdet).toBe(1);
+    expect(result.data.gefaehrdet).toBe(0);
     expect(result.data.ueberfaellig).toBe(1);
     expect(result.data.im_zeitplan).toBe(0);
   });

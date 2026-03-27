@@ -43,6 +43,8 @@ export const ListVorgaengeQuerySchema = z.object({
   suche: z.string().optional(),
   sortierung: z.enum(["eingangsdatum", "aktenzeichen", "workflow_schritt_id", "frist_status"]).optional(),
   richtung: z.enum(["asc", "desc"]).optional(),
+  /** PROJ-55: Frist-Schnellfilter (ueberfaellig=rot+dunkelrot, gefaehrdet=gelb, zeitplan=gruen+null) */
+  frist_filter: z.enum(["ueberfaellig", "gefaehrdet", "zeitplan"]).optional(),
   seite: z.coerce.number().int().positive().optional().default(1),
   pro_seite: z.coerce.number().int().min(1).max(100).optional().default(25),
 });

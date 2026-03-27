@@ -78,9 +78,11 @@ export default function VorgaengeListePage() {
   const [sortierung, setSortierung] = React.useState<Sortierung>("eingangsdatum");
   const [richtung, setRichtung] = React.useState<Richtung>("desc");
 
-  // PROJ-50: Aktive Statistik-Karte tracken
+  // PROJ-50/55: Aktive Statistik-Karte tracken (PROJ-55: Filter statt Sortierung)
   type SchnellfilterKarte = "gesamt" | "gefaehrdet" | "ueberfaellig" | "zeitplan";
   const [activeCard, setActiveCard] = React.useState<SchnellfilterKarte | null>(null);
+  /** PROJ-55: Frist-Filter fuer API (ueberfaellig, gefaehrdet, zeitplan) */
+  const [fristFilter, setFristFilter] = React.useState<string>("");
   const [seite, setSeite] = React.useState(1);
   const proSeite = 25;
 
@@ -139,6 +141,7 @@ export default function VorgaengeListePage() {
       if (statusFilter) params.set("status", statusFilter);
       if (verfahrensartFilter) params.set("verfahrensart_id", verfahrensartFilter);
       if (suche) params.set("suche", suche);
+      if (fristFilter) params.set("frist_filter", fristFilter);
       params.set("sortierung", sortierung);
       params.set("richtung", richtung);
       params.set("seite", String(seite));
@@ -170,7 +173,7 @@ export default function VorgaengeListePage() {
       }
     }
     loadVorgaenge();
-  }, [statusFilter, verfahrensartFilter, suche, sortierung, richtung, seite]);
+  }, [statusFilter, verfahrensartFilter, suche, fristFilter, sortierung, richtung, seite]);
 
   const totalPages = Math.max(1, Math.ceil(total / proSeite));
 
@@ -249,12 +252,12 @@ export default function VorgaengeListePage() {
         >
           <Card
             className={cn("shadow-sm hover:shadow-md transition-all cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "gesamt" && "ring-2 ring-primary shadow-md")}
-            onClick={() => { setActiveCard("gesamt"); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); }}
+            onClick={() => { setActiveCard(activeCard === "gesamt" ? null : "gesamt"); setFristFilter(""); setSeite(1); }}
             tabIndex={0}
             role="button"
-            aria-label="Alle Vorgänge anzeigen (Standard-Sortierung)"
+            aria-label="Alle Vorgänge anzeigen (Filter aufheben)"
             aria-pressed={activeCard === "gesamt"}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("gesamt"); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); } }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard(activeCard === "gesamt" ? null : "gesamt"); setFristFilter(""); setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -267,12 +270,12 @@ export default function VorgaengeListePage() {
           </Card>
           <Card
             className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-yellow-400 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "gefaehrdet" && "ring-2 ring-yellow-400 shadow-md")}
-            onClick={() => { setActiveCard("gefaehrdet"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); }}
+            onClick={() => { if (activeCard === "gefaehrdet") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("gefaehrdet"); setFristFilter("gefaehrdet"); } setSeite(1); }}
             tabIndex={0}
             role="button"
-            aria-label="Fristgefährdete Vorgänge zuerst anzeigen"
+            aria-label="Nur fristgefährdete Vorgänge anzeigen"
             aria-pressed={activeCard === "gefaehrdet"}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("gefaehrdet"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); } }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (activeCard === "gefaehrdet") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("gefaehrdet"); setFristFilter("gefaehrdet"); } setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -287,12 +290,12 @@ export default function VorgaengeListePage() {
           </Card>
           <Card
             className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-red-500 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "ueberfaellig" && "ring-2 ring-red-500 shadow-md")}
-            onClick={() => { setActiveCard("ueberfaellig"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); }}
+            onClick={() => { if (activeCard === "ueberfaellig") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("ueberfaellig"); setFristFilter("ueberfaellig"); } setSeite(1); }}
             tabIndex={0}
             role="button"
-            aria-label="Überfällige Vorgänge zuerst anzeigen"
+            aria-label="Nur überfällige Vorgänge anzeigen"
             aria-pressed={activeCard === "ueberfaellig"}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("ueberfaellig"); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); } }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (activeCard === "ueberfaellig") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("ueberfaellig"); setFristFilter("ueberfaellig"); } setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -307,12 +310,12 @@ export default function VorgaengeListePage() {
           </Card>
           <Card
             className={cn("shadow-sm hover:shadow-md transition-all border-l-4 border-l-primary cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", activeCard === "zeitplan" && "ring-2 ring-primary shadow-md")}
-            onClick={() => { setActiveCard("zeitplan"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
+            onClick={() => { if (activeCard === "zeitplan") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("zeitplan"); setFristFilter("zeitplan"); } setSeite(1); }}
             tabIndex={0}
             role="button"
-            aria-label="Vorgänge im Zeitplan zuerst anzeigen"
+            aria-label="Nur Vorgänge im Zeitplan anzeigen"
             aria-pressed={activeCard === "zeitplan"}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActiveCard("zeitplan"); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (activeCard === "zeitplan") { setActiveCard(null); setFristFilter(""); } else { setActiveCard("zeitplan"); setFristFilter("zeitplan"); } setSeite(1); } }}
           >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
@@ -427,11 +430,11 @@ export default function VorgaengeListePage() {
             Keine Vorgänge gefunden
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            {suche || statusFilter || verfahrensartFilter
+            {suche || statusFilter || verfahrensartFilter || fristFilter
               ? "Passen Sie die Suchkriterien an oder setzen Sie die Filter zurück."
               : "Legen Sie einen neuen Vorgang an, um zu beginnen."}
           </p>
-          {(suche || statusFilter || verfahrensartFilter) && (
+          {(suche || statusFilter || verfahrensartFilter || fristFilter) && (
             <Button
               variant="outline"
               onClick={() => {
@@ -439,6 +442,8 @@ export default function VorgaengeListePage() {
                 setSuche("");
                 setStatusFilter("");
                 setVerfahrensartFilter("");
+                setFristFilter("");
+                setActiveCard(null);
                 setSeite(1);
               }}
             >
