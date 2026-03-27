@@ -17,6 +17,9 @@
 - Wenn diese Agenten Dateien erstellen sollen: Entweder einen schreibfaehigen Agenten nutzen (z.B. `senior-backend-developer`, `technical-writer`) oder den Inhalt im Hauptkontext schreiben
 - Bei Massenoperationen (>3 Dateien): Immer im Hauptkontext schreiben, nie an Subagenten delegieren
 - Schreibfaehige Agenten: `senior-backend-developer`, `senior-frontend-developer`, `senior-qs-engineer`, `devops-platform-engineer`, `senior-security-engineer`, `senior-ui-ux-designer`, `database-architect`, `technical-writer`
+- **Bei parallelen Implementierungen:** Keine zwei Agenten duerfen dieselbe Datei aendern
+- Vor Parallelisierung pruefen: Welche Dateien werden je Item geaendert? Bei Ueberschneidung: sequenziell statt parallel
+- Faustregel: Parallele Agenten nur wenn sie VERSCHIEDENE Service-Module betreffen (z.B. `workflow/` vs. `fristen/` vs. `verfahren/`)
 - Feature-Specs liegen in `features/PROJ-X-feature-name.md`
 - Migrations-Phasen liegen in `features/MIGRATION-X-phase-name.md`
 - ADRs liegen in `docs/adr/ADR-XXX-titel.md` mit Index in `docs/adr/README.md`
@@ -82,6 +85,15 @@ Optionale Abschnitte: Feldmapping, Prozesskette, Rechtsgrundlage.
 - Vor neuen Komponenten prüfen: `git ls-files src/components/`
 - Vor neuen APIs prüfen: `git ls-files src/app/api/`
 - Vor neuem Feature prüfen: `ls features/ | grep PROJ-`
+
+## Deployment-Reihenfolge (Prozess-Pflicht)
+- **Kein `git push` ohne abgeschlossenen QS-Zyklus.** Reihenfolge:
+  1. Implementierung (`/backend-api`, `/frontend-component`, `/frontend-integrate`)
+  2. `git commit` (lokal) — erlaubt nach Implementierung
+  3. `/qs-review` → `/qs-release` → `/po-review` (Go-Entscheidung)
+  4. `git push origin master` — erst nach PO-Go
+- Ausnahmen: Dateien ausserhalb von `src/` und `supabase/` (Specs, Docs, Rules)
+- Bei Verstoess: Befund in `/meta-optimize` dokumentieren
 
 ## Deployment
 - Nach `git push origin main`: `vercel --prod` ausfuehren fuer sofortiges Deployment
