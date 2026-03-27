@@ -247,12 +247,11 @@ export async function listVorgaenge(
     query = query.eq("zustaendiger_user_id", params.zustaendiger_user_id);
   }
 
-  // Volltextsuche (PostgreSQL tsvector)
+  // PROJ-49: Volltextsuche über mehrere Spalten (ilike, case-insensitive)
   if (params.suche) {
-    query = query.textSearch(
-      "aktenzeichen",
-      params.suche,
-      { type: "websearch", config: "german" }
+    const term = params.suche.replace(/%/g, "");
+    query = query.or(
+      `aktenzeichen.ilike.%${term}%,bauherr_name.ilike.%${term}%,grundstueck_adresse.ilike.%${term}%,bezeichnung.ilike.%${term}%`
     );
   }
 

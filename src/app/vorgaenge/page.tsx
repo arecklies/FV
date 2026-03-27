@@ -304,7 +304,7 @@ export default function VorgaengeListePage() {
           />
           <Input
             type="search"
-            placeholder="Suche (Aktenzeichen, Name, Adresse)..."
+            placeholder="Suche (Aktenzeichen, Bauherr, Adresse, Bezeichnung)..."
             value={suchInput}
             onChange={(e) => handleSuchInput(e.target.value)}
             className="pl-9"
