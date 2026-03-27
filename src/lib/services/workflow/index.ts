@@ -3,7 +3,7 @@ import { writeAuditLog } from "@/lib/services/audit";
 import { ladeConfigFristen, createFrist } from "@/lib/services/fristen";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
-import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie } from "./types";
+import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie, WorkflowAktion } from "./types";
 import { WorkflowDefinitionDbSchema, WorkflowSchrittHistorieDbSchema } from "./types";
 
 /**
@@ -57,6 +57,15 @@ export function getVerfuegbareAktionen(
   return { aktionen: schritt.aktionen, schritt };
 }
 
+/**
+ * PROJ-33: Prueft ob eine Aktion eine Zurueckweisung ist.
+ * Konvention: Ziel-Schritt liegt VOR dem aktuellen Schritt in der Workflow-Definition,
+ * oder die Aktion-ID enthaelt "zurueck".
+ */
+export function isZurueckweisungsAktion(aktion: WorkflowAktion): boolean {
+  return aktion.id.includes("zurueck");
+}
+
 interface ExecuteAktionParams {
   tenantId: string;
   userId: string;
@@ -108,6 +117,13 @@ export async function executeWorkflowAktion(
     return { neuerSchrittId: null, fristErstellt: null, error: "Diese Aktion ist nicht verfügbar" };
   }
 
+  // PROJ-33 AC-2: Begruendungspflicht bei Zurueckweisung in Freigabe-Schritten
+  if (schritt.typ === "freigabe" && isZurueckweisungsAktion(aktion)) {
+    if (!params.begruendung || params.begruendung.trim().length < 10) {
+      return { neuerSchrittId: null, fristErstellt: null, error: "Begründung ist Pflicht bei Zurückweisung (mindestens 10 Zeichen)" };
+    }
+  }
+
   // 4. Ziel-Schritt validieren
   const zielSchritt = getSchritt(definition, aktion.ziel);
   if (!zielSchritt) {
@@ -150,6 +166,7 @@ export async function executeWorkflowAktion(
       von: params.aktuellerSchrittId,
       nach: aktion.ziel,
       aktion: params.aktionId,
+      begruendung: params.begruendung ?? null,
     },
   });
 

@@ -21,6 +21,7 @@ import {
   getWorkflowDefinition,
   executeWorkflowAktion,
   getWorkflowHistorie,
+  isZurueckweisungsAktion,
 } from "./index";
 import { writeAuditLog } from "@/lib/services/audit";
 import type { WorkflowDefinition, WorkflowSchrittHistorie } from "./types";
@@ -103,9 +104,10 @@ const testWorkflow: WorkflowDefinition = {
       label: "Freizeichnung",
       typ: "freigabe",
       minRolle: "referatsleiter",
-      naechsteSchritte: ["abgeschlossen"],
+      naechsteSchritte: ["abgeschlossen", "bescheid"],
       aktionen: [
         { id: "freigeben", label: "Freizeichnen", ziel: "abgeschlossen" },
+        { id: "zurueckweisen", label: "Zur Überarbeitung", ziel: "bescheid" },
       ],
     },
     {
@@ -161,13 +163,14 @@ describe("getVerfuegbareAktionen", () => {
 
   it("erlaubt Freigabe-Aktionen fuer Referatsleiter", () => {
     const result = getVerfuegbareAktionen(testWorkflow, "freizeichnung", "referatsleiter");
-    expect(result.aktionen).toHaveLength(1);
+    expect(result.aktionen).toHaveLength(2);
     expect(result.aktionen[0].id).toBe("freigeben");
+    expect(result.aktionen[1].id).toBe("zurueckweisen");
   });
 
   it("erlaubt Freigabe-Aktionen fuer Tenant-Admin (hoehere Rolle)", () => {
     const result = getVerfuegbareAktionen(testWorkflow, "freizeichnung", "tenant_admin");
-    expect(result.aktionen).toHaveLength(1);
+    expect(result.aktionen).toHaveLength(2);
   });
 
   it("gibt leere Aktionen fuer Endstatus", () => {
@@ -385,6 +388,155 @@ describe("executeWorkflowAktion", () => {
     );
 
     consoleSpy.mockRestore();
+  });
+});
+
+// =====================================================================
+// PROJ-33: Vier-Augen-Lite Tests
+// =====================================================================
+
+describe("isZurueckweisungsAktion", () => {
+  it("erkennt Zurueckweisungs-Aktion anhand der ID", () => {
+    expect(isZurueckweisungsAktion({ id: "zurueckweisen", label: "Zurück", ziel: "bescheid" })).toBe(true);
+    expect(isZurueckweisungsAktion({ id: "zur_zurueckweisung", label: "Zurück", ziel: "bescheid" })).toBe(true);
+  });
+
+  it("erkennt Nicht-Zurueckweisungs-Aktionen", () => {
+    expect(isZurueckweisungsAktion({ id: "freigeben", label: "Freigeben", ziel: "zustellung" })).toBe(false);
+    expect(isZurueckweisungsAktion({ id: "weiter", label: "Weiter", ziel: "pruefung" })).toBe(false);
+  });
+});
+
+describe("executeWorkflowAktion — PROJ-33 Begruendungspflicht", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  const freigabeParams = {
+    tenantId: TENANT_ID,
+    userId: USER_ID,
+    userRole: "referatsleiter" as const,
+    vorgangId: VORGANG_ID,
+    aktuellerSchrittId: "freizeichnung",
+    aktionId: "zurueckweisen",
+    verfahrensartId: "va-001",
+    bundesland: "NW",
+  };
+
+  function createFreigabeMockFrom() {
+    const callCounts: Record<string, number> = {};
+    const resolveQueue: Record<string, any[]> = {
+      config_workflows: [{ data: { definition: testWorkflow } }],
+      vorgaenge: [{ error: null }],
+      vorgang_workflow_schritte: [{ error: null }],
+    };
+
+    return jest.fn((table: string) => {
+      if (!callCounts[table]) callCounts[table] = 0;
+      const idx = callCounts[table];
+      callCounts[table]++;
+      const results = resolveQueue[table];
+      const result = results ? results[Math.min(idx, results.length - 1)] : { data: null, error: null };
+      return createChainMock(result).proxy;
+    });
+  }
+
+  it("verweigert Zurueckweisung ohne Begruendung", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      begruendung: undefined,
+    });
+
+    expect(result.neuerSchrittId).toBeNull();
+    expect(result.error).toBe("Begründung ist Pflicht bei Zurückweisung (mindestens 10 Zeichen)");
+  });
+
+  it("verweigert Zurueckweisung mit zu kurzer Begruendung", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      begruendung: "Kurz",
+    });
+
+    expect(result.neuerSchrittId).toBeNull();
+    expect(result.error).toBe("Begründung ist Pflicht bei Zurückweisung (mindestens 10 Zeichen)");
+  });
+
+  it("verweigert Zurueckweisung mit Leerzeichern unter 10 Zeichen", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      begruendung: "   ab   ", // trim() = "ab" = 2 Zeichen
+    });
+
+    expect(result.neuerSchrittId).toBeNull();
+    expect(result.error).toBe("Begründung ist Pflicht bei Zurückweisung (mindestens 10 Zeichen)");
+  });
+
+  it("erlaubt Zurueckweisung mit ausreichender Begruendung", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      begruendung: "Bescheid muss überarbeitet werden, Absatz 3 fehlt.",
+    });
+
+    expect(result.neuerSchrittId).toBe("bescheid");
+    expect(result.error).toBeNull();
+  });
+
+  it("erfordert keine Begruendung bei Freigabe (nicht-zurueckweisend)", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    const result = await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      aktionId: "freigeben",
+      begruendung: undefined,
+    });
+
+    expect(result.neuerSchrittId).toBe("abgeschlossen");
+    expect(result.error).toBeNull();
+  });
+
+  it("schreibt Begruendung in Audit-Log bei Zurueckweisung (AC-3)", async () => {
+    const mockFrom = createFreigabeMockFrom();
+    const begruendung = "Formfehler in Absatz 2, bitte korrigieren";
+
+    await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      begruendung,
+    });
+
+    expect(writeAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "vorgang.workflow_schritt",
+        payload: expect.objectContaining({
+          aktion: "zurueckweisen",
+          begruendung,
+        }),
+      })
+    );
+  });
+
+  it("schreibt begruendung=null in Audit-Log bei Freigabe ohne Begruendung", async () => {
+    const mockFrom = createFreigabeMockFrom();
+
+    await executeWorkflowAktion({ from: mockFrom } as any, {
+      ...freigabeParams,
+      aktionId: "freigeben",
+      begruendung: undefined,
+    });
+
+    expect(writeAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          aktion: "freigeben",
+          begruendung: null,
+        }),
+      })
+    );
   });
 });
 

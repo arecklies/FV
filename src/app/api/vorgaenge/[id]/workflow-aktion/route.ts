@@ -66,6 +66,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       "Aktueller Workflow-Schritt nicht gefunden",
       "Diese Aktion ist nicht verfügbar",
       "Ziel-Schritt nicht in Workflow-Definition",
+      "Begründung ist Pflicht bei Zurückweisung (mindestens 10 Zeichen)",
     ];
     if (businessErrors.includes(result.error)) {
       return jsonResponse({ error: result.error }, 400);
