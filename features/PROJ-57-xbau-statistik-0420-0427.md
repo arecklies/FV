@@ -12,7 +12,15 @@ PROJ-7 US-3 fordert die Generierung aller 8 XBau-Statistik-Nachrichten (0420-042
 ## 2. Fachlicher Kontext & Stakeholder
 
 - **OZG-Konformitaet:** Statistiknachrichten sind Pflicht
-- **Nachrichtentypen:** 0420 Daten Bauvorhaben, 0421 Baugenehmigung, 0422 Abbruchgenehmigung, 0423 Bautaetigkeitsstatistik Hochbau, 0424 Bautaetigkeitsstatistik Tiefbau, 0425 Baufertigstellung, 0426 Bauueberhang, 0427 Wohnungsbestand
+- **Nachrichtentypen (XSD-Element-Namen):**
+  - 0420: statistik.datenBauvorhaben.0420
+  - 0421: statistik.baugenehmigung.0421
+  - 0422: statistik.erloscheneBaugenehmigung.0422
+  - 0423: statistik.baubeginn.0423
+  - 0424: statistik.fertigstellungRohbau.0424
+  - 0425: statistik.baufertigstellung.0425
+  - 0426: statistik.bauabgang.0426
+  - 0427: statistik.bauueberhang.0427
 
 ## 3. Funktionale Anforderungen
 
