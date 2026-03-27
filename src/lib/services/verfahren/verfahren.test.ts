@@ -738,9 +738,9 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
         // Frist-Status-Batch
         {
           data: [
-            { vorgang_id: "v-1", status: "gruen" },
-            { vorgang_id: "v-2", status: "gelb" },
-            { vorgang_id: "v-3", status: "rot" },
+            { vorgang_id: "v-1", status: "gruen", end_datum: "2026-06-01T00:00:00.000Z" },
+            { vorgang_id: "v-2", status: "gelb", end_datum: "2026-04-15T00:00:00.000Z" },
+            { vorgang_id: "v-3", status: "rot", end_datum: "2026-04-01T00:00:00.000Z" },
           ],
         },
       ],
@@ -817,7 +817,7 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
         { data: [{ id: "v-1" }] },
       ],
       vorgang_fristen: [
-        { data: [{ vorgang_id: "v-1", status: "dunkelrot" }] },
+        { data: [{ vorgang_id: "v-1", status: "dunkelrot", end_datum: "2026-03-01T00:00:00.000Z" }] },
       ],
     };
 

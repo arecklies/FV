@@ -495,11 +495,11 @@ export default function VorgaengeListePage() {
                     <button
                       type="button"
                       className="flex items-center gap-1 hover:text-foreground transition-colors rounded focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
-                      onClick={() => handleSort("eingangsdatum")}
-                      aria-label="Nach Eingangsdatum sortieren"
+                      onClick={() => handleSort("frist_status")}
+                      aria-label="Nach Fristdatum sortieren"
                     >
-                      Eingang
-                      {getSortIcon("eingangsdatum")}
+                      Frist bis
+                      {getSortIcon("frist_status")}
                     </button>
                   </TableHead>
                 </TableRow>
@@ -539,9 +539,9 @@ export default function VorgaengeListePage() {
                       ) : null}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {new Date(v.eingangsdatum).toLocaleDateString(
-                        "de-DE"
-                      )}
+                      {v.frist_end_datum
+                        ? new Date(v.frist_end_datum).toLocaleDateString("de-DE")
+                        : "–"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -577,8 +577,10 @@ export default function VorgaengeListePage() {
                   {v.grundstueck_adresse || "-"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Eingang:{" "}
-                  {new Date(v.eingangsdatum).toLocaleDateString("de-DE")}
+                  Frist bis:{" "}
+                  {v.frist_end_datum
+                    ? new Date(v.frist_end_datum).toLocaleDateString("de-DE")
+                    : "–"}
                 </p>
               </Link>
             ))}

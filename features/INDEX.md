@@ -60,6 +60,7 @@
 | PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: B-48-01 Bestandsdaten-Nachpflege) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
 | PROJ-49 | Volltextsuche über mehrere Spalten | Deployed | [PROJ-49](PROJ-49-volltextsuche-erweitern.md) | 2026-03-27 |
 | PROJ-50 | Statistik-Karten als Schnellfilter | Deployed | [PROJ-50](PROJ-50-statistik-karten-schnellfilter.md) | 2026-03-27 |
+| PROJ-51 | Fristdatum statt Eingangsdatum in Vorgangsliste | Deployed | [PROJ-51](PROJ-51-fristdatum-statt-eingang.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)

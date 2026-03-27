@@ -108,6 +108,8 @@ export const VorgangListItemDbSchema = z.object({
   eingangsdatum: z.string(),
   verfahrensart_id: z.string(),
   frist_status: z.string().nullable().optional(),
+  /** PROJ-51: Enddatum der dringendsten Frist */
+  frist_end_datum: z.string().nullable().optional(),
 });
 
 export const VorgangKommentarDbSchema = z.object({

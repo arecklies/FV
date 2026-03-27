@@ -10,20 +10,27 @@ import { resolveUserEmails } from "@/lib/services/user-resolver";
 const FristStatusRowSchema = z.object({
   vorgang_id: z.string(),
   status: z.string(),
+  end_datum: z.string(),
 });
 
-/** PROJ-20: Laedt dringendsten Frist-Status je Vorgang per Batch-Query */
+/** Frist-Info: Status + nächstes Fristdatum (PROJ-20 + PROJ-51) */
+export interface FristInfo {
+  status: string;
+  end_datum: string;
+}
+
+/** PROJ-20/51: Laedt dringendsten Frist-Status + end_datum je Vorgang per Batch-Query */
 async function ladeFristStatusBatch(
   serviceClient: SupabaseClient,
   tenantId: string,
   vorgangIds: string[]
-): Promise<Map<string, string>> {
-  const result = new Map<string, string>();
+): Promise<Map<string, FristInfo>> {
+  const result = new Map<string, FristInfo>();
   if (vorgangIds.length === 0) return result;
 
   const { data } = await serviceClient
     .from("vorgang_fristen")
-    .select("vorgang_id, status")
+    .select("vorgang_id, status, end_datum")
     .eq("tenant_id", tenantId)
     .eq("aktiv", true)
     .in("vorgang_id", vorgangIds)
@@ -35,8 +42,8 @@ async function ladeFristStatusBatch(
   for (const row of data) {
     const parsed = FristStatusRowSchema.parse(row);
     const existing = result.get(parsed.vorgang_id);
-    if (!existing || (AMPEL_PRIO[parsed.status] ?? 5) < (AMPEL_PRIO[existing] ?? 5)) {
-      result.set(parsed.vorgang_id, parsed.status);
+    if (!existing || (AMPEL_PRIO[parsed.status] ?? 5) < (AMPEL_PRIO[existing.status] ?? 5)) {
+      result.set(parsed.vorgang_id, { status: parsed.status, end_datum: parsed.end_datum });
     }
   }
 
@@ -272,7 +279,8 @@ export async function listVorgaenge(
 
     const parsed = (data ?? []).map((d: unknown) => {
       const item = VorgangListItemDbSchema.parse(d);
-      return { ...item, frist_status: fristStatusMap.get(item.id) ?? null };
+      const fristInfo = fristStatusMap.get(item.id);
+      return { ...item, frist_status: fristInfo?.status ?? null, frist_end_datum: fristInfo?.end_datum ?? null };
     });
 
     return { data: parsed, total: count ?? 0, error: null };
@@ -293,8 +301,8 @@ export async function listVorgaenge(
   const sortiert = (alleData ?? []).sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
     const sa = fristStatusMap.get(a.id as string);
     const sb = fristStatusMap.get(b.id as string);
-    const pa = sa ? (SORT_PRIO[sa] ?? nullPrio) : nullPrio;
-    const pb = sb ? (SORT_PRIO[sb] ?? nullPrio) : nullPrio;
+    const pa = sa ? (SORT_PRIO[sa.status] ?? nullPrio) : nullPrio;
+    const pb = sb ? (SORT_PRIO[sb.status] ?? nullPrio) : nullPrio;
     return ascending ? pa - pb : pb - pa;
   });
 
@@ -302,7 +310,8 @@ export async function listVorgaenge(
   const paginiert = sortiert.slice(offset, offset + proSeite);
   const parsed = paginiert.map((d: unknown) => {
     const item = VorgangListItemDbSchema.parse(d);
-    return { ...item, frist_status: fristStatusMap.get(item.id) ?? null };
+    const fristInfo = fristStatusMap.get(item.id);
+    return { ...item, frist_status: fristInfo?.status ?? null, frist_end_datum: fristInfo?.end_datum ?? null };
   });
 
   return { data: parsed, total: count ?? 0, error: null };
@@ -349,7 +358,8 @@ export async function getVorgaengeStatistik(
   let imZeitplan = 0;
 
   for (const id of ids) {
-    const status = fristStatusMap.get(id);
+    const fristInfo = fristStatusMap.get(id);
+    const status = fristInfo?.status;
     if (!status || status === "gruen") {
       imZeitplan++;
     } else if (status === "gelb") {
