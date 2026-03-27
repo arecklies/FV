@@ -58,7 +58,8 @@
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Deployed | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
 | PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: B-48-01 Bestandsdaten-Nachpflege) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
-| PROJ-49 | Volltextsuche über mehrere Spalten | In Progress | [PROJ-49](PROJ-49-volltextsuche-erweitern.md) | 2026-03-27 |
+| PROJ-49 | Volltextsuche über mehrere Spalten | Deployed | [PROJ-49](PROJ-49-volltextsuche-erweitern.md) | 2026-03-27 |
+| PROJ-50 | Statistik-Karten als Schnellfilter | Deployed | [PROJ-50](PROJ-50-statistik-karten-schnellfilter.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -122,4 +123,6 @@
 
 > PROJ-49 Quick-Fix: Volltextsuche über Bauherr, Adresse, Bezeichnung (Pilotblocker große Kommunen)
 
-## Next Available ID: PROJ-50
+> PROJ-50 Quick-Fix: Statistik-Karten als klickbare Schnellfilter (UX-Feedback Demo)
+
+## Next Available ID: PROJ-51

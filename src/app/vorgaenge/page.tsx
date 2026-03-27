@@ -242,7 +242,14 @@ export default function VorgaengeListePage() {
           role="region"
           aria-label="Vorgangsstatistik"
         >
-          <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <Card
+            className="shadow-sm hover:shadow-md transition-shadow cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onClick={() => { setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); }}
+            tabIndex={0}
+            role="button"
+            aria-label="Alle Vorgänge anzeigen (Standard-Sortierung)"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("eingangsdatum"); setRichtung("desc"); setSeite(1); } }}
+          >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight">{statistik.gesamt}</p>
@@ -252,7 +259,14 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Vorgänge gesamt</p>
             </CardContent>
           </Card>
-          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-400">
+          <Card
+            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-400 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onClick={() => { setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
+            tabIndex={0}
+            role="button"
+            aria-label="Fristgefährdete Vorgänge zuerst anzeigen"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
+          >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-yellow-700">
@@ -264,7 +278,14 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Fristgefährdet</p>
             </CardContent>
           </Card>
-          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-red-500">
+          <Card
+            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-red-500 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onClick={() => { setSortierung("frist_status"); setRichtung("desc"); setSeite(1); }}
+            tabIndex={0}
+            role="button"
+            aria-label="Überfällige Vorgänge zuerst anzeigen"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("desc"); setSeite(1); } }}
+          >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-red-700">
@@ -276,7 +297,14 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Überfällig</p>
             </CardContent>
           </Card>
-          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary">
+          <Card
+            className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onClick={() => { setSortierung("frist_status"); setRichtung("asc"); setSeite(1); }}
+            tabIndex={0}
+            role="button"
+            aria-label="Vorgänge im Zeitplan zuerst anzeigen"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortierung("frist_status"); setRichtung("asc"); setSeite(1); } }}
+          >
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-primary">
