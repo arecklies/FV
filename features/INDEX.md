@@ -74,6 +74,7 @@
 > PROJ-45 aus Freiburg-Feedback: service-bw REST-API Evaluation (Spike)
 > PROJ-46 aus UX-Beobachtung: Workflow-Aktionen ohne Bestaetigungsdialog (kritisch)
 > PROJ-47 aus UX-Beobachtungen: Sammelitem UX-Haertung (Breadcrumbs, Fokus, Toast, etc.)
+> PROJ-7 Conditional Go: Follow-ups (US-3 Statistik 0420-0427, US-4 CI-XSD-Validierung, Schematron-Runtime) muessen als eigene PROJ-IDs angelegt werden via /po-backlog
 
 ### Phase 2 - Compliance und Integration
 
