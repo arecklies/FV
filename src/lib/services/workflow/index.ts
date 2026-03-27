@@ -3,6 +3,8 @@ import { writeAuditLog } from "@/lib/services/audit";
 import { ladeConfigFristen, createFrist } from "@/lib/services/fristen";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
+
+const VALID_ROLES: Set<string> = new Set(["sachbearbeiter", "referatsleiter", "amtsleiter", "tenant_admin", "platform_admin"]);
 import type { WorkflowDefinition, WorkflowSchritt, WorkflowSchrittHistorie, WorkflowAktion } from "./types";
 import { WorkflowDefinitionDbSchema, WorkflowSchrittHistorieDbSchema } from "./types";
 
@@ -47,8 +49,12 @@ export function getVerfuegbareAktionen(
   const schritt = getSchritt(definition, aktuellerSchrittId);
   if (!schritt) return { aktionen: [], schritt: null };
 
-  // Freigabe-Schritte: Nur mit Mindestrolle ausfuehrbar
+  // Freigabe-Schritte: Nur mit Mindestrolle ausfuehrbar (B-33-02: validiert statt Cast)
   if (schritt.typ === "freigabe" && schritt.minRolle) {
+    if (!VALID_ROLES.has(schritt.minRolle)) {
+      console.warn(`[PROJ-33] Ungueltige minRolle "${schritt.minRolle}" in Workflow-Schritt "${schritt.id}"`);
+      return { aktionen: [], schritt };
+    }
     if (!hasMinRole(userRole, schritt.minRolle as UserRole)) {
       return { aktionen: [], schritt };
     }
@@ -59,10 +65,10 @@ export function getVerfuegbareAktionen(
 
 /**
  * PROJ-33: Prueft ob eine Aktion eine Zurueckweisung ist.
- * Konvention: Ziel-Schritt liegt VOR dem aktuellen Schritt in der Workflow-Definition,
- * oder die Aktion-ID enthaelt "zurueck".
+ * Bevorzugt explizites Flag (B-33-01 Fix), Fallback auf String-Konvention.
  */
 export function isZurueckweisungsAktion(aktion: WorkflowAktion): boolean {
+  if (aktion.zurueckweisung !== undefined) return aktion.zurueckweisung;
   return aktion.id.includes("zurueck");
 }
 

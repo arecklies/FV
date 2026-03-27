@@ -14,6 +14,7 @@ export interface WorkflowAktion {
   id: string;
   label: string;
   ziel: string;
+  zurueckweisung?: boolean;
 }
 
 export interface WorkflowSchritt {
@@ -52,6 +53,7 @@ const WorkflowAktionDbSchema = z.object({
   id: z.string(),
   label: z.string(),
   ziel: z.string(),
+  zurueckweisung: z.boolean().optional(),
 });
 
 const WorkflowSchrittDbSchema = z.object({
