@@ -18,6 +18,8 @@ export const FristTypSchema = z.enum([
   "nachforderungsfrist",
   "widerspruchsfrist",
   "vollstaendigkeitspruefung",
+  "eingangsbestaetigung",
+  "baubeginn_wartefrist",
 ]);
 export type FristTyp = z.infer<typeof FristTypSchema>;
 
