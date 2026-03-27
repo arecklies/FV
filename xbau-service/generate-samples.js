@@ -59,8 +59,9 @@ const ALLGEMEINE_ANGABEN = {
 
 const DATEN_EINZELNES_GEBAEUDE = {
   baugenehmigung: {
+    verfahrensart: "1",
+    artDerBautaetigkeit: "1",
     datumBaugenehmigung: "2026-01",
-    aktenzeichen: "2026/0042/BG",
   },
 };
 
@@ -188,6 +189,8 @@ nachrichten.push({
     datenEinzelnesGebaeude: {
       artDesBauens: "neubau",
       baugenehmigung: {
+        verfahrensart: "1",
+        artDerBautaetigkeit: "1",
         datumBaugenehmigung: "2026-01",
         aktenzeichen: "2026/0042/BG",
       },

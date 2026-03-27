@@ -240,11 +240,15 @@ export function appendDatenEinzelnesGebaeude(parent, data) {
  */
 function appendBaugenehmigungErweitert(parent, data) {
   const bg = parent.ele(NS_XBAU, "baugenehmigung");
+  // Basistyp Baugenehmigung: bauscheinnummer?, verfahrensart, artDerBautaetigkeit, bauAmBestand?, ...
+  if (data.bauscheinnummer) bg.ele(NS_XBAU, "bauscheinnummer").txt(data.bauscheinnummer);
+  // verfahrensart (Pflicht)
+  appendCodeElement(bg, "verfahrensart", data.verfahrensart ?? "1", CODELISTE.verfahrensartAnStatistik);
+  // artDerBautaetigkeit (Pflicht)
+  appendCodeElement(bg, "artDerBautaetigkeit", data.artDerBautaetigkeit ?? "1", CODELISTE.bautaetigkeitArt);
+  // Extension: datumBaugenehmigung (Pflicht)
   if (data.datumBaugenehmigung) {
     bg.ele(NS_XBAU, "datumBaugenehmigung").txt(data.datumBaugenehmigung);
-  }
-  if (data.aktenzeichen) {
-    bg.ele(NS_XBAU, "aktenzeichen").txt(data.aktenzeichen);
   }
   return bg;
 }

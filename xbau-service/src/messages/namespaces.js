@@ -92,6 +92,15 @@ export const CODELISTE = {
     listURI: "urn:xoev-de:xbau:codeliste:anzahlraeume",
     listVersionID: "3.0",
   },
+  /** VerfahrensartAnStatistik: keine feste listURI/listVersionID in XSD (use="required" ohne fixed) */
+  verfahrensartAnStatistik: {
+    listURI: "urn:xoev-de:xbau:codeliste:verfahrensartanstatistik",
+    listVersionID: "1.0",
+  },
+  bautaetigkeitArt: {
+    listURI: "urn:xoev-de:xbau:codeliste:bautaetigkeitart",
+    listVersionID: "2.0",
+  },
   abgangUmfang: {
     listURI: "urn:xoev-de:xbau:codeliste:abgangumfang",
     listVersionID: "2.0",
