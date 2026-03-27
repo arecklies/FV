@@ -41,7 +41,7 @@ Jede Feature-Spec muss mindestens diese Abschnitte enthalten (Reihenfolge einhal
 2. **Fachlicher Kontext & Stakeholder** – Wer ist betroffen?
 3. **Funktionale Anforderungen** – Was muss das System können?
 4. **User Stories & Akzeptanzkriterien** – Messbare Abnahmekriterien
-5. **Nicht-funktionale Anforderungen** – Performance, Sicherheit, Barrierefreiheit
+5. **Nicht-funktionale Anforderungen** – Performance, Sicherheit, Barrierefreiheit. Ausgabe von `/req-nfr` wird hier eingefuegt.
 6. **Spezialisten-Trigger** – Welche Rollen müssen einbezogen werden?
 7. **Offene Fragen** – Unklarheiten, die vor Implementierung zu klären sind
 8. **Annahmen** – Voraussetzungen, die als gegeben betrachtet werden

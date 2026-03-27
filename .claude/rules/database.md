@@ -17,6 +17,13 @@
 - Policies immer mit `USING` und `WITH CHECK` definieren, wo relevant
 - Nach jeder Schema-Änderung: RLS-Policies auf Vollständigkeit prüfen
 - Änderungen an bestehenden RLS-Policies → Human-in-the-Loop (autoritative Liste: `CLAUDE.md` Abschnitt „Human-in-the-Loop")
+- **RLS-Vollstaendigkeits-Checkliste (Pflicht bei `/db-schema` und `/qs-review`):**
+  - Jede Tabelle: SELECT-Policy mit USING
+  - Jede Tabelle: INSERT-Policy mit WITH CHECK
+  - Jede Tabelle: UPDATE-Policy mit USING + WITH CHECK
+  - Jede Tabelle: DELETE-Policy mit USING
+  - Service-Only-Tabellen: deny-all fuer alle 4 Operationen
+  - Fehlende Policy = Kritischer Befund, blockiert Deployment
 
 ## Schema-Design
 - Primärschlüssel: `uuid` mit `gen_random_uuid()` als Default

@@ -168,6 +168,29 @@ Jeder Skill liest zuerst relevante Dateien, agiert als definierter Agent und sch
 
 ---
 
+## Skill-Routing-Matrix (Entscheidungshilfe nach jedem Skill)
+
+| Nach Skill | Bedingung | Naechster Schritt |
+|---|---|---|
+| `/po-backlog` | Immer | `/req-stories` |
+| `/req-stories` | >= 1 Security-relevante Story (Auth, RLS, Multi-Tenancy) | `/sec-threatmodel` → dann `/arch-design` |
+| `/req-stories` | Neue DB-Entitaet oder Schema-Aenderung | `/db-schema` → dann `/arch-design` |
+| `/req-stories` | Sonst | `/req-nfr` oder direkt `/arch-design` |
+| `/arch-design` | UI-Aenderung | `/ux-concept` → `/ux-handoff` |
+| `/arch-design` | Nur Backend/DB | `/backend-api` |
+| `/db-schema` | Immer | `/backend-api` |
+| `/backend-api` | Frontend-Anbindung noetig | `/frontend-integrate` |
+| `/backend-api` | Keine UI | `/qs-review` |
+| `/frontend-component` | > 3 neue Produktiv-Dateien (ohne Tests) | `/frontend-review` → `/qs-review` |
+| `/frontend-component` | <= 3 Dateien | `/frontend-integrate` oder `/qs-review` |
+| `/qs-review` | BESTANDEN | `/qs-release` |
+| `/qs-review` | NICHT BESTANDEN | Nacharbeit → erneut `/qs-review` |
+| `/qs-release` | Immer | `/po-review` |
+| `/po-review` | Go | `/devops-deploy` → `/docs-write` |
+| `/po-review` | No-Go | Nacharbeit → `/qs-review` |
+
+---
+
 ## Typische Workflows
 
 ### Neues Feature entwickeln
@@ -175,9 +198,10 @@ Jeder Skill liest zuerst relevante Dateien, agiert als definierter Agent und sch
 /po-backlog → /req-stories → /req-nfr → /arch-design
 → /sec-threatmodel (bei sicherheitskritischen Features: Admin, Auth, Multi-Tenancy)
 → /db-schema → /ux-concept → /ux-handoff → /backend-api
-→ /frontend-component → /frontend-integrate → /qs-testplan
+→ /frontend-component → /frontend-integrate → /qs-testplan (optional, bei > 3 US)
 → /qs-review → /sec-review → /qs-release → /po-review
 → /devops-deploy → /docs-write
+→ (optional) Retro: 5 Rollen parallel → Konsolidiertes Protokoll → /po-backlog (Action Items) → /meta-optimize
 ```
 
 ### Sicherheits-Audit
@@ -223,6 +247,9 @@ Technische Items dürfen den verkürzten Workflow nutzen, wenn ALLE Bedingungen 
 
 Kein `/qs-release`, `/po-review`, `/frontend-review` erforderlich.
 Die Qualitätssicherung erfolgt über Tests und Build-Verifikation.
+
+**Pruefpflicht VOR Anwendung des verkuerzten Workflows:**
+Items die neue Pflichtfelder, neue UI-Elemente, geaendertes Berechnungsverhalten oder neue API-Parameter einfuehren, sind KEINE technischen Items — auch wenn sie als "Fix" oder "Optimierung" formuliert sind. Im Zweifel: voller Workflow.
 
 ### Security-Hotfix
 ```

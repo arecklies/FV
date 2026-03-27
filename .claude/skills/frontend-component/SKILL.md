@@ -59,4 +59,4 @@ Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren
 |---|---|---|---|
 | US-X AC-Y | ✅ / ❌ (ausgelassen) | [datei.tsx:42] | [Begruendung bei Auslassung] |
 
-- **Nächster Schritt:** Bei >3 neuen/geänderten Dateien: `/frontend-review` vor QS. Sonst: `/frontend-integrate` für API-Anbindung oder `/qs-review` für Verifikation
+- **Nächster Schritt:** Bei >3 neuen/geaenderten Produktiv-Dateien (*.ts/*.tsx unter src/, OHNE Test-Dateien *.test.ts): `/frontend-review` vor QS. Sonst: `/frontend-integrate` fuer API-Anbindung oder `/qs-review` fuer Verifikation

@@ -8,6 +8,8 @@ description: Bindet Frontend-Komponenten an Backend-APIs an. Implementiert API-C
 2. Prüfe `features/PROJ-X-*.md`: Existiert eine Feature-Spec mit mindestens 1 User Story?
 Wenn beides nicht erfüllt: **STOPP. Keinen Code schreiben.** Nutzer informieren:
 "Feature hat keine Spec / keinen INDEX-Eintrag. Nächster Schritt: `/po-backlog`."
+3. Pruefe ob bereits Implementierung existiert: `git log --oneline --grep="PROJ-X" -- src/ supabase/`
+   Falls Commits gefunden: Nutzer warnen: "Implementierung fuer PROJ-X existiert bereits (X Commits). Fortfahren als Ergaenzung/Korrektur?"
 
 Lies zuerst:
 - API-Dokumentation vom Backend Developer (Feature-Spec: `features/PROJ-X-*.md`)

@@ -33,6 +33,11 @@ Bereite Cutover vor und prüfe alle Go/No-Go-Kriterien.
 3. Definiere No-Go-Trigger (Rollback-Auslöser, z.B. Fehlerrate > X %)
 4. **Hole explizite Go-Entscheidung vom Product Owner ein (Human-in-the-Loop – zwingend, kein Cutover ohne diese)**
 5. Nach erfolgreichem Cutover: `features/INDEX.md` → Status `Deployed`
+6. **Artefakt-Cleanup-Checkliste:**
+   - Feature Flags: Alle `FF_*` fuer diese Phase identifizieren und Deaktivierungsdatum pruefen
+   - Dual-Write-Logik: Alle Dual-Write-Pfade identifizieren und Entfernungszeitpunkt festlegen
+   - Legacy-Code-Pfade: Nicht mehr benoetigte Fallbacks markieren (TODO: Remove after MIGRATION-X)
+   - Cleanup-Items als Eintraege in `/po-backlog` vorschlagen
 
 ## Ausgabe
 - Go/No-Go-Status je Kriterium (mit Nachweis)

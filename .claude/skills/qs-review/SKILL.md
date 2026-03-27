@@ -24,6 +24,10 @@ Verifiziere eine fertiggestellte Implementierung.
 2. Prüfe bestehende Tests auf veraltete Stubs: 501-Platzhalter, auskommentierte Tests, Mocks die nicht mehr zum Produktivcode passen
 3. Führe Testfälle aus: `npx jest --forceExit --no-coverage` (forceExit wegen Timer-basiertem Code). Bei Coverage-Prüfung: `npx jest --forceExit --coverage`
 4. Prüfe RLS-Verhalten: kein Cross-Tenant-Zugriff möglich?
+   Fuer jede neue/geaenderte Tabelle RLS-Checkliste pruefen:
+   - SELECT/INSERT/UPDATE/DELETE Policies vorhanden?
+   - Service-Only = deny-all?
+   - Bei fehlender Policy: Kritischer Befund
 5. Prüfe Auth-Verhalten: unauthentifizierte Requests abgewiesen?
 6. Prüfe Qualitätsgates aus `.claude/rules/testing.md`:
    - Testabdeckung ≥ 80 % für neue Dateien?

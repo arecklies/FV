@@ -27,7 +27,10 @@ Plane und führe ein Deployment durch.
    - In `.env.local.example` dokumentiert? → Nutzer informieren
 4. Prüfe Rollback-Fähigkeit für jeden Schritt
 5. Stelle Logging und Monitoring für neue Komponenten sicher
-6. Prüfe Security Headers korrekt gesetzt (gemäß `.claude/rules/security.md`)
+6. **Security-Header-Verifikation (Pflicht):**
+   - `grep -n "X-XSS-Protection\|Content-Security-Policy\|X-Frame-Options\|Strict-Transport-Security" src/lib/api/security-headers.ts next.config.ts`
+   - Abgleich gegen `.claude/rules/security.md` Abschnitt "Security Headers"
+   - Fehlende oder abweichende Header = Blocker fuer Deployment
 7. Hole Nutzer-Freigabe bei destruktiven Schritten ein (Human-in-the-Loop)
 
 ## Deployment-Checkliste
