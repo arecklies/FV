@@ -1,7 +1,8 @@
 # PROJ-31: Visuelles Redesign und Branding
 
-**Status:** Planned | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
+**Status:** Deployed | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-26
 **Herkunft:** Demo-Test-Feedback ("Das gesamte UI wirkt allerdings sehr langweilig")
+**Priorität:** Hoch (hochgestuft 2026-03-27: Feedback diverser Entwurfsverfasser bestätigt Handlungsbedarf)
 
 ---
 
@@ -14,6 +15,7 @@ Die Anwendung nutzt shadcn/ui-Defaults ohne visuelles Branding. Funktional korre
 - **Alle Personas:** Erste Eindruecke zaehlen — "sieht modern aus" war positives Kundenfeedback, muss gehalten werden
 - **P3 (Referatsleiter):** Repraesentatives Erscheinungsbild fuer interne Praesentationen
 - **P4 (Amtsleitung):** Professioneller Auftritt gegenueber politischen Entscheidungstraegern
+- **Entwurfsverfasser (extern):** Diverse Architekten/Ingenieure bemängeln das UI als "viel zu funktional" (Feedback 2026-03-27). Diese Gruppe sieht die Software bei Kundendemos und beeinflusst die Kaufentscheidung ihrer Auftraggeber (Bauherren).
 - **Umfrage:** 72 Votes fuer Tastaturnavigation (Rang 2) — Power-User brauchen klare visuelle Hierarchie
 
 ## 3. Funktionale Anforderungen

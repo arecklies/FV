@@ -666,7 +666,7 @@ export default function VorgangDetailPage() {
         <TabsContent value="uebersicht">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Bauherr */}
-            <Card className="bg-background shadow-sm">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle className="text-base">Bauherr</CardTitle>
               </CardHeader>
@@ -688,7 +688,7 @@ export default function VorgangDetailPage() {
             </Card>
 
             {/* Grundstück */}
-            <Card className="bg-background shadow-sm">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle className="text-base">Grundstück</CardTitle>
               </CardHeader>
@@ -780,7 +780,7 @@ export default function VorgangDetailPage() {
 
         {/* PROJ-7: Nachrichten (Transportprotokoll) */}
         <TabsContent value="nachrichten">
-          <Card className="bg-background shadow-sm">
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-base">Transportprotokoll</CardTitle>
             </CardHeader>
@@ -868,7 +868,7 @@ export default function VorgangDetailPage() {
 
         {/* Kommentare */}
         <TabsContent value="kommentare">
-          <Card className="bg-background shadow-sm">
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-base">
                 Interne Kommentare
@@ -979,7 +979,7 @@ export default function VorgangDetailPage() {
             {/* Verfuegbare Aktionen */}
             {workflow &&
               workflow.verfuegbare_aktionen.length > 0 && (
-                <Card className="bg-background shadow-sm">
+                <Card className="shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="text-base">
                       Verfügbare Aktionen
@@ -1055,7 +1055,7 @@ export default function VorgangDetailPage() {
 
             {/* Workflow-Historie */}
             {workflowHistorie.length > 0 && (
-              <Card className="bg-background shadow-sm">
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle className="text-base">
                     Verlauf

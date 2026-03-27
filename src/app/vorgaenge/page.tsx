@@ -242,7 +242,7 @@ export default function VorgaengeListePage() {
           role="region"
           aria-label="Vorgangsstatistik"
         >
-          <Card className="bg-background">
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight">{statistik.gesamt}</p>
@@ -252,7 +252,7 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Vorgänge gesamt</p>
             </CardContent>
           </Card>
-          <Card className="bg-background border-l-4 border-l-yellow-400">
+          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-400">
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-yellow-700">
@@ -264,7 +264,7 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Fristgefährdet</p>
             </CardContent>
           </Card>
-          <Card className="bg-background border-l-4 border-l-red-500">
+          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-red-500">
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-red-700">
@@ -276,7 +276,7 @@ export default function VorgaengeListePage() {
               <p className="text-sm text-muted-foreground">Überfällig</p>
             </CardContent>
           </Card>
-          <Card className="bg-background border-l-4 border-l-primary">
+          <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-primary">
             <CardContent className="pt-4 pb-3">
               {statistik ? (
                 <p className="text-3xl font-bold tracking-tight text-primary">
@@ -293,7 +293,7 @@ export default function VorgaengeListePage() {
 
       {/* Filter-Leiste */}
       <div
-        className="flex flex-col sm:flex-row gap-3 mb-4 print:hidden"
+        className="flex flex-col sm:flex-row gap-3 mb-4 p-3 bg-card rounded-lg border shadow-sm print:hidden"
         role="search"
         aria-label="Vorgänge filtern"
       >
@@ -483,7 +483,7 @@ export default function VorgaengeListePage() {
                       }
                     }}
                   >
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium text-primary">
                       {v.aktenzeichen}
                     </TableCell>
                     <TableCell>{v.bauherr_name}</TableCell>

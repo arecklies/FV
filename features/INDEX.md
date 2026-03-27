@@ -109,7 +109,7 @@
 | MIGRATION-2 | Pilotmigration mit Stichtagsmodell | Planned | [MIGRATION-2](MIGRATION-2-pilotmigration.md) | 2026-03-25 |
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
-| PROJ-31 | Visuelles Redesign und Branding | Planned | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
+| PROJ-31 | Visuelles Redesign und Branding | Deployed | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
 | PROJ-32 | Kundenrückmeldungen (Sammelitem) | Planned | [PROJ-32](PROJ-32-kundenrueckmeldungen.md) | 2026-03-27 |
 | PROJ-33 | Vier-Augen-Lite (einfache Freigabe) | Deployed | [PROJ-33](PROJ-33-vier-augen-lite.md) | 2026-03-27 |
 | PROJ-34 | Konfigurierbare Ampel-Schwellenwerte | Deployed | [PROJ-34](PROJ-34-konfigurierbare-ampel-schwellenwerte.md) | 2026-03-27 |

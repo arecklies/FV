@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LogOut, FileText, Users, Loader2 } from "lucide-react";
+import { Menu, LogOut, FileText, Users, Loader2, Building2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -93,7 +93,13 @@ export function AppHeader() {
           className="mr-6 flex items-center space-x-2 font-semibold text-primary-foreground"
           aria-label="Zur Startseite"
         >
-          <span className="text-lg tracking-wide">Fachverfahren</span>
+          <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
+            <Building2 className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold leading-none tracking-wide">Fachverfahren</span>
+            <span className="text-xs text-primary-foreground/60 leading-none">Bauaufsicht</span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
