@@ -21,7 +21,11 @@ Wenn Eingabe ein Security-Eskalations-Bericht ist:
 5. Nutzer-Bestätigung einholen (Human-in-the-Loop)
 
 ## Reguläres Backlog-Item
-1. Prüfe bestehende Features auf Ähnlichkeit
+1. Prüfe auf Duplikate (drei Ebenen):
+   a. `features/INDEX.md` und bestehende Specs auf inhaltliche Überschneidung prüfen
+   b. `grep -ri "<Schlüsselbegriffe>" src/` — prüfen ob die Funktionalität bereits im Code existiert
+   c. Bei Treffer: Spec des implementierenden Features lesen und Überlappung dokumentieren
+   d. Bei >= 80% Überlappung: Nutzer informieren und Zusammenlegung vorschlagen, KEIN neues Item anlegen
 2. Forme jede Idee in ein Backlog-Item: Nutzen / Scope / Priorisierung
 3. Führe Spezialisten-Check durch:
    - Sensible Daten? → Senior Security Engineer

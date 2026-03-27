@@ -31,7 +31,11 @@ Kein `/req-stories`, kein `/arch-design` nötig.
 **Wenn nein:** Reguläres Backlog-Item (siehe unten).
 
 ## Reguläres Backlog-Item
-1. Prüfe bestehende Features auf Ähnlichkeit
+1. Prüfe auf Duplikate (drei Ebenen):
+   a. `features/INDEX.md` und bestehende Specs auf inhaltliche Überschneidung prüfen
+   b. `grep -ri "<Schlüsselbegriffe>" src/` — prüfen ob die Funktionalität bereits im Code existiert
+   c. Bei Treffer: Spec des implementierenden Features lesen und Überlappung dokumentieren
+   d. Bei >= 80% Überlappung: Nutzer informieren und Zusammenlegung vorschlagen, KEIN neues Item anlegen
 2. Konsistenzcheck: Prüfe ob das neue Feature bestehenden Specs widerspricht:
    - Lies die Specs aller Features mit Status `Deployed` oder `In Progress`
    - Prüfe insbesondere Datenschutz-Aussagen, Architektur-Entscheidungen (ADRs) und Produktvision (PRD.md)

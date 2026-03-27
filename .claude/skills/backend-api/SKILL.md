@@ -31,11 +31,14 @@ Entwirf und implementiere API-Endpunkte für ein Feature.
    - Jedes AC aus der Feature-Spec einzeln pruefen: implementiert oder bewusst ausgelassen?
    - Ausgelassene ACs im Ausgabe-Abschnitt dokumentieren mit Begruendung
    - Bei > 2 ausgelassenen ACs: Nutzer informieren — Scope-Reduktion muss vom PO bestaetigt werden
-9. Testcode **parallel zur Implementierung** schreiben (nicht erst bei QS-Review):
+9. **Testcode ist Pflicht-Deliverable (BLOCKER):** Kein Commit ohne Tests fuer neue/geaenderte Dateien.
+   - Fuer jeden neuen Service unter `src/lib/services/`: mindestens 1 Test-Datei mit Happy Path + 1 Negativfall
+   - Fuer jede neue/geaenderte API-Route unter `src/app/api/`: mindestens Validierungs- und Happy-Path-Tests
    - Bestehende Tests auf veraltete Assertions prüfen (z.B. 501-Stubs, die durch echte Implementierung ersetzt werden)
    - Neue Dispatch-Pfade (Switch-Cases) in bestehenden Routen immer mit eigenen Tests abdecken
    - Mocks für alle neu importierten Module hinzufügen
    - **Coverage-Check VOR Commit (Pflicht):** `npx jest --forceExit --coverage` — neue Dateien unter `src/lib/services/` und `src/app/api/` muessen >= 80% haben
+   - **Selbst-Check:** `git diff --name-only | grep -E "\.ts$" | grep -v "\.test\."` — jede Produktiv-Datei MUSS eine zugehoerige `.test.ts`-Datei haben (neu oder aktualisiert)
 10. **Error-Leakage-Selbstpruefung (Pflicht VOR QS-Uebergabe):**
     - `grep -rn "result.error\|error.message" <neue-route-dateien>` ausfuehren
     - Jeder Treffer pruefen: Wird der Wert an den Client zurueckgegeben (`jsonResponse({ error: ... })`)?

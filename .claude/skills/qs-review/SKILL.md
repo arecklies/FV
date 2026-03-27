@@ -35,7 +35,8 @@ Verifiziere eine fertiggestellte Implementierung.
 9. Prüfe Code-Hygiene:
    - Tote Imports (importiert aber nicht verwendet)?
    - Reine Logik in Page-/Komponenten-Dateien statt in eigenen Modulen?
-   - Typ-Duplikate (gleicher Interface-Name in mehreren Dateien)?
+   - Typ-Duplikate: `grep -rn "export type\|export interface" src/ | awk -F: '{print $NF}' | sort | uniq -d` — jeder doppelte Export-Name ist ein Befund. Ausnahme: Re-Exports (`export type { X } from`).
+   - **Redundante Service-Aufrufe:** Prüfen ob derselbe Service/Query mehrfach in einer Route aufgerufen wird (z.B. Konfigurations-Ladung). Jeder Service-Aufruf sollte maximal einmal pro Request erfolgen.
    - Nicht-exportierte Hilfsfunktionen, die testbar sein sollten?
    - **Type Assertions auf DB-Ergebnisse:** `grep -rn "as [A-Z]" <service-dateien>` — muessen durch Zod `.parse()` ersetzt sein (backend.md Type Safety)
    - **Path-Parameter [id]:** UUID-Validierung mit `UuidParamSchema.safeParse()` in allen [id]-Routes?
