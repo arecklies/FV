@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Loader2, Send, Pause, Play } from "lucide-react";
+import { Loader2, Send, Pause, Play, ArrowDown, ArrowUp, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -160,6 +160,35 @@ function WorkflowAktionMitBestaetigung({
   );
 }
 
+// PROJ-7: Nachrichten-Typen (lokal, kein Backend-Service-Import)
+const NACHRICHTENTYP_LABELS: Record<string, string> = {
+  "0200": "Bauantrag",
+  "0201": "Formelle Prüfung",
+  "0202": "Antragsänderung",
+  "0210": "Baugenehmigung (Bescheid)",
+  "0420": "Statistik: Daten Bauvorhaben",
+  "0421": "Statistik: Baugenehmigung",
+  "0422": "Statistik: Abbruchgenehmigung",
+  "0423": "Statistik: Bautätigkeit Hochbau",
+  "0424": "Statistik: Bautätigkeit Tiefbau",
+  "0425": "Statistik: Baufertigstellung",
+  "0426": "Statistik: Bauüberhang",
+  "0427": "Statistik: Wohnungsbestand",
+  "1100": "Rückweisung",
+  "1180": "Eingangsquittung",
+};
+
+interface XBauNachrichtListeItem {
+  id: string;
+  nachrichten_uuid: string;
+  nachrichtentyp: string;
+  richtung: "eingang" | "ausgang";
+  status: string;
+  absender_behoerde: string | null;
+  empfaenger_behoerde: string | null;
+  created_at: string;
+}
+
 interface WorkflowInfo {
   schritt: WorkflowSchritt | null;
   verfuegbare_aktionen: WorkflowAktionInfo[];
@@ -206,6 +235,11 @@ export default function VorgangDetailPage() {
 
   // Fristen (PROJ-4)
   const fristenHook = useFristen(vorgangId);
+
+  // PROJ-7: XBau-Nachrichten (Transportprotokoll)
+  const [nachrichten, setNachrichten] = React.useState<XBauNachrichtListeItem[]>([]);
+  const [nachrichtenLoading, setNachrichtenLoading] = React.useState(false);
+  const [nachrichtenError, setNachrichtenError] = React.useState<string | null>(null);
 
   // Vorgang laden
   const loadVorgang = React.useCallback(async () => {
@@ -272,6 +306,31 @@ export default function VorgangDetailPage() {
       }
     } catch {
       // Nicht-kritisch
+    }
+  }, [vorgangId]);
+
+  // PROJ-7: Nachrichten laden
+  const loadNachrichten = React.useCallback(async () => {
+    setNachrichtenLoading(true);
+    setNachrichtenError(null);
+    try {
+      const res = await fetch(`/api/vorgaenge/${vorgangId}/nachrichten`, {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
+      if (res.ok) {
+        const data = await res.json();
+        setNachrichten(data.nachrichten ?? []);
+      } else {
+        setNachrichtenError("Nachrichten konnten nicht geladen werden.");
+      }
+    } catch {
+      setNachrichtenError("Verbindungsfehler.");
+    } finally {
+      setNachrichtenLoading(false);
     }
   }, [vorgangId]);
 
@@ -586,11 +645,16 @@ export default function VorgangDetailPage() {
         onValueChange={(tab) => {
           if (tab === "kommentare") loadKommentare();
           if (tab === "workflow") loadWorkflowHistorie();
+          if (tab === "nachrichten") loadNachrichten();
         }}
       >
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="uebersicht">Übersicht</TabsTrigger>
           <TabsTrigger value="fristen">Fristen</TabsTrigger>
+          <TabsTrigger value="nachrichten">
+            <Mail className="h-4 w-4 mr-1" aria-hidden="true" />
+            Nachrichten
+          </TabsTrigger>
           <TabsTrigger value="kommentare">Kommentare</TabsTrigger>
           <TabsTrigger value="workflow">Workflow</TabsTrigger>
         </TabsList>
@@ -678,6 +742,94 @@ export default function VorgangDetailPage() {
             onHemmung={fristenHook.hemmeFrist}
             onHemmungAufheben={fristenHook.hebeHemmungAuf}
           />
+        </TabsContent>
+
+        {/* PROJ-7: Nachrichten (Transportprotokoll) */}
+        <TabsContent value="nachrichten">
+          <Card className="bg-background shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Transportprotokoll</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {nachrichtenLoading ? (
+                <div className="space-y-3" aria-label="Nachrichten werden geladen">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full" />
+                  ))}
+                </div>
+              ) : nachrichtenError ? (
+                <Alert variant="destructive" role="alert">
+                  <AlertDescription>{nachrichtenError}</AlertDescription>
+                </Alert>
+              ) : nachrichten.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4">
+                  Keine XBau-Nachrichten vorhanden.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {nachrichten.map((n) => (
+                    <div
+                      key={n.id}
+                      className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-md border p-3"
+                    >
+                      {/* Richtung */}
+                      <div className="shrink-0">
+                        {n.richtung === "eingang" ? (
+                          <Badge
+                            variant="secondary"
+                            className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            aria-label="Eingang"
+                          >
+                            <ArrowDown className="h-3 w-3 mr-1" aria-hidden="true" />
+                            Eingang
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                            aria-label="Ausgang"
+                          >
+                            <ArrowUp className="h-3 w-3 mr-1" aria-hidden="true" />
+                            Ausgang
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Typ und Details */}
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium">
+                          {n.nachrichtentyp}{" "}
+                          {NACHRICHTENTYP_LABELS[n.nachrichtentyp]
+                            ? NACHRICHTENTYP_LABELS[n.nachrichtentyp]
+                            : `Nachricht ${n.nachrichtentyp}`}
+                        </span>
+                        {n.richtung === "eingang" && n.absender_behoerde && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            Absender: {n.absender_behoerde}
+                          </p>
+                        )}
+                        {n.richtung === "ausgang" && n.empfaenger_behoerde && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            Empfänger: {n.empfaenger_behoerde}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Status */}
+                      <Badge variant="outline" className="shrink-0 text-xs">
+                        {n.status}
+                      </Badge>
+
+                      {/* Zeitstempel */}
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {new Date(n.created_at).toLocaleString("de-DE")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Kommentare */}
