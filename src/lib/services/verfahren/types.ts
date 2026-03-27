@@ -93,6 +93,8 @@ export const VorgangDbSchema = z.object({
   deleted_at: z.string().nullable(),
   version: z.number(),
   extra_felder: z.record(z.string(), z.unknown()),
+  /** PROJ-48: Ablaufdatum der Baugenehmigung */
+  geltungsdauer_bis: z.string().nullable().optional(),
 });
 
 export const VorgangListItemDbSchema = z.object({

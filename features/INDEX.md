@@ -57,6 +57,7 @@
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Deployed | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
+| PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: B-48-01 Bestandsdaten-Nachpflege) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -116,4 +117,6 @@
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
 
-## Next Available ID: PROJ-48
+> PROJ-48 aus Kunden-Demo-Validierung 27.03.2026: Verlängerung der Geltungsdauer erteilter Baugenehmigungen
+
+## Next Available ID: PROJ-49

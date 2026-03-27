@@ -50,6 +50,9 @@ import {
 import { FristenPanel } from "@/components/fristen/fristen-panel";
 import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
 import { useFristen } from "@/hooks/use-fristen";
+import { GeltungsdauerBadge } from "@/components/geltungsdauer/geltungsdauer-badge";
+import { VerlaengerungDialog } from "@/components/geltungsdauer/verlaengerung-dialog";
+import { VerlaengerungHistorie } from "@/components/geltungsdauer/verlaengerung-historie";
 
 import type {
   Vorgang,
@@ -725,8 +728,39 @@ export default function VorgangDetailPage() {
                   label="Version"
                   value={String(vorgang.version)}
                 />
+                {/* PROJ-48: Geltungsdauer */}
+                {vorgang.geltungsdauer_bis && (
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-muted-foreground">Geltungsdauer</span>
+                    <GeltungsdauerBadge geltungsdauerBis={vorgang.geltungsdauer_bis} />
+                  </div>
+                )}
               </CardContent>
             </Card>
+
+            {/* PROJ-48: Verlängerung + Historie */}
+            {vorgang.geltungsdauer_bis && vorgang.workflow_schritt_id === "abgeschlossen" && (
+              <Card className="md:col-span-2 bg-background shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-base">Geltungsdauer</CardTitle>
+                  {new Date(vorgang.geltungsdauer_bis) > new Date() && (
+                    <VerlaengerungDialog
+                      vorgangId={vorgang.id}
+                      geltungsdauerBis={vorgang.geltungsdauer_bis}
+                      onSuccess={() => window.location.reload()}
+                    />
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {new Date(vorgang.geltungsdauer_bis) <= new Date() && (
+                    <p className="text-sm text-destructive font-medium mb-3" role="alert">
+                      Genehmigung erloschen — keine Verlängerung mehr möglich
+                    </p>
+                  )}
+                  <VerlaengerungHistorie vorgangId={vorgang.id} />
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 

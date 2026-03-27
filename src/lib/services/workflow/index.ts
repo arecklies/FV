@@ -1,6 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { ladeConfigFristen, createFrist, pruefeVorgangPausiert } from "@/lib/services/fristen";
+import { setGeltungsdauerBeiZustellung } from "@/lib/services/verlaengerung";
 import type { UserRole } from "@/lib/api/auth";
 import { hasMinRole } from "@/lib/api/auth";
 
@@ -203,7 +204,19 @@ export async function executeWorkflowAktion(
     },
   });
 
-  // 8. PROJ-19: Auto-Frist bei Schritt-Wechsel
+  // 8. PROJ-48: Geltungsdauer bei Bescheidzustellung automatisch setzen
+  if (aktion.ziel === "zustellung") {
+    await setGeltungsdauerBeiZustellung(
+      serviceClient,
+      params.tenantId,
+      params.userId,
+      params.vorgangId,
+      params.verfahrensartId,
+      params.bundesland
+    );
+  }
+
+  // 9. PROJ-19: Auto-Frist bei Schritt-Wechsel
   // PROJ-37 AC-3.1: Pruefen ob Vorgang pausiert ist
   let fristErstellt: FristErstellt | null = null;
   if (zielSchritt.frist) {
@@ -219,7 +232,7 @@ export async function executeWorkflowAktion(
     );
     const passendeFrist = configFristen.find((cf) => cf.typ === zielSchritt.frist);
 
-    if (passendeFrist) {
+    if (passendeFrist && passendeFrist.werktage) {
       // AC-6: Duplikat-Schutz — prüfe ob Frist dieses Typs bereits existiert
       const { data: existierendeFristen } = await serviceClient
         .from("vorgang_fristen")

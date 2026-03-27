@@ -106,11 +106,13 @@ export const ConfigFristDbSchema = z.object({
   verfahrensart_id: z.string(),
   typ: z.string(),
   bezeichnung: z.string(),
-  werktage: z.number(),
+  werktage: z.number().nullable(),
   rechtsgrundlage: z.string().nullable(),
   aktiv: z.boolean(),
   gelb_ab: z.number().int().min(1).max(99).nullable().optional(),
   rot_ab: z.number().int().min(1).max(99).nullable().optional(),
+  /** PROJ-48: Kalendertage für Geltungsdauer (mutually exclusive mit werktage) */
+  kalendertage: z.number().nullable().optional(),
 });
 
 export const ConfigFeiertagDbSchema = z.object({

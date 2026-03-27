@@ -57,7 +57,7 @@ export async function ladeConfigFristen(
 ): Promise<ConfigFrist[]> {
   const { data, error } = await serviceClient
     .from("config_fristen")
-    .select("id, bundesland, verfahrensart_id, typ, bezeichnung, werktage, rechtsgrundlage, aktiv, gelb_ab, rot_ab")
+    .select("id, bundesland, verfahrensart_id, typ, bezeichnung, werktage, rechtsgrundlage, aktiv, gelb_ab, rot_ab, kalendertage")
     .eq("bundesland", bundesland)
     .eq("verfahrensart_id", verfahrensartId)
     .eq("aktiv", true)
