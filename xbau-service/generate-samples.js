@@ -187,7 +187,7 @@ nachrichten.push({
     bezug: BEZUG_STATISTIK,
     allgemeineAngaben: ALLGEMEINE_ANGABEN,
     datenEinzelnesGebaeude: {
-      artDesBauens: "1",
+      artDesBauens: "01",
       baugenehmigung: {
         verfahrensart: "1",
         artDerBautaetigkeit: "1",

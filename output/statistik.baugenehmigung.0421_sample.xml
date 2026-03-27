@@ -2,7 +2,7 @@
 <xbau:statistik.baugenehmigung.0421 xmlns:xbau="http://www.xleitstelle.de/xbau/2/6" xmlns:xbauk="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Hochbau" version="2.6">
   <nachrichtenkopf.g2g>
     <identifikation.nachricht>
-      <nachrichtenUUID>64f67fe8-f9d6-44c3-bf30-5aec23ad5747</nachrichtenUUID>
+      <nachrichtenUUID>77178318-f990-4cd1-9424-21f1b176dcb0</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau:codeliste:xbau-nachrichten" listVersionID="4.0">
         <code>0421</code>
       </nachrichtentyp>
@@ -33,7 +33,7 @@
   </xbau:allgemeineAngaben>
   <xbau:datenEinzelnesGebaeude>
     <xbau:artDesBauens listURI="urn:xoev-de:xbau:codeliste:artdesbauens" listVersionID="1.0">
-      <code>1</code>
+      <code>01</code>
     </xbau:artDesBauens>
     <xbau:baugenehmigung>
       <xbau:verfahrensart listURI="urn:xoev-de:xbau:codeliste:verfahrensartanstatistik" listVersionID="1.0">
