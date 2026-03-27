@@ -132,11 +132,11 @@ Als Entwickler moechte ich generierte XMLs automatisch gegen XSD validieren.
 
 ## 7. Offene Fragen
 
-1. Schematron-Validierung: Saxon-JS oder externer Java-Service? (Pflicht fuer MVP — 759 Regeln in `Input/sch/xbau-schematron.sch`). Saxon-JS ist ESM-only → Jest-Kompatibilitaet pruefen (backend.md Dependencies)
+1. ~~Schematron-Validierung: Saxon-JS oder externer Java-Service?~~ **Geklaert (ADR-015):** Saxon-JS mit Pre-Kompilierung (.sch → .sef). Dynamic Import, Jest-Mock.
 2. ~~Welche Statistik-Nachrichtentypen im MVP?~~ **Geklaert:** Alle 8 Typen (0420-0427) im MVP. Vollstaendige OZG-Konformitaet ist K.O.-Kriterium.
 3. XBau-Version pro Tenant konfigurierbar ab wann? (MVP: nur XBau 2.6)
-4. XSD-Validierungsbibliothek fuer Node.js: `libxmljs2` (native, schnell) oder `xmllint` via Child-Process? Beide haben Plattform-Abhaengigkeiten. → `/arch-design` muss entscheiden
-5. Verfahrensart-Mapping 0200 → config_verfahrensarten: Wie werden XBau-Verfahrensart-Codes auf unsere Kuerzel gemappt? Separate Mapping-Tabelle noetig?
+4. ~~XSD-Validierungsbibliothek~~ **Geklaert (ADR-015):** Zweistufig: Zod-Schemas (Runtime) + xmllint (CI). Kein libxmljs2.
+5. ~~Verfahrensart-Mapping~~ **Geklaert (ADR-015):** Neue Spalte `xbau_code` auf `config_verfahrensarten`. Kein separates Mapping.
 
 ## 8. Annahmen
 
