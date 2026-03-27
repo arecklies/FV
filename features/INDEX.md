@@ -52,6 +52,11 @@
 | PROJ-38 | E-Mail-Benachrichtigungen Fristeskalation | Planned | [PROJ-38](PROJ-38-email-benachrichtigungen-fristen.md) | 2026-03-27 |
 | PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | Planned | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
 | PROJ-40 | Adress-/Strassenfilter Vorgangsliste | Planned | [PROJ-40](PROJ-40-adressfilter-vorgangsliste.md) | 2026-03-27 |
+| PROJ-42 | Print-CSS Frist-Dashboard und Vorgangsliste | Planned | [PROJ-42](PROJ-42-print-css-fristen.md) | 2026-03-28 |
+| PROJ-43 | Pause-Begründung als Auswahlliste | Planned | [PROJ-43](PROJ-43-pause-begruendung-auswahlliste.md) | 2026-03-28 |
+| PROJ-44 | LBO Baden-Württemberg Regelwerk | Planned | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
+| PROJ-46 | Workflow-Bestätigungsdialog | Planned | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
+| PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Planned | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -64,6 +69,11 @@
 > PROJ-38 aus Dortmund-Feedback: E-Mail-Benachrichtigung bei Fristeskalation
 > PROJ-39 aus Leipzig-Feedback: Wizard fuer Berufseinsteiger
 > PROJ-40 aus Soest-Feedback: Gebietsfilter nach Strasse
+> PROJ-42/43 aus Kunden-Session 28.03.2026: Print-CSS (Dortmund), Pause-Auswahlliste (Soest)
+> PROJ-44 aus Freiburg-Feedback: LBO BW fehlt (Pilotblocker erster Nicht-NRW-Pilot)
+> PROJ-45 aus Freiburg-Feedback: service-bw REST-API Evaluation (Spike)
+> PROJ-46 aus UX-Beobachtung: Workflow-Aktionen ohne Bestaetigungsdialog (kritisch)
+> PROJ-47 aus UX-Beobachtungen: Sammelitem UX-Haertung (Breadcrumbs, Fokus, Toast, etc.)
 
 ### Phase 2 - Compliance und Integration
 
@@ -74,6 +84,7 @@
 | PROJ-11 | XTA-Anbindung (OSCI-Transport) | Planned | [PROJ-11](PROJ-11-xta-anbindung.md) | 2026-03-25 |
 | PROJ-18 | FIT-Connect-Anbindung (OZG-Portal) | Planned | [PROJ-18](PROJ-18-fit-connect.md) | 2026-03-26 |
 | PROJ-41 | Loeschkonzept und Aufbewahrungsfristen (DSGVO) | Planned | [PROJ-41](PROJ-41-loeschkonzept-dsgvo.md) | 2026-03-27 |
+| PROJ-45 | service-bw REST-API Evaluation (Spike) | Planned | [PROJ-45](PROJ-45-service-bw-evaluation.md) | 2026-03-28 |
 
 > PROJ-11 umbenannt: XTA statt FIT-Connect (Kundenfeedback 2026-03-26: Bestandskunden haben kein FIT-Connect)
 > PROJ-18 neu: FIT-Connect als strategisches Ziel in Phase 3, XTA-Sunset nach Migration
@@ -104,4 +115,4 @@
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
 
-## Next Available ID: PROJ-42
+## Next Available ID: PROJ-48

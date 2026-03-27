@@ -55,7 +55,7 @@ Als Sachbearbeiter moechte ich E-Mail-Benachrichtigungen ein-/ausschalten koenne
 ## 7. Offene Fragen
 
 - Q-1: Welcher E-Mail-Provider? (Supabase Auth nutzt bereits einen — gleichen verwenden?)
-- Q-2: Soll der Referatsleiter eine taegliche Zusammenfassung statt Einzel-Mails erhalten?
+- ~~Q-2: Soll der Referatsleiter eine taegliche Zusammenfassung statt Einzel-Mails erhalten?~~ **Geklaert (Session 28.03.2026, Dortmund F-05):** Ja, Digest-Mail als Standardmodus. Einzel-Mails fuehren zu Benachrichtigungs-Muedigkeit bei 30+ Fristen. Format: Morgens eine Mail mit Zusammenfassung aller Ampelwechsel.
 - Q-3: Benachrichtigung auch bei Gelb→Gruen (Entwarnung)?
 
 ## 8. Annahmen

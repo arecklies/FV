@@ -130,7 +130,7 @@ Als Tenant-Admin moechte ich alle Vertretungsbeziehungen im Mandanten einsehen u
 - API-Endpunkte fuer CRUD Vertretungsbeziehungen
 
 **Nicht-Scope:**
-- Zeitliche Begrenzung der Vertretung (Start-/Enddatum)
+- Zeitliche Begrenzung der Vertretung (Start-/Enddatum) → **Kundenfeedback 28.03.2026 (Soest F-01):** Praxis-Bedarf bestätigt (Zweiwochenrhythmus). Phase-2-Erweiterung priorisieren.
 - Automatische Benachrichtigung bei Vertretungs-Erstellung
 - Mehrstufige Freigabe-Ketten (PROJ-9, Phase 2)
 - Vertretung fuer andere Funktionen als Vier-Augen-Freigabe

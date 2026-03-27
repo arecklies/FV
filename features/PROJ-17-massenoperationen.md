@@ -65,4 +65,6 @@ Als Sachbearbeiter moechte ich mehrere Vorgaenge gleichzeitig bearbeiten.
 ## 11. Scope / Nicht-Scope
 
 **Scope:** Checkboxen + Sammelaktionen (Status, Zuweisen, Frist) in bestehender Vorgangsliste
+- **Kundenfeedback 28.03.2026 (Soest F-07):** "Zuständigen ändern" als Sammelaktion ist Pflicht-Scope. Anwendungsfall: Urlaubsvertretung — 40 Vorgänge an 3 Sachbearbeiter aufteilen. Muss mit PROJ-35 (Freigabe-Vertretung) zusammen gedacht werden.
+
 **Nicht-Scope:** Bulk-Import, Bulk-Export, Massenloeschung
