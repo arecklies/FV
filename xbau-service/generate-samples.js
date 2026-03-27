@@ -120,7 +120,7 @@ nachrichten.push({
     fehlerkennzahl: "X001",
     fehlertext: "Die Nachricht ist nicht XSD-konform: Element 'bauherr' fehlt im Pflichtblock 'antragsteller'.",
     abgewieseNeNachrichtBase64: "PD94bWwgdmVyc2lvbj0iMS4wIj8+PGJhdWdlbmVobWlndW5nLmFudHJhZy4wMjAwLz4=",
-    bezugNachrichtenUuid: "invalid-msg-uuid-001",
+    bezugNachrichtenUuid: "a0b1c2d3-e4f5-6789-abcd-ef0123456789",
     bezugNachrichtentyp: "0200",
     bezugErstellungszeit: "2026-03-25T08:00:00Z",
   }),

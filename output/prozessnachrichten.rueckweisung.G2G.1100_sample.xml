@@ -2,11 +2,11 @@
 <prozessnachrichten.rueckweisung.G2G.1100 xmlns="http://www.xleitstelle.de/xbau/kernmodul/1/3/0" produkt="FV-SaaS" produkthersteller="Fachverfahren SaaS" produktversion="1.0.0" standard="XBau-Kernmodul" version="1.3.0">
   <nachrichtenkopf.g2g xmlns="">
     <identifikation.nachricht>
-      <nachrichtenUUID>cef629d4-dab6-4793-b567-b7810fdf5bbe</nachrichtenUUID>
+      <nachrichtenUUID>f669603a-496b-43ba-a014-41f5cd5bae42</nachrichtenUUID>
       <nachrichtentyp listURI="urn:xoev-de:xbau-kernmodul:codeliste:xbau-kernmodul-nachrichten" listVersionID="3.0">
         <code>1100</code>
       </nachrichtentyp>
-      <erstellungszeitpunkt>2026-03-27T21:09:18.206Z</erstellungszeitpunkt>
+      <erstellungszeitpunkt>2026-03-27T21:10:37.345Z</erstellungszeitpunkt>
     </identifikation.nachricht>
     <leser>
       <verzeichnisdienst listURI="urn:xoev-de:kosit:codeliste:verzeichnisdienst" listVersionID="1">
@@ -31,7 +31,7 @@
       <fehlertext>Die Nachricht ist nicht XSD-konform: Element 'bauherr' fehlt im Pflichtblock 'antragsteller'.</fehlertext>
     </rueckweisungsgrund>
     <idNachricht>
-      <nachrichtenUUID xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1">invalid-msg-uuid-001</nachrichtenUUID>
+      <nachrichtenUUID xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1">a0b1c2d3-e4f5-6789-abcd-ef0123456789</nachrichtenUUID>
       <nachrichtentyp xmlns="http://xoev.de/schemata/basisnachricht/g2g/1_1" listURI="urn:xoev-de:xbau-kernmodul:codeliste:xbau-kernmodul-nachrichten" listVersionID="3.0">
         <code xmlns="">0200</code>
       </nachrichtentyp>
