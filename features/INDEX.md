@@ -37,7 +37,7 @@
 | PROJ-19 | Auto-Fristen bei Workflow-Schritt-Wechsel | Deployed | [PROJ-19](PROJ-19-auto-fristen-workflow.md) | 2026-03-26 |
 | PROJ-20 | Frist-Ampel in Vorgangsliste | Deployed | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
 | PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | Deployed | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
-| PROJ-22 | Cron-Job Feiertags-Korrektheit und Batch-Optimierung | Planned | [PROJ-22](PROJ-22-cron-feiertage-fix.md) | 2026-03-26 |
+| PROJ-22 | Cron-Job Feiertags-Korrektheit und Batch-Optimierung | Deployed | [PROJ-22](PROJ-22-cron-feiertage-fix.md) | 2026-03-26 |
 | PROJ-23 | AmpelStatus Typ-Konsolidierung | Planned | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
 | PROJ-24 | Typisiertes ServiceResult Error-Modell | Planned | [PROJ-24](PROJ-24-typisiertes-service-error-modell.md) | 2026-03-26 |
 | PROJ-25 | API-Route-Test-Template und Komponenten-Tests | Planned | [PROJ-25](PROJ-25-test-templates-komponententests.md) | 2026-03-26 |
@@ -86,8 +86,8 @@
 
 | PROJ-31 | Visuelles Redesign und Branding | Planned | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
 | PROJ-32 | Kundenrückmeldungen (Sammelitem) | Planned | [PROJ-32](PROJ-32-kundenrueckmeldungen.md) | 2026-03-27 |
-| PROJ-33 | Vier-Augen-Lite (einfache Freigabe) | Planned | [PROJ-33](PROJ-33-vier-augen-lite.md) | 2026-03-27 |
-| PROJ-34 | Konfigurierbare Ampel-Schwellenwerte | Planned | [PROJ-34](PROJ-34-konfigurierbare-ampel-schwellenwerte.md) | 2026-03-27 |
+| PROJ-33 | Vier-Augen-Lite (einfache Freigabe) | Deployed | [PROJ-33](PROJ-33-vier-augen-lite.md) | 2026-03-27 |
+| PROJ-34 | Konfigurierbare Ampel-Schwellenwerte | Deployed | [PROJ-34](PROJ-34-konfigurierbare-ampel-schwellenwerte.md) | 2026-03-27 |
 
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
