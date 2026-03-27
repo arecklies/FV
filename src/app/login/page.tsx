@@ -67,7 +67,7 @@ export default function LoginPage() {
       // window.location.href fuer Post-Login-Redirect (frontend.md Auth Best Practices)
       window.location.href = "/vorgaenge";
     } catch {
-      setError("Verbindungsfehler. Bitte pruefen Sie Ihre Internetverbindung.");
+      setError("Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung.");
       setLoading(false);
     }
   };
@@ -102,7 +102,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="name@behoerde.de"
+                placeholder="name@behörde.de"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

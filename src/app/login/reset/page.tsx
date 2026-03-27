@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
                 <Input
                   id="reset-email"
                   type="email"
-                  placeholder="name@behoerde.de"
+                  placeholder="name@behörde.de"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

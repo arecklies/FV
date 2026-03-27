@@ -83,8 +83,9 @@
 | MIGRATION-3 | Rollout und Legacy-Dekommissionierung | Planned | [MIGRATION-3](MIGRATION-3-rollout-und-dekommissionierung.md) | 2026-03-25 |
 
 | PROJ-31 | Visuelles Redesign und Branding | Planned | [PROJ-31](PROJ-31-visuelles-redesign.md) | 2026-03-26 |
+| PROJ-32 | Kundenrückmeldungen (Sammelitem) | Planned | [PROJ-32](PROJ-32-kundenrueckmeldungen.md) | 2026-03-27 |
 
 > PROJ-30 Quick-Fix: Workflow-Aktionen mit Kontextinformation
 > PROJ-31 aus Demo-Feedback: UI wirkt langweilig
 
-## Next Available ID: PROJ-32
+## Next Available ID: PROJ-33

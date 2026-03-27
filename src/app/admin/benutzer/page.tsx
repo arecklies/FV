@@ -279,7 +279,7 @@ export default function BenutzerVerwaltungPage() {
                   <Input
                     id="new-email"
                     type="email"
-                    placeholder="name@behoerde.de"
+                    placeholder="name@behörde.de"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     required

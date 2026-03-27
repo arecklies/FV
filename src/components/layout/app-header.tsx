@@ -36,7 +36,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     href: "/vorgaenge",
-    label: "Vorgaenge",
+    label: "Vorgänge",
     icon: <FileText className="h-4 w-4" />,
   },
   {
