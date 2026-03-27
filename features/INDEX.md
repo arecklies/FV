@@ -55,7 +55,7 @@
 | PROJ-42 | Print-CSS Frist-Dashboard und Vorgangsliste | Planned | [PROJ-42](PROJ-42-print-css-fristen.md) | 2026-03-28 |
 | PROJ-43 | Pause-Begründung als Auswahlliste | Planned | [PROJ-43](PROJ-43-pause-begruendung-auswahlliste.md) | 2026-03-28 |
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
-| PROJ-46 | Workflow-Bestätigungsdialog | Planned | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
+| PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Planned | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
