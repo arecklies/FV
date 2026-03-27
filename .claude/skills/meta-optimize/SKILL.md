@@ -7,7 +7,7 @@ Lies zuerst:
 - `CLAUDE.md` – Gesamtstruktur und Qualitätsgates
 - `.claude/rules/general.md` – Commit-Format, Qualitätsgates, INDEX.md-Pflege
 - Alle Dateien unter `.claude/rules/`
-- Alle Dateien unter `.claude/skills/` die in der letzten Arbeitsphase betroffen waren
+- Alle Dateien unter `.claude/skills/` und `.claude/commands/` die in der letzten Arbeitsphase betroffen waren
 
 Agiere als **Senior Software Architect** gemäß `.claude/agents/senior-software-architect.md`
 in Zusammenarbeit mit **Technical Writer** gemäß `.claude/agents/technical-writer.md`.
@@ -44,7 +44,7 @@ Formuliere je Befund eine konkrete Verbesserungshypothese:
 ### 3. Umsetzungsvorschlag
 Erstelle für jeden Befund einen konkreten Änderungsvorschlag:
 - **Regel-Update**: Präzisierung oder Ergänzung in `.claude/rules/*.md`
-- **Skill-Verbesserung**: Optimierung der Prompt-Struktur in `.claude/skills/*.md`
+- **Skill-Verbesserung**: Optimierung der Prompt-Struktur in `.claude/skills/*.md` und `.claude/commands/*.md`
 - **Neuer Skill**: Vollständige Skill-Datei nach bestehendem Standard
 - **Agenten-Ergänzung**: Fehlende Übergabepunkte in `.claude/agents/*.md`
 - **CLAUDE.md-Update**: Neue Skills in Tabelle und Workflow-Abschnitt eintragen
