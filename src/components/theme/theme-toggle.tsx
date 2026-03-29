@@ -31,7 +31,7 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/15 h-8 w-8"
+          className="text-white/80 hover:text-white hover:bg-white/15 h-8 w-8"
           aria-label="Farbschema wechseln"
         >
           {mounted ? (

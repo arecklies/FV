@@ -96,7 +96,7 @@ export function AppHeader() {
         {/* Logo / Titel */}
         <Link
           href="/vorgaenge"
-          className="mr-6 flex items-center space-x-2 font-semibold text-primary-foreground"
+          className="mr-6 flex items-center space-x-2 font-semibold text-white"
           aria-label="Zur Startseite"
         >
           <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -104,7 +104,7 @@ export function AppHeader() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-bold leading-none tracking-wide">Fachverfahren</span>
-            <span className="text-xs text-primary-foreground/60 leading-none">Bauaufsicht</span>
+            <span className="text-xs text-white/60 leading-none">Bauaufsicht</span>
           </div>
         </Link>
 
@@ -116,8 +116,8 @@ export function AppHeader() {
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "gap-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/15",
-                  pathname.startsWith(item.href) && "bg-white/20 text-primary-foreground"
+                  "gap-2 text-white/80 hover:text-white hover:bg-white/15",
+                  pathname.startsWith(item.href) && "bg-white/20 text-white"
                 )}
                 aria-current={pathname.startsWith(item.href) ? "page" : undefined}
               >
@@ -133,10 +133,10 @@ export function AppHeader() {
 
         {/* Desktop: User Info + Theme + Logout */}
         <div className="hidden md:flex items-center space-x-3">
-          <span className="text-sm text-primary-foreground/70" aria-label="Angemeldeter Benutzer">
+          <span className="text-sm text-white/70" aria-label="Angemeldeter Benutzer">
             {user.email}
           </span>
-          <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground" aria-label={`Rolle: ${roleLabel}`}>
+          <Badge variant="outline" className="border-primary-foreground/30 text-white" aria-label={`Rolle: ${roleLabel}`}>
             {roleLabel}
           </Badge>
           <ThemeToggle />
@@ -146,7 +146,7 @@ export function AppHeader() {
             onClick={handleLogout}
             disabled={loggingOut}
             aria-label="Abmelden"
-            className="gap-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/15"
+            className="gap-2 text-white/80 hover:text-white hover:bg-white/15"
           >
             {loggingOut ? (
               <Loader2 className="h-4 w-4 animate-spin" />
