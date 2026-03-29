@@ -56,3 +56,21 @@ export function getSchrittLabel(
 export function getAllSchrittLabels(): Record<string, SchrittLabelInfo> {
   return { ...FALLBACK_LABELS };
 }
+
+/**
+ * Kontextinformation eines Workflow-Schritts (PROJ-30).
+ * Enthält Hinweistext und Checkliste für die Anzeige bei Aktions-Buttons.
+ */
+export interface SchrittKontextInfo {
+  hinweis?: string;
+  checkliste?: string[];
+}
+
+/**
+ * Prüft, ob für einen Schritt Kontextinformation vorhanden ist.
+ * Gibt true zurück wenn mindestens Hinweis oder nicht-leere Checkliste existiert.
+ */
+export function hatSchrittKontext(kontext: SchrittKontextInfo | undefined | null): boolean {
+  if (!kontext) return false;
+  return Boolean(kontext.hinweis) || Boolean(kontext.checkliste && kontext.checkliste.length > 0);
+}
