@@ -44,6 +44,14 @@ export function FristHemmungDialog({
     null
   );
 
+  // PROJ-26: State zuruecksetzen bei erneutem Oeffnen
+  React.useEffect(() => {
+    if (open) {
+      setGrund("");
+      setValidationError(null);
+    }
+  }, [open]);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValidationError(null);

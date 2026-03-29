@@ -41,7 +41,7 @@
 | PROJ-23 | AmpelStatus Typ-Konsolidierung | Planned | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
 | PROJ-24 | Typisiertes ServiceResult Error-Modell | Planned | [PROJ-24](PROJ-24-typisiertes-service-error-modell.md) | 2026-03-26 |
 | PROJ-25 | API-Route-Test-Template und Komponenten-Tests | Planned | [PROJ-25](PROJ-25-test-templates-komponententests.md) | 2026-03-26 |
-| PROJ-26 | Dialog-State-Reset | Planned | [PROJ-26](PROJ-26-dialog-state-reset.md) | 2026-03-26 |
+| PROJ-26 | Dialog-State-Reset | Deployed | [PROJ-26](PROJ-26-dialog-state-reset.md) | 2026-03-26 |
 | PROJ-27 | Route-Handler-Utilities | Planned | [PROJ-27](PROJ-27-route-handler-utilities.md) | 2026-03-26 |
 | PROJ-28 | Nicht-gesetzliche Fristen (intern) | Planned | [PROJ-28](PROJ-28-nicht-gesetzliche-fristen.md) | 2026-03-26 |
 | PROJ-29 | Persoenliche Tagesansicht | Planned | [PROJ-29](PROJ-29-persoenliche-tagesansicht.md) | 2026-03-26 |

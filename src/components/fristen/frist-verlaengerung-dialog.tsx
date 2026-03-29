@@ -48,6 +48,15 @@ export function FristVerlaengerungDialog({
     null
   );
 
+  // PROJ-26: State zuruecksetzen bei erneutem Oeffnen
+  React.useEffect(() => {
+    if (open) {
+      setWerktage("");
+      setBegruendung("");
+      setValidationError(null);
+    }
+  }, [open]);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValidationError(null);
