@@ -63,7 +63,7 @@
 | PROJ-51 | Fristdatum statt Eingangsdatum in Vorgangsliste | Deployed | [PROJ-51](PROJ-51-fristdatum-statt-eingang.md) | 2026-03-27 |
 | PROJ-52 | Interne Vorgang-Notizen (privat) | Planned | [PROJ-52](PROJ-52-interne-vorgang-notizen.md) | 2026-03-27 |
 | PROJ-53 | Wiedervorlagen mit Erinnerung | Planned | [PROJ-53](PROJ-53-wiedervorlagen-erinnerung.md) | 2026-03-27 |
-| PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | In Progress | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
+| PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | In Review | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
 | PROJ-55 | Statistik-Karten echtes Filtern statt Sortierung | Deployed | [PROJ-55](PROJ-55-statistik-karten-filter.md) | 2026-03-27 |
 | PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Planned | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
 | PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Deployed | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
@@ -109,7 +109,7 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-13 | Fuehrungs-Dashboard und Reporting | Planned | | 2026-03-25 |
-| PROJ-14 | Gebuehrenberechnung nach Landesrecht | Planned | | 2026-03-25 |
+| PROJ-14 | Gebuehrenberechnung nach Landesrecht | Planned | [PROJ-14](PROJ-14-gebuehrenberechnung.md) | 2026-03-25 |
 | PROJ-15 | PWA Offline-Lesemodus | Planned | | 2026-03-25 |
 | PROJ-16 | Schulungskonzept und In-App-Onboarding | Planned | | 2026-03-25 |
 

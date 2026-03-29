@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LogOut, FileText, Users, Loader2, Building2 } from "lucide-react";
+import { Menu, LogOut, FileText, Users, Loader2, Building2, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,11 @@ const NAV_ITEMS: NavItem[] = [
     href: "/vorgaenge",
     label: "Vorgänge",
     icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    href: "/glossar",
+    label: "Glossar",
+    icon: <BookOpen className="h-4 w-4" />,
   },
   {
     href: "/admin/benutzer",

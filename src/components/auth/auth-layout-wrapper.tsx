@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { AppHeader } from "@/components/layout/app-header";
+import { GlossarProvider } from "@/lib/glossar/glossar-provider";
 
 /**
  * Auth-Layout-Wrapper (PROJ-1).
@@ -31,8 +32,10 @@ export function AuthLayoutWrapper({ children }: AuthLayoutWrapperProps) {
 
   return (
     <AuthProvider>
-      {showHeader && <AppHeader />}
-      <main>{children}</main>
+      <GlossarProvider>
+        {showHeader && <AppHeader />}
+        <main>{children}</main>
+      </GlossarProvider>
     </AuthProvider>
   );
 }
