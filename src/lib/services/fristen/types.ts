@@ -11,7 +11,7 @@ import { z } from "zod";
 export const AmpelStatusSchema = z.enum(["gruen", "gelb", "rot", "dunkelrot", "gehemmt", "pausiert"]);
 export type AmpelStatus = z.infer<typeof AmpelStatusSchema>;
 
-/** Fristtypen gemäß config_fristen */
+/** Fristtypen gemäß config_fristen + PROJ-28: interne Bearbeitungsfristen */
 export const FristTypSchema = z.enum([
   "gesamtfrist",
   "beteiligungsfrist",
@@ -20,6 +20,7 @@ export const FristTypSchema = z.enum([
   "vollstaendigkeitspruefung",
   "eingangsbestaetigung",
   "baubeginn_wartefrist",
+  "intern",
 ]);
 export type FristTyp = z.infer<typeof FristTypSchema>;
 

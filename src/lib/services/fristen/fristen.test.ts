@@ -98,6 +98,15 @@ const MOCK_FRIST = {
   updated_at: "2026-03-01T00:00:00.000Z",
 };
 
+const MOCK_FRIST_INTERN = {
+  ...MOCK_FRIST,
+  id: "frist-intern-1",
+  typ: "intern",
+  bezeichnung: "Interne Bearbeitungsfrist",
+  end_datum: "2026-04-01T00:00:00.000Z",
+  werktage: 20,
+};
+
 describe("ladeFeiertage", () => {
   it("sollte Feiertage als Set von ISO-Datumsstrings zurückgeben", async () => {
     const mockClient = createMockClient();
@@ -136,6 +145,30 @@ describe("getFristen", () => {
     const result = await getFristen(mockClient as any, "tenant-1", "vorgang-1");
     expect(result.error).toBe("RLS-Fehler");
     expect(result.data).toEqual([]);
+  });
+
+  it("sollte gesetzliche Fristen vor internen sortieren (PROJ-28 NFR-2)", async () => {
+    const interneFristFrueh = {
+      ...MOCK_FRIST_INTERN,
+      end_datum: "2026-04-01T00:00:00.000Z",
+    };
+    const gesetzlicheFristSpaet = {
+      ...MOCK_FRIST,
+      end_datum: "2026-07-01T00:00:00.000Z",
+    };
+    // DB liefert intern vor gesetzlich (nach end_datum ASC)
+    const mockClient = createMockClient();
+    mockClient.setTableResult("vorgang_fristen", {
+      data: [interneFristFrueh, gesetzlicheFristSpaet],
+      error: null,
+    });
+
+    const result = await getFristen(mockClient as any, "tenant-1", "vorgang-1");
+    expect(result.error).toBeNull();
+    expect(result.data).toHaveLength(2);
+    // Gesetzlich zuerst, auch wenn end_datum spaeter
+    expect(result.data[0].typ).toBe("gesamtfrist");
+    expect(result.data[1].typ).toBe("intern");
   });
 });
 
@@ -187,6 +220,33 @@ describe("createFrist", () => {
 
     expect(result.error).toBe("Insert fehlgeschlagen");
     expect(result.data).toBeNull();
+  });
+
+  it("sollte eine interne Frist anlegen (PROJ-28 US-1)", async () => {
+    const mockClient = createMockClient();
+    mockClient.setTableResult("config_feiertage", { data: [], error: null });
+    mockClient.setTableResult("vorgang_fristen", { data: MOCK_FRIST_INTERN, error: null });
+
+    const result = await createFrist(mockClient as any, {
+      tenantId: "tenant-1",
+      userId: "user-1",
+      vorgangId: "vorgang-1",
+      typ: "intern",
+      bezeichnung: "Interne Bearbeitungsfrist",
+      werktage: 20,
+      startDatum: "2026-03-01T00:00:00.000Z",
+      bundesland: "NW",
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.data).not.toBeNull();
+    expect(result.data!.typ).toBe("intern");
+    expect(writeAuditLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "frist.created",
+        payload: expect.objectContaining({ typ: "intern" }),
+      })
+    );
   });
 });
 

@@ -85,6 +85,15 @@ export async function getFristen(
 
   if (error) return { data: [], error: error.message };
   const parsed = (data ?? []).map((d: unknown) => VorgangFristDbSchema.parse(d));
+
+  // PROJ-28 NFR-2: Gesetzliche Fristen vor internen, jeweils nach end_datum ASC
+  parsed.sort((a, b) => {
+    const aIsIntern = a.typ === "intern" ? 1 : 0;
+    const bIsIntern = b.typ === "intern" ? 1 : 0;
+    if (aIsIntern !== bIsIntern) return aIsIntern - bIsIntern;
+    return new Date(a.end_datum).getTime() - new Date(b.end_datum).getTime();
+  });
+
   return { data: parsed, error: null };
 }
 
