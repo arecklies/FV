@@ -62,6 +62,55 @@ export const KommentarSchema = z.object({
 /** UUID-Validierung fuer [id] Path-Parameter (B-004) */
 export const UuidParamSchema = z.string().uuid("Ungültige ID");
 
+// -- Batch-Aktionen (PROJ-17: Massenoperationen) --
+
+const VorgangIdsSchema = z.array(z.string().uuid("Ungültige Vorgang-ID")).min(1, "Mindestens ein Vorgang erforderlich").max(100, "Maximal 100 Vorgänge pro Batch");
+
+export const BatchZuweisenSchema = z.object({
+  aktion: z.literal("zuweisen"),
+  vorgang_ids: VorgangIdsSchema,
+  zustaendiger_user_id: z.string().uuid("Ungültige Benutzer-ID"),
+});
+
+export const BatchStatusAendernSchema = z.object({
+  aktion: z.literal("status_aendern"),
+  vorgang_ids: VorgangIdsSchema,
+  aktion_id: z.string().min(1, "Aktion-ID ist Pflichtfeld"),
+  begruendung: z.string().optional(),
+});
+
+export const BatchFristVerschiebenSchema = z.object({
+  aktion: z.literal("frist_verschieben"),
+  vorgang_ids: VorgangIdsSchema,
+  frist_typ: z.string().min(1, "Frist-Typ ist Pflichtfeld"),
+  zusaetzliche_werktage: z.number().int().positive("Werktage müssen positiv sein"),
+  begruendung: z.string().min(1, "Begründung ist Pflichtfeld bei Fristverlängerung"),
+});
+
+/** Discriminated Union über "aktion" (PROJ-17 FA-2) */
+export const BatchAktionSchema = z.discriminatedUnion("aktion", [
+  BatchZuweisenSchema,
+  BatchStatusAendernSchema,
+  BatchFristVerschiebenSchema,
+]);
+
+export type BatchAktion = z.infer<typeof BatchAktionSchema>;
+
+/** Ergebnis pro Vorgang innerhalb eines Batch-Durchlaufs */
+export interface BatchEinzelErgebnis {
+  vorgang_id: string;
+  erfolg: boolean;
+  meldung: string;
+}
+
+/** Gesamt-Response für Batch-Aktionen (PROJ-17 FA-4) */
+export interface BatchAktionResponse {
+  gesamt: number;
+  erfolgreich: number;
+  fehlgeschlagen: number;
+  ergebnisse: BatchEinzelErgebnis[];
+}
+
 // -- Zod-Schemas fuer DB-Ergebnisse (B-003: statt Type Assertions) --
 
 export const VerfahrensartDbSchema = z.object({
