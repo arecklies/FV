@@ -53,6 +53,7 @@ import { useFristen } from "@/hooks/use-fristen";
 import { GeltungsdauerBadge } from "@/components/geltungsdauer/geltungsdauer-badge";
 import { VerlaengerungDialog } from "@/components/geltungsdauer/verlaengerung-dialog";
 import { VerlaengerungHistorie } from "@/components/geltungsdauer/verlaengerung-historie";
+import { GeltungsdauerNachpflegeDialog } from "@/components/geltungsdauer/nachpflege-dialog";
 
 import type {
   Vorgang,
@@ -737,6 +738,27 @@ export default function VorgangDetailPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* PROJ-56: Nachpflege-Hinweis bei abgeschlossenen Vorgängen ohne Geltungsdauer */}
+            {!vorgang.geltungsdauer_bis && vorgang.workflow_schritt_id === "abgeschlossen" && (
+              <Card className="md:col-span-2 bg-amber-50 border-amber-200 shadow-sm dark:bg-amber-950/20 dark:border-amber-800">
+                <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 pb-4">
+                  <div>
+                    <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                      Geltungsdauer nicht gesetzt
+                    </p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                      Für Verlängerungen muss die Geltungsdauer manuell nachgepflegt werden.
+                    </p>
+                  </div>
+                  <GeltungsdauerNachpflegeDialog
+                    vorgangId={vorgang.id}
+                    version={vorgang.version}
+                    onSuccess={() => window.location.reload()}
+                  />
+                </CardContent>
+              </Card>
+            )}
 
             {/* PROJ-48: Verlängerung + Historie */}
             {vorgang.geltungsdauer_bis && vorgang.workflow_schritt_id === "abgeschlossen" && (

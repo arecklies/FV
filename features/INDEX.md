@@ -57,7 +57,7 @@
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Deployed | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
-| PROJ-48 | Verlängerung der Baugenehmigung | Deployed (Conditional: PROJ-56) | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
+| PROJ-48 | Verlängerung der Baugenehmigung | Deployed | [PROJ-48](PROJ-48-verlaengerung-baugenehmigung.md) | 2026-03-27 |
 | PROJ-49 | Volltextsuche über mehrere Spalten | Deployed | [PROJ-49](PROJ-49-volltextsuche-erweitern.md) | 2026-03-27 |
 | PROJ-50 | Statistik-Karten als Schnellfilter | Deployed | [PROJ-50](PROJ-50-statistik-karten-schnellfilter.md) | 2026-03-27 |
 | PROJ-51 | Fristdatum statt Eingangsdatum in Vorgangsliste | Deployed | [PROJ-51](PROJ-51-fristdatum-statt-eingang.md) | 2026-03-27 |
@@ -65,7 +65,7 @@
 | PROJ-53 | Wiedervorlagen mit Erinnerung | Planned | [PROJ-53](PROJ-53-wiedervorlagen-erinnerung.md) | 2026-03-27 |
 | PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | Deployed (Conditional: PROJ-60) | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
 | PROJ-55 | Statistik-Karten echtes Filtern statt Sortierung | Deployed | [PROJ-55](PROJ-55-statistik-karten-filter.md) | 2026-03-27 |
-| PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Planned | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
+| PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Deployed | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
 | PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Deployed | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
 | PROJ-58 | XBau CI-Pipeline XSD-Validierung | Deployed | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
 | PROJ-59 | XBau Schematron-Runtime-Validierung | Deployed | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |

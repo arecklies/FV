@@ -453,13 +453,17 @@ export async function updateVorgang(
     return { data: null, error: error.message, conflict: false };
   }
 
+  // PROJ-56: Spezifisches Audit-Log bei Geltungsdauer-Nachpflege
+  const isGeltungsdauerUpdate = "geltungsdauer_bis" in params.updates;
   await writeAuditLog({
     tenantId: params.tenantId,
     userId: params.userId,
-    action: "vorgang.updated",
+    action: isGeltungsdauerUpdate ? "geltungsdauer.manuell_gesetzt" : "vorgang.updated",
     resourceType: "vorgang",
     resourceId: params.vorgangId,
-    payload: { fields: Object.keys(params.updates) },
+    payload: isGeltungsdauerUpdate
+      ? { geltungsdauer_bis_neu: params.updates.geltungsdauer_bis, fields: Object.keys(params.updates) }
+      : { fields: Object.keys(params.updates) },
   });
 
   return { data: VorgangDbSchema.parse(data), error: null, conflict: false };

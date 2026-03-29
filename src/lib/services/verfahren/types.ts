@@ -33,6 +33,8 @@ export const UpdateVorgangSchema = z.object({
   grundstueck_gemarkung: z.string().optional(),
   bezeichnung: z.string().optional(),
   extra_felder: z.record(z.string(), z.unknown()).optional(),
+  /** PROJ-56: Manuelle Nachpflege der Geltungsdauer fuer Bestandsvorgaenge */
+  geltungsdauer_bis: z.string().datetime().optional(),
   version: z.number().int().positive("Version ist Pflichtfeld für Optimistic Locking"),
 });
 
