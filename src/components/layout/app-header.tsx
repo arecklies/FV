@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "@/components/auth/auth-provider";
 import { ROLE_LABELS, ROLE_BADGE_VARIANT } from "@/lib/utils/auth-constants";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 /**
  * App-Header mit Navigation (PROJ-1 US-4).
@@ -88,7 +89,7 @@ export function AppHeader() {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-sm print:hidden"
+      className="sticky top-0 z-50 w-full bg-gradient-to-r from-blue-700 to-blue-600 dark:from-slate-900 dark:to-slate-800 text-white shadow-sm print:hidden"
       role="banner"
     >
       <div className="flex h-14 items-center px-4 md:px-6">
@@ -130,7 +131,7 @@ export function AppHeader() {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Desktop: User Info + Logout */}
+        {/* Desktop: User Info + Theme + Logout */}
         <div className="hidden md:flex items-center space-x-3">
           <span className="text-sm text-primary-foreground/70" aria-label="Angemeldeter Benutzer">
             {user.email}
@@ -138,6 +139,7 @@ export function AppHeader() {
           <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground" aria-label={`Rolle: ${roleLabel}`}>
             {roleLabel}
           </Badge>
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="sm"
@@ -199,6 +201,11 @@ export function AppHeader() {
 
                 {/* Separator */}
                 <div className="h-px bg-border" />
+
+                {/* Theme Toggle (Mobile) */}
+                <div className="px-2 py-1">
+                  <ThemeToggle />
+                </div>
 
                 {/* Logout */}
                 <Button

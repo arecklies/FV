@@ -70,6 +70,7 @@
 | PROJ-58 | XBau CI-Pipeline XSD-Validierung | Deployed | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
 | PROJ-59 | XBau Schematron-Runtime-Validierung | Deployed | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
 | PROJ-60 | Fachliche Pruefung Glossar-Texte gegen LBOs | Planned | [PROJ-60](PROJ-60-glossar-fachpruefung.md) | 2026-03-29 |
+| PROJ-61 | Dark/Light Mode Toggle | Deployed | [PROJ-61](PROJ-61-dark-light-mode.md) | 2026-03-29 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -146,4 +147,6 @@
 
 > PROJ-60 Follow-up aus PROJ-54: Fachliche Pruefung aller 30 Glossar-Texte gegen LBO-Quelldokumente
 
-## Next Available ID: PROJ-61
+> PROJ-61 aus Nutzertest Afterwork: Dark Mode (Jan, Leipzig IT-Quereinsteiger)
+
+## Next Available ID: PROJ-62
