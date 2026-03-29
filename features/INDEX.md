@@ -63,13 +63,13 @@
 | PROJ-51 | Fristdatum statt Eingangsdatum in Vorgangsliste | Deployed | [PROJ-51](PROJ-51-fristdatum-statt-eingang.md) | 2026-03-27 |
 | PROJ-52 | Interne Vorgang-Notizen (privat) | Planned | [PROJ-52](PROJ-52-interne-vorgang-notizen.md) | 2026-03-27 |
 | PROJ-53 | Wiedervorlagen mit Erinnerung | Planned | [PROJ-53](PROJ-53-wiedervorlagen-erinnerung.md) | 2026-03-27 |
-| PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | Deployed (Conditional: PROJ-60) | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
+| PROJ-54 | Kontextbezogenes Fachbegriff-Glossar | Deployed | [PROJ-54](PROJ-54-fachbegriff-glossar.md) | 2026-03-27 |
 | PROJ-55 | Statistik-Karten echtes Filtern statt Sortierung | Deployed | [PROJ-55](PROJ-55-statistik-karten-filter.md) | 2026-03-27 |
 | PROJ-56 | Bestandsdaten Geltungsdauer-Nachpflege | Deployed | [PROJ-56](PROJ-56-bestandsdaten-geltungsdauer-nachpflege.md) | 2026-03-27 |
 | PROJ-57 | XBau Statistik-Nachrichten 0420-0427 | Deployed | [PROJ-57](PROJ-57-xbau-statistik-0420-0427.md) | 2026-03-27 |
 | PROJ-58 | XBau CI-Pipeline XSD-Validierung | Deployed | [PROJ-58](PROJ-58-xbau-ci-xsd-validierung.md) | 2026-03-27 |
 | PROJ-59 | XBau Schematron-Runtime-Validierung | Deployed | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
-| PROJ-60 | Fachliche Pruefung Glossar-Texte gegen LBOs | Planned | [PROJ-60](PROJ-60-glossar-fachpruefung.md) | 2026-03-29 |
+| PROJ-60 | Fachliche Pruefung Glossar-Texte gegen LBOs | Deployed | [PROJ-60](PROJ-60-glossar-fachpruefung.md) | 2026-03-29 |
 | PROJ-61 | Dark/Light Mode Toggle | Deployed | [PROJ-61](PROJ-61-dark-light-mode.md) | 2026-03-29 |
 | PROJ-62 | Nachrichten-API-Endpunkt (Transportprotokoll) | Planned | [PROJ-62](PROJ-62-nachrichten-api-endpunkt.md) | 2026-03-29 |
 
