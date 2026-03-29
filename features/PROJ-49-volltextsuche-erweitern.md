@@ -1,6 +1,6 @@
 # PROJ-49: Volltextsuche über mehrere Spalten erweitern
 
-**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
+**Status:** Deployed | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
 **Herkunft:** Kunden-Demo-Validierung 27.03.2026 (große Kommune braucht funktionierende Suche)
 **Priorität:** Hoch (Pilotblocker große Kommunen)
 **Typ:** Quick-Fix

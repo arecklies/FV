@@ -1,6 +1,6 @@
 # PROJ-54: Kontextbezogenes Fachbegriff-Glossar
 
-**Status:** In Progress | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
+**Status:** Deployed (Conditional: PROJ-60) | **Phase:** 1 (Kern-MVP Erweiterung) | **Erstellt:** 2026-03-27
 **Herkunft:** Nutzertest Tag 2 (Berufseinsteiger), 14.05.2026 -- 5/6 Teilnehmer fordern Glossar
 **Prioritaet:** Hoch (Pilotblocker fuer Berufseinsteiger und Quereinsteiger)
 
