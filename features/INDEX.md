@@ -53,7 +53,7 @@
 | PROJ-39 | Wizard Vorgangsanlage (Schritt-fuer-Schritt) | Deployed | [PROJ-39](PROJ-39-wizard-vorgangsanlage.md) | 2026-03-27 |
 | PROJ-40 | Adress-/Strassenfilter Vorgangsliste | Planned | [PROJ-40](PROJ-40-adressfilter-vorgangsliste.md) | 2026-03-27 |
 | PROJ-42 | Print-CSS Frist-Dashboard und Vorgangsliste | Deployed | [PROJ-42](PROJ-42-print-css-fristen.md) | 2026-03-28 |
-| PROJ-43 | Pause-Begründung als Auswahlliste | Planned | [PROJ-43](PROJ-43-pause-begruendung-auswahlliste.md) | 2026-03-28 |
+| PROJ-43 | Pause-Begründung als Auswahlliste | Deployed | [PROJ-43](PROJ-43-pause-begruendung-auswahlliste.md) | 2026-03-28 |
 | PROJ-44 | LBO Baden-Württemberg Regelwerk | Deployed | [PROJ-44](PROJ-44-lbo-baden-wuerttemberg.md) | 2026-03-28 |
 | PROJ-46 | Workflow-Bestätigungsdialog | Deployed | [PROJ-46](PROJ-46-workflow-bestaetigungsdialog.md) | 2026-03-28 |
 | PROJ-47 | UX-Härtung (Breadcrumbs, User-Resolver, Fokus, Toast, Statistik) | Deployed | [PROJ-47](PROJ-47-ux-haertung.md) | 2026-03-28 |
