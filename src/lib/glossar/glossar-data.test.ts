@@ -92,12 +92,18 @@ describe("sucheGlossar", () => {
   it("filtert nach Bundesland", () => {
     const nrw = sucheGlossar("", "NW");
     const bw = sucheGlossar("", "BW");
-    // NRW-spezifische Begriffe (z.B. Kenntnisgabe) sollten in BW nicht erscheinen
-    const kenntnisgabe = bw.find((e) => e.id === "kenntnisgabeverfahren");
-    expect(kenntnisgabe).toBeUndefined();
-    // Aber in NRW schon
+    // PROJ-60: Kenntnisgabeverfahren ist BW-spezifisch (§ 51 LBO BW), nicht NRW
+    // BW-spezifische Begriffe (z.B. Kenntnisgabe) sollten in NRW nicht erscheinen
     const kenntnisgabeNrw = nrw.find((e) => e.id === "kenntnisgabeverfahren");
-    expect(kenntnisgabeNrw).toBeDefined();
+    expect(kenntnisgabeNrw).toBeUndefined();
+    // Aber in BW schon
+    const kenntnisgabeBw = bw.find((e) => e.id === "kenntnisgabeverfahren");
+    expect(kenntnisgabeBw).toBeDefined();
+    // Baulast ist NRW-spezifisch, sollte in BW nicht erscheinen
+    const baulastBw = bw.find((e) => e.id === "baulast");
+    expect(baulastBw).toBeUndefined();
+    const baulastNrw = nrw.find((e) => e.id === "baulast");
+    expect(baulastNrw).toBeDefined();
   });
 
   it("gibt leeres Array bei keinem Treffer", () => {

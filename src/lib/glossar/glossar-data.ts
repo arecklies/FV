@@ -117,14 +117,16 @@ export const GLOSSAR_EINTRAEGE: GlossarEintrag[] = [
     id: "gebaeueklasse",
     term: "Gebäudeklasse",
     kurzerklaerung: "Einstufung eines Gebäudes nach Höhe und Nutzfläche (GK 1-5). Bestimmt die Anforderungen an Brandschutz, Standsicherheit und Rettungswege.",
-    langerklaerung: "GK 1: Freistehende Gebäude bis 7m Höhe, max. 2 Nutzungseinheiten bis 400m². GK 5: Gebäude mit Fußbodenhöhe des höchsten Geschosses über 13m (Hochhausgrenze in manchen BL ab 22m).",
+    // PROJ-60: "Hochhausgrenze ab 22m" entfernt -- Hochhaeuser sind Sonderbauten, keine GK-Einstufung. GK 5 praezisiert als "sonstige Gebaeude" (Auffangklasse).
+    langerklaerung: "GK 1: Freistehende Gebäude bis 7m Höhe, max. 2 Nutzungseinheiten bis 400m². GK 5: Sonstige Gebäude, die nicht in GK 1-4 fallen (z.B. Gebäude mit Fußbodenhöhe des höchsten Geschosses über 13m).",
   },
   {
+    // PROJ-60: Genehmigungsfreistellung ist NRW-spezifisch (§ 63 BauO NRW). BW hat stattdessen das Kenntnisgabeverfahren (§ 51 LBO BW) -- verwandtes aber eigenstaendiges Verfahren.
     id: "genehmigungsfreistellung",
     term: "Genehmigungsfreistellung",
-    kurzerklaerung: "Vereinfachtes Verfahren für Vorhaben im Geltungsbereich eines qualifizierten Bebauungsplans. Kein Genehmigungsbescheid, aber Frist für Gemeinde-Einspruch.",
-    bundeslaender: ["NW", "BW"],
-    langerklaerung: "In NRW geregelt in § 63 BauO NRW, in BW in § 51 LBO BW. Das Vorhaben gilt als genehmigt, wenn die Gemeinde nicht innerhalb einer Frist widerspricht.",
+    kurzerklaerung: "Verfahren für Wohngebäude im Geltungsbereich eines qualifizierten Bebauungsplans. Kein Genehmigungsbescheid, aber Frist für behördlichen Einspruch.",
+    bundeslaender: ["NW"],
+    langerklaerung: "Geregelt in § 63 BauO NRW. Das Vorhaben darf ausgeführt werden, wenn die Gemeinde nicht innerhalb eines Monats nach Eingang widerspricht. In BW existiert das verwandte Kenntnisgabeverfahren (§ 51 LBO BW).",
   },
   {
     id: "innenbereich",
@@ -132,11 +134,12 @@ export const GLOSSAR_EINTRAEGE: GlossarEintrag[] = [
     kurzerklaerung: "Zusammenhängend bebauter Ortsteil ohne Bebauungsplan. Bauvorhaben müssen sich in die Umgebungsbebauung einfügen (§ 34 BauGB).",
   },
   {
+    // PROJ-60: Kenntnisgabeverfahren ist BW (§ 51 LBO BW), nicht NRW. § 64 BauO NRW ist das vereinfachte Baugenehmigungsverfahren. Bundesland-Tag korrigiert.
     id: "kenntnisgabeverfahren",
     term: "Kenntnisgabeverfahren",
-    kurzerklaerung: "Vereinfachtes Verfahren in NRW: Bauvorhaben wird der Behörde nur angezeigt, keine Genehmigung erforderlich. Gilt für einfache Wohngebäude im B-Plan-Gebiet.",
-    bundeslaender: ["NW"],
-    langerklaerung: "Geregelt in § 64 BauO NRW. Die Bauaufsicht prüft nicht, der Bauherr und der Entwurfsverfasser übernehmen die volle Verantwortung. Frist: 1 Monat nach Eingang.",
+    kurzerklaerung: "Vereinfachtes Verfahren in BW: Bauvorhaben wird der Behörde nur angezeigt, keine Genehmigung erforderlich. Gilt für Wohngebäude im B-Plan-Gebiet.",
+    bundeslaender: ["BW"],
+    langerklaerung: "Geregelt in § 51 LBO BW. Die Bauaufsicht prüft nicht, der Bauherr und der Entwurfsverfasser übernehmen die volle Verantwortung. Baubeginn frühestens nach Ablauf der Bearbeitungsfrist.",
   },
   {
     id: "materielle-pruefung",
@@ -190,7 +193,8 @@ export const GLOSSAR_EINTRAEGE: GlossarEintrag[] = [
     id: "verfahrensart",
     term: "Verfahrensart",
     kurzerklaerung: "Art des baurechtlichen Genehmigungsverfahrens. Bestimmt den Prüfumfang der Behörde (z.B. vereinfachtes Verfahren, Sonderbauverfahren, Genehmigungsfreistellung).",
-    langerklaerung: "Häufige Verfahrensarten in NRW: Genehmigungsfreistellung (§ 63), Einfaches Genehmigungsverfahren (§ 64), Vereinfachtes Genehmigungsverfahren (§ 68), Vollständiges Genehmigungsverfahren für Sonderbauten (§ 68 Abs. 1).",
+    // PROJ-60: Verfahrensarten korrigiert -- "Einfaches" und "Vereinfachtes" waren vertauscht/doppelt. BauO NRW kennt: Genehmigungsfreistellung (§ 63), Vereinfachtes Baugenehmigungsverfahren (§ 64), Baugenehmigungsverfahren (§ 68).
+    langerklaerung: "Verfahrensarten in NRW: Genehmigungsfreistellung (§ 63 BauO NRW), Vereinfachtes Baugenehmigungsverfahren (§ 64 BauO NRW), Baugenehmigungsverfahren (§ 68 BauO NRW, auch für Sonderbauten).",
   },
 ].sort((a, b) => a.term.localeCompare(b.term, "de"));
 
