@@ -38,14 +38,14 @@
 | PROJ-20 | Frist-Ampel in Vorgangsliste | Deployed | [PROJ-20](PROJ-20-frist-ampel-vorgangsliste.md) | 2026-03-26 |
 | PROJ-21 | Frist-Dashboard Sachbearbeiter-Gruppierung | Deployed | [PROJ-21](PROJ-21-frist-dashboard-gruppierung.md) | 2026-03-26 |
 | PROJ-22 | Cron-Job Feiertags-Korrektheit und Batch-Optimierung | Deployed | [PROJ-22](PROJ-22-cron-feiertage-fix.md) | 2026-03-26 |
-| PROJ-23 | AmpelStatus Typ-Konsolidierung | Planned | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
+| PROJ-23 | AmpelStatus Typ-Konsolidierung | Deployed | [PROJ-23](PROJ-23-ampelstatus-typ-konsolidierung.md) | 2026-03-26 |
 | PROJ-24 | Typisiertes ServiceResult Error-Modell | Planned | [PROJ-24](PROJ-24-typisiertes-service-error-modell.md) | 2026-03-26 |
 | PROJ-25 | API-Route-Test-Template und Komponenten-Tests | Planned | [PROJ-25](PROJ-25-test-templates-komponententests.md) | 2026-03-26 |
 | PROJ-26 | Dialog-State-Reset | Deployed | [PROJ-26](PROJ-26-dialog-state-reset.md) | 2026-03-26 |
-| PROJ-27 | Route-Handler-Utilities | Planned | [PROJ-27](PROJ-27-route-handler-utilities.md) | 2026-03-26 |
+| PROJ-27 | Route-Handler-Utilities | Deployed | [PROJ-27](PROJ-27-route-handler-utilities.md) | 2026-03-26 |
 | PROJ-28 | Nicht-gesetzliche Fristen (intern) | Planned | [PROJ-28](PROJ-28-nicht-gesetzliche-fristen.md) | 2026-03-26 |
 | PROJ-29 | Persoenliche Tagesansicht | Planned | [PROJ-29](PROJ-29-persoenliche-tagesansicht.md) | 2026-03-26 |
-| PROJ-30 | Workflow-Aktionen mit Kontextinformation | Planned | [PROJ-30](PROJ-30-workflow-aktionen-kontext.md) | 2026-03-26 |
+| PROJ-30 | Workflow-Aktionen mit Kontextinformation | Deployed | [PROJ-30](PROJ-30-workflow-aktionen-kontext.md) | 2026-03-26 |
 | PROJ-35 | Vertretungsregelung Vier-Augen-Freigabe | Deployed | [PROJ-35](PROJ-35-vertretungsregelung-freigabe.md) | 2026-03-27 |
 | PROJ-36 | Aktenzeichen-Feld auf Vorgang | Deployed | [PROJ-36](PROJ-36-aktenzeichen-feld.md) | 2026-03-27 |
 | PROJ-37 | Frist-Pause bei ruhenden Verfahren | Deployed | [PROJ-37](PROJ-37-frist-pause-ruhende-verfahren.md) | 2026-03-27 |
@@ -71,6 +71,7 @@
 | PROJ-59 | XBau Schematron-Runtime-Validierung | Deployed | [PROJ-59](PROJ-59-xbau-schematron-runtime.md) | 2026-03-27 |
 | PROJ-60 | Fachliche Pruefung Glossar-Texte gegen LBOs | Planned | [PROJ-60](PROJ-60-glossar-fachpruefung.md) | 2026-03-29 |
 | PROJ-61 | Dark/Light Mode Toggle | Deployed | [PROJ-61](PROJ-61-dark-light-mode.md) | 2026-03-29 |
+| PROJ-62 | Nachrichten-API-Endpunkt (Transportprotokoll) | Planned | [PROJ-62](PROJ-62-nachrichten-api-endpunkt.md) | 2026-03-29 |
 
 > PROJ-12 vorgezogen von Phase 2 auf Phase 1 (Umfrage: SB bewerten 4,47/5, Rang 3 der operativen Features)
 > PROJ-17 aus PROJ-3 US-6 extrahiert (Retro A-8: MVP-Scope frueher schneiden)
@@ -149,4 +150,6 @@
 
 > PROJ-61 aus Nutzertest Afterwork: Dark Mode (Jan, Leipzig IT-Quereinsteiger)
 
-## Next Available ID: PROJ-62
+> PROJ-62 Fehlender API-Endpunkt fuer PROJ-7 Transportprotokoll (sichtbarer UI-Fehler)
+
+## Next Available ID: PROJ-63
