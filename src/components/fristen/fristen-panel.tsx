@@ -6,7 +6,7 @@ import { Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AmpelBadge, type AmpelStatus } from "./ampel-badge";
+import { AmpelBadge } from "./ampel-badge";
 import { FristVerlaengerungDialog } from "./frist-verlaengerung-dialog";
 import { FristHemmungDialog } from "./frist-hemmung-dialog";
 
@@ -106,7 +106,7 @@ export function FristenPanel({
                   <span className="font-medium text-sm">
                     {frist.bezeichnung}
                   </span>
-                  <AmpelBadge status={frist.status as AmpelStatus} compact />
+                  <AmpelBadge status={frist.status} compact />
                 </div>
                 <div className="text-xs text-muted-foreground space-y-0.5">
                   <p>

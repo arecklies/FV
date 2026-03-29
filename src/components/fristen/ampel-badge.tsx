@@ -9,6 +9,7 @@ import {
   PauseCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { AmpelStatus } from "@/lib/services/fristen/types";
 
 /**
  * Ampel-Badge (PROJ-4 FA-4, NFR-4)
@@ -17,7 +18,7 @@ import { cn } from "@/lib/utils";
  * Nie nur Farbe — immer auch Icon und Text.
  */
 
-export type AmpelStatus = "gruen" | "gelb" | "rot" | "dunkelrot" | "gehemmt" | "pausiert";
+export type { AmpelStatus };
 
 interface AmpelBadgeProps {
   status: AmpelStatus;
