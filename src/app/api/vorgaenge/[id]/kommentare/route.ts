@@ -24,7 +24,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
   const serviceClient = createServiceRoleClient();
 
-  const result = await listKommentare(serviceClient, auth.tenantId, id);
+  // PROJ-52: userId fuer Sichtbarkeitsfilter privater Kommentare
+  const result = await listKommentare(serviceClient, auth.tenantId, id, auth.userId);
   if (result.error) {
     return serverError("[PROJ-3] GET /api/vorgaenge/[id]/kommentare failed", result.error);
   }
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   }
 
   const serviceClient = createServiceRoleClient();
-  const result = await createKommentar(serviceClient, auth.tenantId, auth.userId, id, body.inhalt);
+  // PROJ-52: ist_privat aus Body durchreichen (Default: false)
+  const result = await createKommentar(serviceClient, auth.tenantId, auth.userId, id, body.inhalt, body.ist_privat);
 
   if (result.error) {
     return serverError("[PROJ-3] POST /api/vorgaenge/[id]/kommentare failed", result.error);

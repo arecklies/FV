@@ -19,6 +19,10 @@ jest.mock("@/lib/services/user-resolver", () => ({
   resolveUserEmails: jest.fn().mockResolvedValue(new Map([["u-001", "mueller@freiburg.de"]])),
 }));
 
+jest.mock("@/lib/services/stellvertreter", () => ({
+  getVertretungenVon: jest.fn().mockResolvedValue({ data: [], error: null }),
+}));
+
 import {
   listVerfahrensarten,
   getVerfahrensart,
@@ -35,6 +39,7 @@ import {
 } from "./index";
 import { writeAuditLog } from "@/lib/services/audit";
 import { resolveUserEmails } from "@/lib/services/user-resolver";
+import { getVertretungenVon } from "@/lib/services/stellvertreter";
 import type { Verfahrensart, Vorgang, VorgangListItem, VorgangKommentar } from "./types";
 
 // -- Hilfsfunktionen fuer Supabase-Mock --
@@ -813,7 +818,7 @@ describe("listKommentare", () => {
       error: null,
     });
 
-    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID);
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, USER_ID);
 
     expect(result.data).toHaveLength(1);
     expect(result.data[0].inhalt).toBe("Unterlagen vollständig.");
@@ -833,7 +838,7 @@ describe("listKommentare", () => {
       error: null,
     });
 
-    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID);
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, USER_ID);
 
     expect(result.data[0].autor_email).toBeNull();
   });
@@ -845,7 +850,7 @@ describe("listKommentare", () => {
       error: { message: "timeout" },
     });
 
-    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID);
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, USER_ID);
 
     expect(result.data).toEqual([]);
     expect(result.error).toBe("timeout");
@@ -869,6 +874,29 @@ describe("createKommentar", () => {
 
     expect(result.data).not.toBeNull();
     expect(result.data!.inhalt).toBe("Unterlagen vollständig.");
+    expect(result.error).toBeNull();
+  });
+
+  it("erstellt privaten Kommentar mit ist_privat=true (PROJ-52)", async () => {
+    const privatKommentar: VorgangKommentar = {
+      ...MOCK_KOMMENTAR,
+      id: "k-002",
+      ist_privat: true,
+    };
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", { data: privatKommentar, error: null });
+
+    const result = await createKommentar(
+      client as any,
+      TENANT_ID,
+      USER_ID,
+      VORGANG_ID,
+      "Private Notiz",
+      true
+    );
+
+    expect(result.data).not.toBeNull();
+    expect(result.data!.ist_privat).toBe(true);
     expect(result.error).toBeNull();
   });
 
@@ -1007,5 +1035,88 @@ describe("getVorgaengeStatistik (PROJ-47 US-3)", () => {
     expect(result.data.gefaehrdet).toBe(0);
     expect(result.data.ueberfaellig).toBe(1);
     expect(result.data.im_zeitplan).toBe(0);
+  });
+});
+
+// -- PROJ-52: Private Kommentare Sichtbarkeitsfilter --
+
+describe("listKommentare - PROJ-52 private Notizen", () => {
+  const OTHER_USER_ID = "u-002";
+  const DEPUTY_USER_ID = "u-003";
+
+  const KOMMENTARE_MIX = [
+    { id: "k-1", vorgang_id: VORGANG_ID, autor_user_id: USER_ID, inhalt: "Oeffentlich vom Ersteller", created_at: "2026-03-26T10:00:00Z", ist_privat: false },
+    { id: "k-2", vorgang_id: VORGANG_ID, autor_user_id: USER_ID, inhalt: "Privat vom Ersteller", created_at: "2026-03-26T11:00:00Z", ist_privat: true },
+    { id: "k-3", vorgang_id: VORGANG_ID, autor_user_id: OTHER_USER_ID, inhalt: "Privat vom anderen User", created_at: "2026-03-26T12:00:00Z", ist_privat: true },
+    { id: "k-4", vorgang_id: VORGANG_ID, autor_user_id: OTHER_USER_ID, inhalt: "Oeffentlich vom anderen User", created_at: "2026-03-26T13:00:00Z", ist_privat: false },
+  ];
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it("filtert private Kommentare anderer User aus", async () => {
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", { data: KOMMENTARE_MIX, error: null });
+
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, USER_ID);
+
+    expect(result.error).toBeNull();
+    // USER_ID sieht: k-1 (oeffentlich), k-2 (eigene privat), k-4 (oeffentlich)
+    // NICHT: k-3 (privat von OTHER_USER_ID)
+    expect(result.data).toHaveLength(3);
+    expect(result.data.map((k) => k.id)).toEqual(["k-1", "k-2", "k-4"]);
+  });
+
+  it("zeigt private Kommentare des Erstellers", async () => {
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", { data: KOMMENTARE_MIX, error: null });
+
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, USER_ID);
+
+    const eigenePrivate = result.data.filter((k) => k.ist_privat && k.autor_user_id === USER_ID);
+    expect(eigenePrivate).toHaveLength(1);
+    expect(eigenePrivate[0].id).toBe("k-2");
+  });
+
+  it("zeigt private Kommentare bei Vertretungsbeziehung (PROJ-35)", async () => {
+    // DEPUTY_USER_ID vertritt OTHER_USER_ID
+    (getVertretungenVon as jest.Mock).mockResolvedValueOnce({
+      data: [
+        {
+          id: "sv-001",
+          tenant_id: TENANT_ID,
+          vertretener_id: OTHER_USER_ID,
+          stellvertreter_id: DEPUTY_USER_ID,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+      ],
+      error: null,
+    });
+
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", { data: KOMMENTARE_MIX, error: null });
+
+    // DEPUTY_USER_ID fragt an -> sieht private von OTHER_USER_ID weil Vertretung
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, DEPUTY_USER_ID);
+
+    expect(result.error).toBeNull();
+    // DEPUTY sieht: k-1 (oeffentlich), k-3 (privat von OTHER, Vertretung), k-4 (oeffentlich)
+    // NICHT: k-2 (privat von USER_ID, keine Vertretung)
+    expect(result.data).toHaveLength(3);
+    expect(result.data.map((k) => k.id)).toEqual(["k-1", "k-3", "k-4"]);
+  });
+
+  it("versteckt private Kommentare wenn keine Vertretung besteht", async () => {
+    // Default mock: getVertretungenVon gibt leere Liste
+    const client = createMockClient();
+    client.setResult("vorgang_kommentare", { data: KOMMENTARE_MIX, error: null });
+
+    // OTHER_USER_ID fragt an (kein Ersteller, keine Vertretung fuer USER_ID)
+    const result = await listKommentare(client as any, TENANT_ID, VORGANG_ID, OTHER_USER_ID);
+
+    expect(result.error).toBeNull();
+    // OTHER sieht: k-1 (oeffentlich), k-3 (eigene privat), k-4 (oeffentlich)
+    // NICHT: k-2 (privat von USER_ID)
+    expect(result.data).toHaveLength(3);
+    expect(result.data.map((k) => k.id)).toEqual(["k-1", "k-3", "k-4"]);
   });
 });

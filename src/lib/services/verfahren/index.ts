@@ -559,14 +559,21 @@ export async function zuweiseVorgang(
 
 // -- Kommentare (PROJ-3 FA-9, US-4) --
 
+/**
+ * PROJ-52: userId wird fuer Sichtbarkeitsfilter privater Kommentare benoetigt.
+ * Private Kommentare (ist_privat=true) sind nur sichtbar fuer:
+ * - den Autor selbst
+ * - Stellvertreter des Autors (PROJ-35 Vertretungsregel)
+ */
 export async function listKommentare(
   serviceClient: SupabaseClient,
   tenantId: string,
-  vorgangId: string
+  vorgangId: string,
+  userId: string
 ): Promise<{ data: VorgangKommentarMitEmail[]; error: string | null }> {
   const { data, error } = await serviceClient
     .from("vorgang_kommentare")
-    .select("id, vorgang_id, autor_user_id, inhalt, created_at")
+    .select("id, vorgang_id, autor_user_id, inhalt, created_at, ist_privat")
     .eq("tenant_id", tenantId)
     .eq("vorgang_id", vorgangId)
     .order("created_at", { ascending: true })
@@ -575,11 +582,20 @@ export async function listKommentare(
   if (error) return { data: [], error: error.message };
   const parsed = (data ?? []).map((d: unknown) => VorgangKommentarDbSchema.parse(d));
 
+  // PROJ-52: Vertretungsbeziehungen laden fuer Sichtbarkeitsfilter
+  const vertretungen = await getVertretungenVon(serviceClient, tenantId, userId);
+  const vertreteneIds = new Set(vertretungen.data.map((v) => v.vertretener_id));
+
+  // PROJ-52: Private Kommentare filtern
+  const sichtbar = parsed.filter((k) =>
+    !k.ist_privat || k.autor_user_id === userId || vertreteneIds.has(k.autor_user_id)
+  );
+
   // PROJ-47 US-1: E-Mail-Adressen der Autoren auflösen
-  const userIds = parsed.map((k) => k.autor_user_id);
+  const userIds = sichtbar.map((k) => k.autor_user_id);
   const emailMap = await resolveUserEmails(serviceClient, userIds);
 
-  const enriched: VorgangKommentarMitEmail[] = parsed.map((k) => ({
+  const enriched: VorgangKommentarMitEmail[] = sichtbar.map((k) => ({
     ...k,
     autor_email: emailMap.get(k.autor_user_id) ?? null,
   }));
@@ -592,7 +608,9 @@ export async function createKommentar(
   tenantId: string,
   userId: string,
   vorgangId: string,
-  inhalt: string
+  inhalt: string,
+  /** PROJ-52: true = private Notiz (Default: false) */
+  istPrivat: boolean = false
 ): Promise<{ data: VorgangKommentar | null; error: string | null }> {
   const { data, error } = await serviceClient
     .from("vorgang_kommentare")
@@ -601,8 +619,9 @@ export async function createKommentar(
       vorgang_id: vorgangId,
       autor_user_id: userId,
       inhalt,
+      ist_privat: istPrivat,
     })
-    .select("id, vorgang_id, autor_user_id, inhalt, created_at")
+    .select("id, vorgang_id, autor_user_id, inhalt, created_at, ist_privat")
     .single();
 
   if (error) return { data: null, error: error.message };
