@@ -215,6 +215,7 @@ describe("TextBausteinService", () => {
       const result = await updateBaustein(
         mockClient as unknown as Parameters<typeof updateBaustein>[0],
         TENANT_ID,
+        USER_ID,
         BAUSTEIN_ID,
         { titel: "Neuer Titel" }
       );
@@ -225,6 +226,7 @@ describe("TextBausteinService", () => {
       expect(writeAuditLog).toHaveBeenCalledWith(
         expect.objectContaining({
           action: "textbaustein.aktualisiert",
+          userId: USER_ID,
         })
       );
     });
@@ -235,6 +237,7 @@ describe("TextBausteinService", () => {
       const result = await updateBaustein(
         mockClient as unknown as Parameters<typeof updateBaustein>[0],
         TENANT_ID,
+        USER_ID,
         BAUSTEIN_ID,
         {}
       );
@@ -253,6 +256,7 @@ describe("TextBausteinService", () => {
       const result = await deactivateBaustein(
         mockClient as unknown as Parameters<typeof deactivateBaustein>[0],
         TENANT_ID,
+        USER_ID,
         BAUSTEIN_ID
       );
 
@@ -260,6 +264,7 @@ describe("TextBausteinService", () => {
       expect(writeAuditLog).toHaveBeenCalledWith(
         expect.objectContaining({
           action: "textbaustein.deaktiviert",
+          userId: USER_ID,
         })
       );
     });
@@ -274,6 +279,7 @@ describe("TextBausteinService", () => {
       const result = await deactivateBaustein(
         mockClient as unknown as Parameters<typeof deactivateBaustein>[0],
         TENANT_ID,
+        USER_ID,
         BAUSTEIN_ID
       );
 

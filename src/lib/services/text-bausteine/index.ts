@@ -55,13 +55,12 @@ export async function listBausteine(
     );
   }
 
-  // Filter: Volltextsuche (GIN-Index)
+  // Filter: Volltextsuche ueber Titel UND Inhalt (US-2 AC-6)
+  // ilike-basiert statt textSearch, da Supabase JS Client textSearch nur eine Spalte unterstuetzt
   if (filter?.suche) {
-    // Supabase textSearch mit German-Config
-    query = query.textSearch(
-      "titel",
-      filter.suche,
-      { type: "websearch", config: "german" }
+    const escaped = filter.suche.replace(/[%_\\]/g, (c) => `\\${c}`);
+    query = query.or(
+      `titel.ilike.%${escaped}%,inhalt.ilike.%${escaped}%`
     );
   }
 
@@ -144,6 +143,7 @@ export async function createBaustein(
 export async function updateBaustein(
   serviceClient: SupabaseClient,
   tenantId: string,
+  userId: string,
   id: string,
   data: {
     titel?: string;
@@ -183,7 +183,7 @@ export async function updateBaustein(
 
   await writeAuditLog({
     tenantId,
-    userId: null,
+    userId,
     action: "textbaustein.aktualisiert",
     resourceType: "text_bausteine",
     resourceId: id,
@@ -200,6 +200,7 @@ export async function updateBaustein(
 export async function deactivateBaustein(
   serviceClient: SupabaseClient,
   tenantId: string,
+  userId: string,
   id: string
 ): Promise<{ error: string | null }> {
   const { error } = await serviceClient
@@ -212,7 +213,7 @@ export async function deactivateBaustein(
 
   await writeAuditLog({
     tenantId,
-    userId: null,
+    userId,
     action: "textbaustein.deaktiviert",
     resourceType: "text_bausteine",
     resourceId: id,

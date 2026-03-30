@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const body = await parseJsonBody(request, UpdateTextBausteinSchema, "[PROJ-6] PUT /api/text-bausteine/[id]");
   if (body.error) return body.error;
 
-  const result = await updateBaustein(serviceClient, auth.tenantId, uuidResult.id, body.data);
+  const result = await updateBaustein(serviceClient, auth.tenantId, auth.userId, uuidResult.id, body.data);
   if (result.error) {
     return serverError("[PROJ-6] PUT /api/text-bausteine/[id]", result.error);
   }
@@ -50,7 +50,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
   const serviceClient = createServiceRoleClient();
 
-  const result = await deactivateBaustein(serviceClient, auth.tenantId, uuidResult.id);
+  const result = await deactivateBaustein(serviceClient, auth.tenantId, auth.userId, uuidResult.id);
   if (result.error) {
     return serverError("[PROJ-6] DELETE /api/text-bausteine/[id]", result.error);
   }
