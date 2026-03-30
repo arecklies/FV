@@ -30,12 +30,15 @@
 | [ADR-013](ADR-013-stellvertreter-freigabe.md) | Stellvertreter-Modell fuer Vier-Augen-Freigabe | **Accepted** | 2026-03-27 |
 | [ADR-014](ADR-014-frist-pause-verfahrensruhe.md) | Frist-Pause bei Verfahrensruhe | **Accepted** | 2026-03-27 |
 | [ADR-015](ADR-015-xbau-nachrichten-datenmodell.md) | XBau-Nachrichten-Datenmodell und Verarbeitungspipeline | **Accepted** | 2026-03-28 |
+| [ADR-016](ADR-016-transport-abstraktion-eingangskanal.md) | Transport-Abstraktion fuer Eingangskanal-Routing | **Accepted** | 2026-03-29 |
+| [ADR-017](ADR-017-loeschstrategie-pii-inventar.md) | Loeschstrategie und PII-Inventar | **Accepted** | 2026-03-29 |
+| [ADR-018](ADR-018-email-benachrichtigungsstrategie.md) | E-Mail-Benachrichtigungsstrategie | **Accepted** | 2026-03-29 |
 
-> Alle 15 ADRs sind accepted (Review 2026-03-28).
+> 18 ADRs accepted (Stand 2026-03-29).
 
 ## Konventionen
 
 - Dateiformat: `ADR-XXX-titel-in-kebab-case.md`
 - Jeder ADR wird ueber `/arch-adr` erstellt und ueber `/docs-adr` in diesen Index eingepflegt
 - ADR-Nummern sind sequenziell und werden nie wiederverwendet
-- Naechste verfuegbare Nummer: **ADR-016**
+- Naechste verfuegbare Nummer: **ADR-019**
