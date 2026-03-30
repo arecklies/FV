@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Search, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 import type { VorgangListItem, Verfahrensart, VorgaengeStatistik, BatchAktionResponse } from "@/lib/services/verfahren/types";
 import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
@@ -83,6 +88,19 @@ export default function VorgaengeListePage() {
   const [sortierung, setSortierung] = React.useState<Sortierung>("eingangsdatum");
   const [richtung, setRichtung] = React.useState<Richtung>("desc");
 
+  // PROJ-40: Adressfilter
+  const [strasseFilter, setStrasseFilter] = React.useState("");
+  const [plzFilter, setPlzFilter] = React.useState("");
+  const [ortFilter, setOrtFilter] = React.useState("");
+  const [strasseInput, setStrasseInput] = React.useState("");
+  const [ortInput, setOrtInput] = React.useState("");
+  const [adressfilterOffen, setAdressfilterOffen] = React.useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("adressfilter-offen") === "true";
+    }
+    return false;
+  });
+
   // PROJ-50/55: Aktive Statistik-Karte tracken (PROJ-55: Filter statt Sortierung)
   type SchnellfilterKarte = "gesamt" | "gefaehrdet" | "ueberfaellig" | "zeitplan";
   const [activeCard, setActiveCard] = React.useState<SchnellfilterKarte | null>(null);
@@ -112,6 +130,40 @@ export default function VorgaengeListePage() {
       setSeite(1);
     }, 400);
   }, []);
+
+  // PROJ-40: Debounced Adressfilter (Strasse, Ort)
+  const strasseTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ortTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleStrasseInput = React.useCallback((value: string) => {
+    setStrasseInput(value);
+    if (strasseTimerRef.current) clearTimeout(strasseTimerRef.current);
+    strasseTimerRef.current = setTimeout(() => {
+      setStrasseFilter(value);
+      setSeite(1);
+    }, 400);
+  }, []);
+
+  const handleOrtInput = React.useCallback((value: string) => {
+    setOrtInput(value);
+    if (ortTimerRef.current) clearTimeout(ortTimerRef.current);
+    ortTimerRef.current = setTimeout(() => {
+      setOrtFilter(value);
+      setSeite(1);
+    }, 400);
+  }, []);
+
+  const handlePlzInput = React.useCallback((value: string) => {
+    // PLZ: nur Ziffern, max 5 Zeichen, kein Debounce noetig (exakte Suche)
+    const cleaned = value.replace(/[^0-9]/g, "").slice(0, 5);
+    setPlzFilter(cleaned);
+    setSeite(1);
+  }, []);
+
+  // PROJ-40: sessionStorage sync fuer Adressfilter-Offen-State
+  React.useEffect(() => {
+    sessionStorage.setItem("adressfilter-offen", String(adressfilterOffen));
+  }, [adressfilterOffen]);
 
   // Keyboard shortcut: Ctrl+N -> Neuer Vorgang
   React.useEffect(() => {
@@ -155,6 +207,9 @@ export default function VorgaengeListePage() {
       if (verfahrensartFilter) params.set("verfahrensart_id", verfahrensartFilter);
       if (suche) params.set("suche", suche);
       if (fristFilter) params.set("frist_filter", fristFilter);
+      if (strasseFilter) params.set("strasse", strasseFilter);
+      if (plzFilter) params.set("plz", plzFilter);
+      if (ortFilter) params.set("ort", ortFilter);
       params.set("sortierung", sortierung);
       params.set("richtung", richtung);
       params.set("seite", String(seite));
@@ -186,7 +241,7 @@ export default function VorgaengeListePage() {
       }
     }
     loadVorgaenge();
-  }, [statusFilter, verfahrensartFilter, suche, fristFilter, sortierung, richtung, seite]);
+  }, [statusFilter, verfahrensartFilter, suche, fristFilter, strasseFilter, plzFilter, ortFilter, sortierung, richtung, seite]);
 
   const totalPages = Math.max(1, Math.ceil(total / proSeite));
 
@@ -429,6 +484,86 @@ export default function VorgaengeListePage() {
         </Select>
       </div>
 
+      {/* PROJ-40: Aufklappbarer Adressfilter */}
+      <Collapsible
+        open={adressfilterOffen}
+        onOpenChange={setAdressfilterOffen}
+        className="mb-4 print:hidden"
+      >
+        <CollapsibleTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            aria-label="Adressfilter ein-/ausklappen"
+            aria-expanded={adressfilterOffen}
+          >
+            <MapPin className="h-4 w-4" aria-hidden="true" />
+            Adressfilter
+            {adressfilterOffen ? (
+              <ChevronUp className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            )}
+            {(strasseFilter || plzFilter || ortFilter) && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {[strasseFilter, plzFilter, ortFilter].filter(Boolean).length}
+              </Badge>
+            )}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div
+            className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 p-3 bg-card rounded-lg border shadow-sm"
+            role="group"
+            aria-label="Adressfilter"
+          >
+            <div>
+              <label htmlFor="adressfilter-strasse" className="sr-only">
+                Straße
+              </label>
+              <Input
+                id="adressfilter-strasse"
+                type="text"
+                placeholder="Straße..."
+                value={strasseInput}
+                onChange={(e) => handleStrasseInput(e.target.value)}
+                aria-label="Nach Straße filtern"
+              />
+            </div>
+            <div>
+              <label htmlFor="adressfilter-plz" className="sr-only">
+                PLZ
+              </label>
+              <Input
+                id="adressfilter-plz"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={5}
+                placeholder="PLZ"
+                value={plzFilter}
+                onChange={(e) => handlePlzInput(e.target.value)}
+                aria-label="Nach PLZ filtern"
+              />
+            </div>
+            <div>
+              <label htmlFor="adressfilter-ort" className="sr-only">
+                Ort
+              </label>
+              <Input
+                id="adressfilter-ort"
+                type="text"
+                placeholder="Ort..."
+                value={ortInput}
+                onChange={(e) => handleOrtInput(e.target.value)}
+                aria-label="Nach Ort filtern"
+              />
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
       {/* PROJ-17: Massenaktionen-Toolbar */}
       <MassenaktionenToolbar
         selectedCount={selection.selectedCount}
@@ -470,11 +605,11 @@ export default function VorgaengeListePage() {
             Keine Vorgänge gefunden
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            {suche || statusFilter || verfahrensartFilter || fristFilter
+            {suche || statusFilter || verfahrensartFilter || fristFilter || strasseFilter || plzFilter || ortFilter
               ? "Passen Sie die Suchkriterien an oder setzen Sie die Filter zurück."
               : "Legen Sie einen neuen Vorgang an, um zu beginnen."}
           </p>
-          {(suche || statusFilter || verfahrensartFilter || fristFilter) && (
+          {(suche || statusFilter || verfahrensartFilter || fristFilter || strasseFilter || plzFilter || ortFilter) && (
             <Button
               variant="outline"
               onClick={() => {
@@ -483,6 +618,11 @@ export default function VorgaengeListePage() {
                 setStatusFilter("");
                 setVerfahrensartFilter("");
                 setFristFilter("");
+                setStrasseInput("");
+                setStrasseFilter("");
+                setPlzFilter("");
+                setOrtInput("");
+                setOrtFilter("");
                 setActiveCard(null);
                 setSeite(1);
               }}
