@@ -264,7 +264,7 @@ describe("TagesansichtService", () => {
       const client = createMockClient();
 
       // Historie-Eintraege (2 Eintraege fuer denselben Vorgang)
-      client.setResult("workflow_schritt_historie", {
+      client.setResult("vorgang_workflow_schritte", {
         data: [
           {
             id: "h-002",
@@ -326,7 +326,7 @@ describe("TagesansichtService", () => {
 
     it("sollte leeres Array zurueckgeben wenn keine Historie vorhanden", async () => {
       const client = createMockClient();
-      client.setResult("workflow_schritt_historie", {
+      client.setResult("vorgang_workflow_schritte", {
         data: [],
         error: null,
       });
@@ -344,7 +344,7 @@ describe("TagesansichtService", () => {
     it("sollte Vorgaenge anderer Tenants ausfiltern", async () => {
       const client = createMockClient();
 
-      client.setResult("workflow_schritt_historie", {
+      client.setResult("vorgang_workflow_schritte", {
         data: [
           {
             id: "h-001",
@@ -374,7 +374,7 @@ describe("TagesansichtService", () => {
 
     it("sollte Fehler zurueckgeben bei DB-Fehler in Historie", async () => {
       const client = createMockClient();
-      client.setResult("workflow_schritt_historie", {
+      client.setResult("vorgang_workflow_schritte", {
         data: null,
         error: { message: "Query timeout" },
       });

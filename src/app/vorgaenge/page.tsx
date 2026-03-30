@@ -107,6 +107,7 @@ export default function VorgaengeListePage() {
   /** PROJ-55: Frist-Filter fuer API (ueberfaellig, gefaehrdet, zeitplan) */
   const [fristFilter, setFristFilter] = React.useState<string>("");
   const [seite, setSeite] = React.useState(1);
+  const [refreshCounter, setRefreshCounter] = React.useState(0);
   const proSeite = 25;
 
   // PROJ-17: Massenoperationen
@@ -241,7 +242,7 @@ export default function VorgaengeListePage() {
       }
     }
     loadVorgaenge();
-  }, [statusFilter, verfahrensartFilter, suche, fristFilter, strasseFilter, plzFilter, ortFilter, sortierung, richtung, seite]);
+  }, [statusFilter, verfahrensartFilter, suche, fristFilter, strasseFilter, plzFilter, ortFilter, sortierung, richtung, seite, refreshCounter]);
 
   const totalPages = Math.max(1, Math.ceil(total / proSeite));
 
@@ -295,8 +296,8 @@ export default function VorgaengeListePage() {
     setMassenaktionErgebnis(ergebnis);
     setErgebnisDialogOpen(true);
     selection.clear();
-    // Daten neu laden (Trigger ueber seite-Setter)
-    setSeite((s) => s);
+    // Daten neu laden via Refresh-Counter (setSeite(s=>s) bewirkt keinen Re-Render in React)
+    setRefreshCounter((c) => c + 1);
   }
 
   // Checkbox-Status: alle sichtbaren ausgewaehlt?

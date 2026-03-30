@@ -146,8 +146,9 @@ export async function ladeKuerzlichBearbeitet(
   // Supabase JS Client unterstuetzt kein DISTINCT ON.
   // Workaround: Lade letzte N Historie-Eintraege des Users, dedupliziere im Code.
   const { data: historieData, error: historieError } = await serviceClient
-    .from("workflow_schritt_historie")
+    .from("vorgang_workflow_schritte")
     .select("id, vorgang_id, schritt_id, ausgefuehrt_am")
+    .eq("tenant_id", tenantId)
     .eq("ausgefuehrt_von", userId)
     .order("ausgefuehrt_am", { ascending: false })
     .limit(50);

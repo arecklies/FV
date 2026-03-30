@@ -71,7 +71,7 @@ export function FaelligeWiedervorlagen({
         }
         const body = await res.json();
         if (!abgebrochen) {
-          setDaten(body.data ?? []);
+          setDaten(body.wiedervorlagen ?? []);
         }
       } catch (err) {
         if (!abgebrochen) {
@@ -137,7 +137,7 @@ export function FaelligeWiedervorlagen({
                     if (!res.ok) throw new Error();
                     return res.json();
                   })
-                  .then((body) => setDaten(body.data ?? []))
+                  .then((body) => setDaten(body.wiedervorlagen ?? []))
                   .catch(() =>
                     setError(
                       "Fällige Wiedervorlagen konnten nicht geladen werden."
