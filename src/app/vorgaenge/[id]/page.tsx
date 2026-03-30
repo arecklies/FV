@@ -797,6 +797,7 @@ export default function VorgangDetailPage() {
             onVerlaengerung={fristenHook.verlaengereFrist}
             onHemmung={fristenHook.hemmeFrist}
             onHemmungAufheben={fristenHook.hebeHemmungAuf}
+            onCreateFrist={fristenHook.createFrist}
           />
         </TabsContent>
 
