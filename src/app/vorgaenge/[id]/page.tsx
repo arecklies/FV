@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Loader2, Send, Pause, Play, ArrowDown, ArrowUp, Mail } from "lucide-react";
+import { Loader2, Send, Pause, Play, ArrowDown, ArrowUp, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -22,6 +22,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
@@ -54,6 +56,7 @@ import { GeltungsdauerBadge } from "@/components/geltungsdauer/geltungsdauer-bad
 import { VerlaengerungDialog } from "@/components/geltungsdauer/verlaengerung-dialog";
 import { VerlaengerungHistorie } from "@/components/geltungsdauer/verlaengerung-historie";
 import { GeltungsdauerNachpflegeDialog } from "@/components/geltungsdauer/nachpflege-dialog";
+import { useAuth } from "@/components/auth/auth-provider";
 
 import type {
   Vorgang,
@@ -207,6 +210,7 @@ interface VorgangDetailResponse {
 export default function VorgangDetailPage() {
   const params = useParams<{ id: string }>();
   const vorgangId = params.id;
+  const { user } = useAuth();
 
   // Vorgang
   const [vorgang, setVorgang] = React.useState<Vorgang | null>(null);
@@ -220,6 +224,8 @@ export default function VorgangDetailPage() {
   const [neuerKommentar, setNeuerKommentar] = React.useState("");
   const [kommentarSubmitting, setKommentarSubmitting] = React.useState(false);
   const [kommentarError, setKommentarError] = React.useState<string | null>(null);
+  // PROJ-52: Privat-Toggle für Kommentare
+  const [istPrivat, setIstPrivat] = React.useState(false);
 
   // Workflow-Historie
   const [workflowHistorie, setWorkflowHistorie] = React.useState<
@@ -405,7 +411,7 @@ export default function VorgangDetailPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ inhalt: neuerKommentar.trim() }),
+        body: JSON.stringify({ inhalt: neuerKommentar.trim(), ist_privat: istPrivat }),
       });
       if (!res.ok) {
         setKommentarError("Kommentar konnte nicht gespeichert werden.");
@@ -414,7 +420,8 @@ export default function VorgangDetailPage() {
       const data = await res.json();
       setKommentare((prev) => [...prev, data.kommentar]);
       setNeuerKommentar("");
-      toast.success("Kommentar gespeichert");
+      setIstPrivat(false);
+      toast.success(istPrivat ? "Private Notiz gespeichert" : "Kommentar gespeichert");
     } catch {
       setKommentarError("Verbindungsfehler.");
     } finally {
@@ -911,26 +918,46 @@ export default function VorgangDetailPage() {
                 </p>
               ) : (
                 <div className="space-y-3 mb-4">
-                  {kommentare.map((k) => (
-                    <div
-                      key={k.id}
-                      className="rounded-md border p-3"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {k.autor_email ?? `${k.autor_user_id.slice(0, 8)}...`}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(k.created_at).toLocaleString(
-                            "de-DE"
-                          )}
-                        </span>
+                  {kommentare.map((k) => {
+                    const istEigenerPrivater = k.ist_privat && k.autor_user_id === user?.id;
+                    const istVertretungsNotiz = k.ist_privat && k.autor_user_id !== user?.id;
+                    return (
+                      <div
+                        key={k.id}
+                        className={`rounded-md border p-3 ${
+                          k.ist_privat
+                            ? "bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {k.autor_email ?? `${k.autor_user_id.slice(0, 8)}...`}
+                            </span>
+                            {istEigenerPrivater && (
+                              <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300">
+                                <Lock className="h-3 w-3" aria-hidden="true" />
+                                Nur für dich sichtbar
+                              </span>
+                            )}
+                            {istVertretungsNotiz && (
+                              <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300">
+                                <Lock className="h-3 w-3" aria-hidden="true" />
+                                Sichtbar als Vertretung
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(k.created_at).toLocaleString("de-DE")}
+                          </span>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap">
+                          {k.inhalt}
+                        </p>
                       </div>
-                      <p className="text-sm whitespace-pre-wrap">
-                        {k.inhalt}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -954,7 +981,30 @@ export default function VorgangDetailPage() {
                     {kommentarError}
                   </p>
                 )}
-                <div className="flex justify-end">
+                <div className="flex items-center justify-between">
+                  {/* PROJ-52: Privat-Toggle */}
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="kommentar-privat"
+                      checked={istPrivat}
+                      onCheckedChange={setIstPrivat}
+                      disabled={kommentarSubmitting}
+                      aria-label="Kommentar als privat markieren"
+                    />
+                    <Label
+                      htmlFor="kommentar-privat"
+                      className="flex items-center gap-1 text-sm cursor-pointer select-none"
+                    >
+                      {istPrivat ? (
+                        <>
+                          <Lock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                          <span className="text-amber-700 dark:text-amber-300 font-medium">Privat</span>
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">Für alle</span>
+                      )}
+                    </Label>
+                  </div>
                   <Button
                     type="submit"
                     size="sm"
