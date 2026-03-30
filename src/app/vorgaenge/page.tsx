@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -35,8 +36,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import type { VorgangListItem, Verfahrensart, VorgaengeStatistik } from "@/lib/services/verfahren/types";
+import type { VorgangListItem, Verfahrensart, VorgaengeStatistik, BatchAktionResponse } from "@/lib/services/verfahren/types";
 import { AmpelBadge, type AmpelStatus } from "@/components/fristen/ampel-badge";
+import { useSelection } from "@/lib/hooks/use-selection";
+import { MassenaktionenToolbar, type MassenaktionTyp } from "@/components/vorgaenge/massenaktionen-toolbar";
+import { MassenaktionenDialog } from "@/components/vorgaenge/massenaktionen-dialog";
+import { MassenaktionenErgebnis } from "@/components/vorgaenge/massenaktionen-ergebnis";
 
 /**
  * Vorgangsliste (PROJ-3 US-2, PROJ-20 Frist-Ampel)
@@ -85,6 +90,13 @@ export default function VorgaengeListePage() {
   const [fristFilter, setFristFilter] = React.useState<string>("");
   const [seite, setSeite] = React.useState(1);
   const proSeite = 25;
+
+  // PROJ-17: Massenoperationen
+  const selection = useSelection();
+  const [massenaktionTyp, setMassenaktionTyp] = React.useState<MassenaktionTyp | null>(null);
+  const [massenaktionDialogOpen, setMassenaktionDialogOpen] = React.useState(false);
+  const [massenaktionErgebnis, setMassenaktionErgebnis] = React.useState<BatchAktionResponse | null>(null);
+  const [ergebnisDialogOpen, setErgebnisDialogOpen] = React.useState(false);
 
   // Verfahrensarten fuer Filter-Dropdown
   const [verfahrensarten, setVerfahrensarten] = React.useState<Verfahrensart[]>([]);
@@ -136,6 +148,7 @@ export default function VorgaengeListePage() {
     async function loadVorgaenge() {
       setLoading(true);
       setError(null);
+      selection.clear(); // PROJ-17: Auswahl bei Daten-Neuladen zuruecksetzen
 
       const params = new URLSearchParams();
       if (statusFilter) params.set("status", statusFilter);
@@ -216,6 +229,26 @@ export default function VorgaengeListePage() {
     }
     return pages;
   }
+
+  // PROJ-17: Massenaktionen-Handler
+  function handleMassenaktion(typ: MassenaktionTyp) {
+    setMassenaktionTyp(typ);
+    setMassenaktionDialogOpen(true);
+  }
+
+  function handleMassenaktionErgebnis(ergebnis: BatchAktionResponse) {
+    setMassenaktionErgebnis(ergebnis);
+    setErgebnisDialogOpen(true);
+    selection.clear();
+    // Daten neu laden (Trigger ueber seite-Setter)
+    setSeite((s) => s);
+  }
+
+  // Checkbox-Status: alle sichtbaren ausgewaehlt?
+  const alleAusgewaehlt =
+    vorgaenge.length > 0 && vorgaenge.every((v) => selection.isSelected(v.id));
+  const einigeAusgewaehlt =
+    !alleAusgewaehlt && vorgaenge.some((v) => selection.isSelected(v.id));
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -396,6 +429,13 @@ export default function VorgaengeListePage() {
         </Select>
       </div>
 
+      {/* PROJ-17: Massenaktionen-Toolbar */}
+      <MassenaktionenToolbar
+        selectedCount={selection.selectedCount}
+        onAktion={handleMassenaktion}
+        onClear={selection.clear}
+      />
+
       {/* Error State */}
       {error && (
         <div
@@ -461,6 +501,20 @@ export default function VorgaengeListePage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  {/* PROJ-17: Checkbox-Spalte */}
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={alleAusgewaehlt ? true : einigeAusgewaehlt ? "indeterminate" : false}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          selection.selectAll(vorgaenge.map((v) => v.id));
+                        } else {
+                          selection.clear();
+                        }
+                      }}
+                      aria-label="Alle Vorgänge auswählen"
+                    />
+                  </TableHead>
                   <TableHead>
                     <button
                       type="button"
@@ -513,7 +567,10 @@ export default function VorgaengeListePage() {
                 {vorgaenge.map((v) => (
                   <TableRow
                     key={v.id}
-                    className="cursor-pointer hover:bg-primary/5 even:bg-muted/30 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none scroll-mt-16"
+                    className={cn(
+                      "cursor-pointer hover:bg-primary/5 even:bg-muted/30 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none scroll-mt-16",
+                      selection.isSelected(v.id) && "bg-primary/10"
+                    )}
                     onClick={() => router.push(`/vorgaenge/${v.id}`)}
                     tabIndex={0}
                     role="link"
@@ -525,6 +582,17 @@ export default function VorgaengeListePage() {
                       }
                     }}
                   >
+                    {/* PROJ-17: Zeilen-Checkbox */}
+                    <TableCell
+                      className="w-10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        checked={selection.isSelected(v.id)}
+                        onCheckedChange={() => selection.toggle(v.id)}
+                        aria-label={`Vorgang ${v.aktenzeichen} auswählen`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium text-primary">
                       {v.aktenzeichen}
                     </TableCell>
@@ -560,13 +628,25 @@ export default function VorgaengeListePage() {
               <Link
                 key={v.id}
                 href={`/vorgaenge/${v.id}`}
-                className="block rounded-lg border bg-background p-4 hover:bg-primary/5 shadow-sm transition-colors"
+                className={cn(
+                  "block rounded-lg border bg-background p-4 hover:bg-primary/5 shadow-sm transition-colors",
+                  selection.isSelected(v.id) && "bg-primary/10 border-primary/30"
+                )}
                 aria-label={`Vorgang ${v.aktenzeichen} öffnen`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="font-medium text-sm">
-                    {v.aktenzeichen}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {/* PROJ-17: Mobile Checkbox */}
+                    <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); selection.toggle(v.id); }}>
+                      <Checkbox
+                        checked={selection.isSelected(v.id)}
+                        aria-label={`Vorgang ${v.aktenzeichen} auswählen`}
+                      />
+                    </span>
+                    <span className="font-medium text-sm">
+                      {v.aktenzeichen}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-1">
                     {v.frist_status && (
                       <AmpelBadge
@@ -651,6 +731,21 @@ export default function VorgaengeListePage() {
           )}
         </>
       )}
+
+      {/* PROJ-17: Massenaktionen-Dialoge */}
+      <MassenaktionenDialog
+        open={massenaktionDialogOpen}
+        onOpenChange={setMassenaktionDialogOpen}
+        aktionTyp={massenaktionTyp}
+        vorgangIds={Array.from(selection.selectedIds)}
+        onErgebnis={handleMassenaktionErgebnis}
+      />
+
+      <MassenaktionenErgebnis
+        open={ergebnisDialogOpen}
+        onOpenChange={setErgebnisDialogOpen}
+        ergebnis={massenaktionErgebnis}
+      />
     </div>
   );
 }
