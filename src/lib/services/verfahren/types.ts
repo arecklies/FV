@@ -47,6 +47,10 @@ export const ListVorgaengeQuerySchema = z.object({
   richtung: z.enum(["asc", "desc"]).optional(),
   /** PROJ-55: Frist-Schnellfilter (ueberfaellig=rot+dunkelrot, gefaehrdet=gelb, zeitplan=gruen+null) */
   frist_filter: z.enum(["ueberfaellig", "gefaehrdet", "zeitplan"]).optional(),
+  /** PROJ-40: Adressfilter (Teilstring-Suche auf grundstueck_adresse) */
+  strasse: z.string().max(200).optional(),
+  plz: z.string().regex(/^\d{5}$/, "PLZ muss exakt 5 Ziffern haben").optional(),
+  ort: z.string().max(200).optional(),
   seite: z.coerce.number().int().positive().optional().default(1),
   pro_seite: z.coerce.number().int().min(1).max(100).optional().default(25),
 });
@@ -57,6 +61,8 @@ export const ZuweisenSchema = z.object({
 
 export const KommentarSchema = z.object({
   inhalt: z.string().min(1, "Kommentar darf nicht leer sein").max(10000),
+  /** PROJ-52: true = private Notiz, nur fuer Autor (und Vertretung) sichtbar */
+  ist_privat: z.boolean().optional().default(false),
 });
 
 /** UUID-Validierung fuer [id] Path-Parameter (B-004) */
@@ -171,6 +177,8 @@ export const VorgangKommentarDbSchema = z.object({
   autor_user_id: z.string(),
   inhalt: z.string(),
   created_at: z.string(),
+  /** PROJ-52: true = private Notiz */
+  ist_privat: z.boolean(),
 });
 
 /** PROJ-47 US-1: Kommentar mit aufgelöster E-Mail-Adresse */

@@ -31,6 +31,7 @@ import {
   zuweiseVorgang,
   listKommentare,
   createKommentar,
+  escapeIlikeInput,
 } from "./index";
 import { writeAuditLog } from "@/lib/services/audit";
 import { resolveUserEmails } from "@/lib/services/user-resolver";
@@ -132,6 +133,7 @@ const MOCK_KOMMENTAR: VorgangKommentar = {
   autor_user_id: USER_ID,
   inhalt: "Unterlagen vollständig.",
   created_at: "2026-03-26T10:00:00Z",
+  ist_privat: false,
 };
 
 // -- Tests --
@@ -539,6 +541,92 @@ describe("listVorgaenge", () => {
       expect(result.data[0].frist_status).toBe("dunkelrot");
       expect(result.data[1].frist_status).toBe("rot");
     });
+  });
+
+  // PROJ-40: Adressfilter-Tests
+  describe("adressfilter (PROJ-40)", () => {
+    it("baut ilike-Query fuer strasse-Filter", async () => {
+      const client = createMockClient();
+      const listItems: VorgangListItem[] = [
+        {
+          id: "v-addr-1",
+          aktenzeichen: "2026/0010/BG",
+          bauherr_name: "Anna Schmidt",
+          grundstueck_adresse: "Hauptstrasse 12, 50667 Köln",
+          bezeichnung: "Anbau",
+          workflow_schritt_id: "eingegangen",
+          zustaendiger_user_id: USER_ID,
+          eingangsdatum: "2026-03-26T00:00:00Z",
+          verfahrensart_id: "va-001",
+        },
+      ];
+      client.setResult("vorgaenge", { data: listItems, count: 1, error: null });
+
+      const result = await listVorgaenge(client as any, {
+        tenantId: TENANT_ID,
+        strasse: "Hauptstrasse",
+      });
+
+      expect(result.error).toBeNull();
+      expect(result.data).toHaveLength(1);
+      // Verify ilike was called on the chain
+      const chain = client.getChain("vorgaenge");
+      expect(chain.ilike).toHaveBeenCalledWith("grundstueck_adresse", "%Hauptstrasse%");
+    });
+
+    it("baut AND-verknuepfte ilike-Queries fuer strasse + plz + ort", async () => {
+      const client = createMockClient();
+      client.setResult("vorgaenge", { data: [], count: 0, error: null });
+
+      await listVorgaenge(client as any, {
+        tenantId: TENANT_ID,
+        strasse: "Bauweg",
+        plz: "50667",
+        ort: "Köln",
+      });
+
+      const chain = client.getChain("vorgaenge");
+      // Drei separate ilike-Aufrufe (AND-Verknuepfung)
+      expect(chain.ilike).toHaveBeenCalledTimes(3);
+      expect(chain.ilike).toHaveBeenCalledWith("grundstueck_adresse", "%Bauweg%");
+      expect(chain.ilike).toHaveBeenCalledWith("grundstueck_adresse", "%50667%");
+      expect(chain.ilike).toHaveBeenCalledWith("grundstueck_adresse", "%Köln%");
+    });
+
+    it("escaped Sonderzeichen % und _ in Benutzereingaben", async () => {
+      const client = createMockClient();
+      client.setResult("vorgaenge", { data: [], count: 0, error: null });
+
+      await listVorgaenge(client as any, {
+        tenantId: TENANT_ID,
+        strasse: "Haupt%strasse_1",
+      });
+
+      const chain = client.getChain("vorgaenge");
+      expect(chain.ilike).toHaveBeenCalledWith("grundstueck_adresse", "%Haupt\\%strasse\\_1%");
+    });
+  });
+});
+
+describe("escapeIlikeInput", () => {
+  it("escaped % Zeichen", () => {
+    expect(escapeIlikeInput("100%")).toBe("100\\%");
+  });
+
+  it("escaped _ Zeichen", () => {
+    expect(escapeIlikeInput("strasse_1")).toBe("strasse\\_1");
+  });
+
+  it("escaped Backslashes", () => {
+    expect(escapeIlikeInput("a\\b")).toBe("a\\\\b");
+  });
+
+  it("laesst normalen Text unveraendert", () => {
+    expect(escapeIlikeInput("Hauptstrasse 12")).toBe("Hauptstrasse 12");
+  });
+
+  it("escaped mehrere Sonderzeichen gleichzeitig", () => {
+    expect(escapeIlikeInput("50%_test\\x")).toBe("50\\%\\_test\\\\x");
   });
 });
 

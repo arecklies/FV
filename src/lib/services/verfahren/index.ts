@@ -5,6 +5,7 @@ import { generateAktenzeichen } from "./aktenzeichen";
 import type { Vorgang, VorgangListItem, VorgangKommentar, VorgangKommentarMitEmail, Verfahrensart, VorgaengeStatistik } from "./types";
 import { VerfahrensartDbSchema, VorgangDbSchema, VorgangListItemDbSchema, VorgangKommentarDbSchema } from "./types";
 import { resolveUserEmails } from "@/lib/services/user-resolver";
+import { getVertretungenVon } from "@/lib/services/stellvertreter";
 
 /** Zod-Schema fuer Frist-Batch-Query (B-20-03: statt Type Assertion) */
 const FristStatusRowSchema = z.object({
@@ -214,6 +215,11 @@ export async function createVorgang(
   return { data: null, error: "Aktenzeichen konnte nicht vergeben werden (zu viele Konflikte)" };
 }
 
+/** PROJ-40: Escaped % und _ in Benutzereingaben fuer ilike-Queries */
+export function escapeIlikeInput(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
 interface ListVorgaengeParams {
   tenantId: string;
   status?: string;
@@ -224,6 +230,10 @@ interface ListVorgaengeParams {
   richtung?: string;
   /** PROJ-55: Frist-Schnellfilter (ueberfaellig, gefaehrdet, zeitplan) */
   frist_filter?: string;
+  /** PROJ-40: Adressfilter */
+  strasse?: string;
+  plz?: string;
+  ort?: string;
   seite?: number;
   pro_seite?: number;
 }
@@ -262,6 +272,17 @@ export async function listVorgaenge(
     query = query.or(
       `aktenzeichen.ilike.%${term}%,bauherr_name.ilike.%${term}%,grundstueck_adresse.ilike.%${term}%,bezeichnung.ilike.%${term}%`
     );
+  }
+
+  // PROJ-40: Adressfilter (AND-Verknuepfung, Teilstring-Suche auf grundstueck_adresse)
+  if (params.strasse) {
+    query = query.ilike("grundstueck_adresse", `%${escapeIlikeInput(params.strasse)}%`);
+  }
+  if (params.plz) {
+    query = query.ilike("grundstueck_adresse", `%${escapeIlikeInput(params.plz)}%`);
+  }
+  if (params.ort) {
+    query = query.ilike("grundstueck_adresse", `%${escapeIlikeInput(params.ort)}%`);
   }
 
   const ascending = params.richtung === "asc";
