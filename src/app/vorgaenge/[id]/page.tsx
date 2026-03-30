@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Loader2, Send, Pause, Play, ArrowDown, ArrowUp, Mail, Lock } from "lucide-react";
+import { Loader2, Send, Pause, Play, ArrowDown, ArrowUp, Mail, Lock, FileText, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -74,6 +74,10 @@ import type {
  */
 
 import { getSchrittLabel } from "@/lib/utils/workflow-labels";
+import { DokumentListe } from "@/components/dokumente/dokument-liste";
+import { DokumentUploadZone } from "@/components/dokumente/dokument-upload-zone";
+import { WiedervorlagenListe } from "@/components/wiedervorlagen/wiedervorlagen-liste";
+import { WiedervorlageDialog } from "@/components/wiedervorlagen/wiedervorlage-dialog";
 
 interface WorkflowAktionInfo {
   id: string;
@@ -226,6 +230,8 @@ export default function VorgangDetailPage() {
   const [kommentarError, setKommentarError] = React.useState<string | null>(null);
   // PROJ-52: Privat-Toggle für Kommentare
   const [istPrivat, setIstPrivat] = React.useState(false);
+  const [refreshDokumente, setRefreshDokumente] = React.useState(0);
+  const [refreshWiedervorlagen, setRefreshWiedervorlagen] = React.useState(0);
 
   // Workflow-Historie
   const [workflowHistorie, setWorkflowHistorie] = React.useState<
@@ -666,7 +672,15 @@ export default function VorgangDetailPage() {
             <Mail className="h-4 w-4 mr-1" aria-hidden="true" />
             Nachrichten
           </TabsTrigger>
+          <TabsTrigger value="dokumente">
+            <FileText className="h-4 w-4 mr-1" aria-hidden="true" />
+            Dokumente
+          </TabsTrigger>
           <TabsTrigger value="kommentare">Kommentare</TabsTrigger>
+          <TabsTrigger value="wiedervorlagen">
+            <Bell className="h-4 w-4 mr-1" aria-hidden="true" />
+            Wiedervorlagen
+          </TabsTrigger>
           <TabsTrigger value="workflow">Workflow</TabsTrigger>
         </TabsList>
 
@@ -1029,6 +1043,39 @@ export default function VorgangDetailPage() {
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Dokumente (PROJ-5) */}
+        <TabsContent value="dokumente">
+          <div className="space-y-4">
+            <DokumentUploadZone
+              vorgangId={id as string}
+              onUploadComplete={() => {
+                // Trigger Reload der Dokumentenliste
+                setRefreshDokumente((c) => c + 1);
+              }}
+            />
+            <DokumentListe
+              vorgangId={id as string}
+              key={refreshDokumente}
+            />
+          </div>
+        </TabsContent>
+
+        {/* Wiedervorlagen (PROJ-53) */}
+        <TabsContent value="wiedervorlagen">
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <WiedervorlageDialog
+                vorgangId={id as string}
+                onCreated={() => setRefreshWiedervorlagen((c) => c + 1)}
+              />
+            </div>
+            <WiedervorlagenListe
+              vorgangId={id as string}
+              key={refreshWiedervorlagen}
+            />
+          </div>
         </TabsContent>
 
         {/* Workflow */}
